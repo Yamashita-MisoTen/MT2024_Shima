@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/YK_TransportTestScene.unity
+    guid: e04dd026a82cbb942b5a67fb6aebaef5
   m_configObjects: {}
