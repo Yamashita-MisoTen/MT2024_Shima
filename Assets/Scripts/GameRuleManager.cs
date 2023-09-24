@@ -19,20 +19,23 @@ public class GameRuleManager : NetworkBehaviour
 		}
 	}
 
-	// ** 変数定義
+	//// **** 変数定義 **** ////
 
+	// ** 時間関係
+	// ゲームの制限時間
+	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
+	float _progressLimitTime;	// 経過時間
+	// 鬼のタッチ後のクールタイム
 	[SerializeField]
-	[Header("ゲームの制限時間(秒)")]int _LimitTime = 300;	// 制限時間
-	float _progressTime;	// 経過時間
-	bool _isFinishGame = false;
-	enum PlayerID{
-		player01,
-		player02,
-		player03,
-		player04,
-	}
-	PlayerID _orgaPlayer = PlayerID.player01;
+	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
+	float _progressCoolTime;	// 経過時間
+	bool _isCoolTimeNow = false;
+
+	// ** プレイヤー関係
 	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
+	CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
+
+	bool _isFinishGame = false;
 	void Start()
 	{
 		_playerData = new List<CPlayer>(0);
@@ -43,14 +46,29 @@ public class GameRuleManager : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(_LimitTime < _progressTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
-		_progressTime += Time.deltaTime;				// 経過時間を更新する
+		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
+		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
+
+		// タッチのクールタイムの設定
+		if(_isCoolTimeNow){
+			if(_changeCoolTime < _progressCoolTime){
+				_progressCoolTime += Time.deltaTime;
+			}else{
+				_isCoolTimeNow = false;
+				Debug.Log("クールタイム終了");
+			}
+		}
 	}
 
 	void StartGame(){
+		// プレイヤーをランダムに鬼に設定する(未完成)
 		int num = UnityEngine.Random.Range(0,4);
 		Debug.Log(num);
-		Debug.Log((PlayerID)num);
+	}
+
+	void RandomSetOrgaPlayer(){
+		int num = UnityEngine.Random.Range(0,_playerData.Count());
+		ChangeOrgaPlayer(_playerData[num]);
 	}
 
 	void FinishGame(){	// ゲーム終了時に呼び出される関数
@@ -62,16 +80,23 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	bool CheckIdentityPlayer(int plNum, CPlayer player){
-		if(_playerData[plNum] == player) return true;
+		if(_playerData[plNum] == player){
+			Debug.Log(player.name);
+			return true;
+		}
 		return false;
 	}
 
 	// 鬼が変わるタイミングで呼ぶ関数
-	void ChangeOrgaPlayer(CPlayer player){
+	public void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){
+		Debug.Log(_playerData.Count());
 		for(int i = 0; i < _playerData.Count(); i++){
 			// オブジェクトが同一かどうか確認する
-			if(CheckIdentityPlayer(i, player)){
-				_orgaPlayer = (PlayerID)i;
+			if(CheckIdentityPlayer(i, nextOrgaPlayer)){
+				nextOrgaPlayer.ChangeToOrga();	// 鬼になった通知を送る
+				_orgaPlayer = nextOrgaPlayer;
+				SetCoolTime();					// クールタイムを設定する
+				Debug.Log("鬼が変更されました 次の鬼は" + _orgaPlayer.name);
 				continue;
 			}
 		}
@@ -88,7 +113,20 @@ public class GameRuleManager : NetworkBehaviour
 			if(_playerData[i] == player) return;
 		}
 		_playerData.Add(player);	// プレイヤーのデータを格納する
-		Debug.Log("プレイヤーを追加しました現在のプレイヤー数" + _playerData.Count());
+		Debug.Log("プレイヤーを追加しました");
+		Debug.Log("追加したプレイヤー" + player.name);
+		Debug.Log("現在のプレイヤー数" + _playerData.Count());
+	}
+
+	private void SetCoolTime(){
+		Debug.Log("クールタイムを開始する");
+		_isCoolTimeNow = true;
+		_progressCoolTime = 0f;
+	}
+
+	public bool CheckOverCoolTime(){
+		if(_isCoolTimeNow) return false;
+		return true;
 	}
 
 }

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Mirror;
+using Unity.Collections;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,7 +10,10 @@ using UnityEngine.Animations;
 
 public class CPlayer : NetworkBehaviour
 {
-	bool _isNowOrga = false;
+	[SerializeField] bool _isNowOrga = false;
+	// アイテム所持するように
+	// CItem _HaveItemData;
+
 	/// </summary>
 	/// // Start is called before the first frame update
 	void Start()
@@ -31,9 +36,19 @@ public class CPlayer : NetworkBehaviour
 		this.gameObject.transform.position = pos;
 	}
 
-	// 鬼の場合のみ起動して相手を鬼に変更する
-	void ChangeOrgaPlayer(){
-		//if()
-		_isNowOrga = false;
+	private void OnTriggerEnter(Collider other) {
+		if(!other.gameObject.CompareTag("Player")) return;
+
+		// 自分が鬼のときのみ通知をする
+		if(_isNowOrga && GameRuleManager.instance.CheckOverCoolTime()){
+			Debug.Log("当たり判定発生");
+			GameRuleManager.instance.ChangeOrgaPlayer(other.gameObject.GetComponent<CPlayer>());
+			_isNowOrga = false;
+		}
 	}
+
+	public void ChangeToOrga(){
+		_isNowOrga = true;
+	}
+
 }
