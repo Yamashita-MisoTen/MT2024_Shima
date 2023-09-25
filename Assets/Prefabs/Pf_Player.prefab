@@ -235,12 +235,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1790004077252208956}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 448b8caf35d9cfb42ae713602ea936a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 3aec5bb8f0121c042972abf79443c86b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _isNowOrga: 0
+  testMove: 1
 --- !u!114 &8857170424990527049
 MonoBehaviour:
   m_ObjectHideFlags: 0
