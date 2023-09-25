@@ -11,6 +11,7 @@ using UnityEngine.Animations;
 public class CPlayer : NetworkBehaviour
 {
 	[SerializeField] bool _isNowOrga = false;
+	public bool testMove = true;
 	// アイテム所持するように
 	// CItem _HaveItemData;
 
@@ -25,18 +26,26 @@ public class CPlayer : NetworkBehaviour
 	void Update()
 	{
 		// 移動系適当に作ったから後から変更
-		if (Input.GetKey(KeyCode.W)) MoveX(0.1f);
-		if (Input.GetKey(KeyCode.S)) MoveX(-0.1f);
+		if(testMove){
+			if (Input.GetKey(KeyCode.D)) MoveX(0.1f);
+			if (Input.GetKey(KeyCode.A)) MoveX(-0.1f);
+			if (Input.GetKey(KeyCode.W)) MoveZ(0.1f);
+			if (Input.GetKey(KeyCode.S)) MoveZ(-0.1f);
+		}
 	}
 
-	[Command]
 	void MoveX(float speed){
 		Vector3 pos = this.transform.position;
 		pos.x += speed;
 		this.gameObject.transform.position = pos;
 	}
-
-	private void OnTriggerEnter(Collider other) {
+	void MoveZ(float speed){
+		Vector3 pos = this.transform.position;
+		pos.z += speed;
+		this.gameObject.transform.position = pos;
+	}
+	private void OnCollisionEnter(Collision other) {
+		Debug.Log("あたり");
 		if(!other.gameObject.CompareTag("Player")) return;
 
 		// 自分が鬼のときのみ通知をする

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ public class GameRuleManager : NetworkBehaviour
 	// 鬼のタッチ後のクールタイム
 	[SerializeField]
 	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
+	[SerializeField] private TextMeshProUGUI text;
 	float _progressCoolTime;	// 経過時間
 	bool _isCoolTimeNow = false;
 
@@ -48,6 +50,10 @@ public class GameRuleManager : NetworkBehaviour
 	{
 		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
+		var timer = (int)(_LimitTime - _progressLimitTime);
+		string min = ((int)(timer / 60)).ToString();
+		string sec = (timer % 60).ToString();
+		text.text = min +":"+ sec;
 
 		// タッチのクールタイムの設定
 		if(_isCoolTimeNow){
