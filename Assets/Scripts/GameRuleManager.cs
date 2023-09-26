@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Mirror.Examples.Basic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,6 +34,9 @@ public class GameRuleManager : NetworkBehaviour
 	float _progressCoolTime;	// 経過時間
 	bool _isCoolTimeNow = false;
 
+	// ** ゲーム開始前の準備時間関連
+	bool _isGameReady = false;
+
 	// ** プレイヤー関係
 	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
 	CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
@@ -41,13 +45,12 @@ public class GameRuleManager : NetworkBehaviour
 	void Start()
 	{
 		_playerData = new List<CPlayer>(0);
-		Debug.Log("生成");
-		StartGame();
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		if(_isGameReady){ GameReady(); }else return;
 		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
 		var timer = (int)(_LimitTime - _progressLimitTime);
@@ -66,16 +69,12 @@ public class GameRuleManager : NetworkBehaviour
 		}
 	}
 
-	void StartGame(){
-		// プレイヤーをランダムに鬼に設定する(未完成)
-		int num = UnityEngine.Random.Range(0,4);
-		Debug.Log(num);
+	// ** ゲームの開始終了関連の関数
+
+	void StartGame(){	// ゲーム開始時に呼び出される関数
+		RandomSetOrgaPlayer();
 	}
 
-	void RandomSetOrgaPlayer(){
-		int num = UnityEngine.Random.Range(0,_playerData.Count());
-		ChangeOrgaPlayer(_playerData[num]);
-	}
 
 	void FinishGame(){	// ゲーム終了時に呼び出される関数
 		if(_isFinishGame) return;
@@ -85,7 +84,18 @@ public class GameRuleManager : NetworkBehaviour
 		// 接続しているプレイヤーすべてに終了命令を送る
 	}
 
-	bool CheckIdentityPlayer(int plNum, CPlayer player){
+	void GameReady(){
+		// 開始前にカウントダウン入れたりする
+
+	}
+
+
+	void RandomSetOrgaPlayer(){		// 鬼をランダムで変更する
+		int num = UnityEngine.Random.Range(0,_playerData.Count());
+		ChangeOrgaPlayer(_playerData[num]);
+	}
+
+	bool CheckIdentityPlayer(int plNum, CPlayer player){	// 同一のプレイヤーか確認する
 		if(_playerData[plNum] == player){
 			Debug.Log(player.name);
 			return true;
@@ -93,8 +103,7 @@ public class GameRuleManager : NetworkBehaviour
 		return false;
 	}
 
-	// 鬼が変わるタイミングで呼ぶ関数
-	public void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){
+	public void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){	// 鬼が変わるタイミングで呼ぶ関数
 		Debug.Log(_playerData.Count());
 		for(int i = 0; i < _playerData.Count(); i++){
 			// オブジェクトが同一かどうか確認する
@@ -108,9 +117,10 @@ public class GameRuleManager : NetworkBehaviour
 		}
 	}
 
-	public void AddPlayerData(CPlayer player){
-		if(_playerData.Count() > 4){
-			Debug.LogError("人数制限を超えようとしています");
+	public void AddPlayerData(GameObject playerObj){
+		CPlayer player = playerObj.GetComponent<CPlayer>();
+		if(player == null){
+			Debug.Log("追加されたプレハブがおかしい");
 			return;
 		}
 
@@ -118,6 +128,7 @@ public class GameRuleManager : NetworkBehaviour
 		for(int i = 0; i < _playerData.Count(); i++){
 			if(_playerData[i] == player) return;
 		}
+
 		_playerData.Add(player);	// プレイヤーのデータを格納する
 		Debug.Log("プレイヤーを追加しました");
 		Debug.Log("追加したプレイヤー" + player.name);

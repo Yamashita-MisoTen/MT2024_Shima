@@ -37,8 +37,6 @@ public class CPlayer : NetworkBehaviour
 	/// // Start is called before the first frame update
 	void Start()
 	{
-		GameRuleManager.instance.AddPlayerData(this);
-
 		Start_Position = this.transform.position;
 		Jump_Type = eJump_Type.UP;
 	}
