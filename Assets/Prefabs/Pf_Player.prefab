@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1062285894496003265}
   - component: {fileID: 6241311371408313978}
-  - component: {fileID: 4053676091460699784}
   - component: {fileID: 8640760381981941475}
   m_Layer: 0
   m_Name: PlayerCamera
@@ -27,13 +26,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 386070441905520449}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.872, z: -1.644}
+  m_LocalRotation: {x: 0.096627496, y: 0, z: 0, w: 0.9953206}
+  m_LocalPosition: {x: 0, y: 1.327, z: -1.644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 67852990808549744}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 11.09, y: 0, z: 0}
 --- !u!20 &6241311371408313978
 Camera:
   m_ObjectHideFlags: 0
@@ -85,14 +84,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &4053676091460699784
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 386070441905520449}
-  m_Enabled: 1
 --- !u!114 &8640760381981941475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,9 +141,10 @@ GameObject:
   - component: {fileID: 6180968104525011139}
   - component: {fileID: 2234664384835923380}
   - component: {fileID: 8857170424990527049}
+  - component: {fileID: 837816968325431735}
   m_Layer: 0
   m_Name: Pf_Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -242,7 +234,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _isNowOrga: 0
+  _WhirloopPrefab: {fileID: 8917630142182620420, guid: e1c964221159fc2429dff286cdc0fd0e,
+    type: 3}
   testMove: 1
+  _rotAngle: 0
 --- !u!114 &8857170424990527049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,6 +269,27 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!65 &837816968325431735
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790004077252208956}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1001 &2577533286217806449
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -31,4 +31,8 @@ public class CustomNetworkManager : NetworkManager
 		GameRuleManager.instance.AddPlayerData(player);
 	}
 
+	private void AddPlayerCharacter(){
+		
+	}
+
 }
