@@ -75,7 +75,6 @@ public partial class CPlayer : NetworkBehaviour
 			}
 		}
 
-		if(Input.GetKeyDown(KeyCode.U)) CreateWhirloop(1.0f);
 	}
 
 	//	[Command]
@@ -109,6 +108,8 @@ public partial class CPlayer : NetworkBehaviour
 				Jump_Switch = true;
 				Now_Time = 0.0f;
 			}
+			// ジャンプするタイミングで渦潮生成する
+			CreateWhirloop(1.0f);
 		}
 	}
 

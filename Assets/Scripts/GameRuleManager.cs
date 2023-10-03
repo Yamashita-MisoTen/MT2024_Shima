@@ -50,7 +50,10 @@ public class GameRuleManager : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(_isGameReady){ GameReady(); }else return;
+		if(!_isGameReady){
+			if(Input.GetKeyDown(KeyCode.Space)) GameReady();
+			return;
+		}
 		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
 		var timer = (int)(_LimitTime - _progressLimitTime);
@@ -86,7 +89,7 @@ public class GameRuleManager : NetworkBehaviour
 
 	void GameReady(){
 		// 開始前にカウントダウン入れたりする
-
+		_isGameReady = true;
 	}
 
 
