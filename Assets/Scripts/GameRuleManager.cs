@@ -23,6 +23,15 @@ public class GameRuleManager : NetworkBehaviour
 
 	//// **** 変数定義 **** ////
 
+	// ** ゲームの状態関連
+	enum GameState{
+		Ready,
+		NowPlay,
+		Finish
+	}
+
+	GameState gameState = GameState.Ready;
+
 	// ** 時間関係
 	// ゲームの制限時間
 	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
@@ -30,12 +39,13 @@ public class GameRuleManager : NetworkBehaviour
 	// 鬼のタッチ後のクールタイム
 	[SerializeField]
 	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
-	[SerializeField] private TextMeshProUGUI text;
+	[SerializeField] private TextMeshProUGUI timerText;
+	[SerializeField] private TextMeshProUGUI gameStateText;
 	float _progressCoolTime;	// 経過時間
 	bool _isCoolTimeNow = false;
 
 	// ** ゲーム開始前の準備時間関連
-	bool _isGameReady = false;
+	bool _isGameReady = true;
 
 	// ** プレイヤー関係
 	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
@@ -50,19 +60,59 @@ public class GameRuleManager : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(!_isGameReady){
-			if(Input.GetKeyDown(KeyCode.Space)) GameReady();
-			return;
+		switch(gameState){
+			case GameState.Ready:
+				UpdateReady();	// ゲーム始める前の演出などの更新
+				break;
+			case GameState.NowPlay:
+				UpdateGame();	// ゲーム本編の更新
+				break;
+			case GameState.Finish:
+				UpdateFinsh();	// ゲーム終了の更新
+				break;
 		}
+	}
+
+	// ** ゲームの開始終了関連の関数
+	void StartGame(){	// ゲーム開始時に呼び出される関数
+		gameStateText.text = "now play";
+		gameState = GameState.NowPlay;
+		RandomSetOrgaPlayer();
+	}
+	void FinishGame(){	// ゲーム終了時に呼び出される関数
+		if(_isFinishGame) return;
+		Debug.Log("ゲームを終了します");
+		_isFinishGame = true;
+		gameStateText.text = "Finish";
+		gameState = GameState.Finish;
+		timerText.text = "";
+
+		// 敗者一応置いといたほうがよき？
+
+		// 接続しているプレイヤーすべてに終了命令を送る
+	}
+
+	void UpdateReady(){
+		gameStateText.text = "Ready";
+		// 開始前にカウントダウン入れたりする
+		if(Input.GetKeyDown(KeyCode.Space)){
+			StartGame();
+			_isGameReady = false;
+		}
+	}
+	void UpdateGame(){
 		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
 		var timer = (int)(_LimitTime - _progressLimitTime);
-		string min = ((int)(timer / 60)).ToString();
-		string sec = (timer % 60).ToString();
-		text.text = min +":"+ sec;
+		// UI用に時間を計算しなおす
+		string min = ((int)(timer / 60)).ToString();	// 分計算
+		int secNum = timer % 60;		// 秒計算
+		string sec = secNum.ToString();
+		if(secNum < 10) sec = "0" + sec;	// 10秒以下の場合09などのように2桁表記に変更
+		timerText.text = min +":"+ sec;	// UIに更新入れる
 
 		// タッチのクールタイムの設定
-		if(_isCoolTimeNow){
+		if(_isCoolTimeNow){	// キャラクターの点滅とか入れたい
 			if(_changeCoolTime < _progressCoolTime){
 				_progressCoolTime += Time.deltaTime;
 			}else{
@@ -72,30 +122,14 @@ public class GameRuleManager : NetworkBehaviour
 		}
 	}
 
-	// ** ゲームの開始終了関連の関数
+	void UpdateFinsh(){
 
-	void StartGame(){	// ゲーム開始時に呼び出される関数
-		RandomSetOrgaPlayer();
 	}
 
-
-	void FinishGame(){	// ゲーム終了時に呼び出される関数
-		if(_isFinishGame) return;
-		Debug.Log("ゲームを終了します");
-		_isFinishGame = true;
-
-		// 接続しているプレイヤーすべてに終了命令を送る
-	}
-
-	void GameReady(){
-		// 開始前にカウントダウン入れたりする
-		_isGameReady = true;
-	}
-
-
+	// ** 単発系の関数
 	void RandomSetOrgaPlayer(){		// 鬼をランダムで変更する
 		int num = UnityEngine.Random.Range(0,_playerData.Count());
-		ChangeOrgaPlayer(_playerData[num]);
+		//ChangeOrgaPlayer(_playerData[num]);
 	}
 
 	bool CheckIdentityPlayer(int plNum, CPlayer player){	// 同一のプレイヤーか確認する
@@ -119,6 +153,18 @@ public class GameRuleManager : NetworkBehaviour
 			}
 		}
 	}
+	private void SetCoolTime(){		// クールタイムの設定
+		Debug.Log("クールタイムを開始する");
+		_isCoolTimeNow = true;
+		_progressCoolTime = 0f;
+	}
+
+	public bool CheckOverCoolTime(){	// クールタイム終わってるか確認
+		if(_isCoolTimeNow) return false;
+		return true;
+	}
+
+	// ** 通信関連の関数
 
 	public void AddPlayerData(GameObject playerObj){
 		CPlayer player = playerObj.GetComponent<CPlayer>();
@@ -138,15 +184,5 @@ public class GameRuleManager : NetworkBehaviour
 		Debug.Log("現在のプレイヤー数" + _playerData.Count());
 	}
 
-	private void SetCoolTime(){
-		Debug.Log("クールタイムを開始する");
-		_isCoolTimeNow = true;
-		_progressCoolTime = 0f;
-	}
-
-	public bool CheckOverCoolTime(){
-		if(_isCoolTimeNow) return false;
-		return true;
-	}
 
 }

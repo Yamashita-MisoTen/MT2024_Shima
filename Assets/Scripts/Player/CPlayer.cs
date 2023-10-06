@@ -47,6 +47,7 @@ public partial class CPlayer : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		// 今のシーンを確認してから入力機構切りたい
 		// オブジェクト移動
 		this.gameObject.transform.position += Velocity * Time.deltaTime;
 
@@ -80,7 +81,7 @@ public partial class CPlayer : NetworkBehaviour
 	//	[Command]
 	private void OnMove(InputValue value)
 	{
-		Debug.Log("動く");
+		//Debug.Log("動く");
 		// MoveActionの入力値を取得
 		var axis = value.Get<Vector2>();
 
@@ -139,7 +140,6 @@ public partial class CPlayer : NetworkBehaviour
 			_isNowOrga = false;
 		}
 	}
-
 	public void ChangeToOrga(){
 		_isNowOrga = true;
 	}
