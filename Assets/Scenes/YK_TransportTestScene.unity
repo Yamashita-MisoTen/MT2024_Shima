@@ -449,6 +449,21 @@ PrefabInstance:
       propertyPath: _isNowOrga
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2234664384835923380, guid: 6ca9cad79ae1457498e55bbf50da7afb,
+        type: 3}
+      propertyPath: SJump_Fall
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2234664384835923380, guid: 6ca9cad79ae1457498e55bbf50da7afb,
+        type: 3}
+      propertyPath: SJump_AllTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2234664384835923380, guid: 6ca9cad79ae1457498e55bbf50da7afb,
+        type: 3}
+      propertyPath: SJump_Acceleration
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7864918274296005831, guid: 6ca9cad79ae1457498e55bbf50da7afb,
         type: 3}
       propertyPath: sceneId
