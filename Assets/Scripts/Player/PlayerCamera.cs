@@ -28,4 +28,8 @@ public class PlayerCamera : NetworkBehaviour
 	{
 		
 	}
+
+	public void SetCamera(bool flg){
+		CameraObj.SetActive(flg);
+	}
 }
