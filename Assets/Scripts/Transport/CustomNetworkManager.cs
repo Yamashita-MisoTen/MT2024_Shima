@@ -22,7 +22,7 @@ public class CustomNetworkManager : NetworkManager
 			prefab = pPlayer[connectPlayerCount - 1];
 		}
 		Debug.Log("プレイヤーを生成する");
-        Transform startPos = GetStartPosition(connectPlayerCount);
+        Transform startPos = GetStartPosition();
         GameObject player = startPos != null
             ? Instantiate(prefab, startPos.position, startPos.rotation)
             : Instantiate(prefab);
