@@ -30,7 +30,7 @@ public partial class CPlayer : NetworkBehaviour
     //ジャンプ経過時間
     private float SJump_NowTime;
     //現在の速度
-    private float SJump_Speed;  
+    private float SJump_Speed;
 
 　　//ダッシュ落下速度
     private float Jump_Fall = 1.0f;
@@ -58,20 +58,18 @@ public partial class CPlayer : NetworkBehaviour
     // Update is called once per frame
     void CplayerMoveUpdate()
     {
-        Debug.Log("アプデ");
         // オブジェクト移動
         this.gameObject.transform.position += Velocity * Time.deltaTime;
 
         if (Jump_Switch)
         {
-           
             if (Jump_Type == eJump_Type.UP)
             { Debug.Log("縦じゃん");
                 //縦ジャンプの予備動作
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
                     this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
-                    HJump_NowTime += Time.deltaTime;                   
+                    HJump_NowTime += Time.deltaTime;
                 }
                 else//縦ジャンプ
                 {
