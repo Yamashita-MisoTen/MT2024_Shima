@@ -9,9 +9,11 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
-public class CPlayer : NetworkBehaviour
+public partial class CPlayer : NetworkBehaviour
 {
 	[SerializeField] bool _isNowOrga = false;
+	[Header("渦潮のプレハブ")]
+	[SerializeField] GameObject _WhirloopPrefab;
 	public bool testMove = true;
 	// アイテム所持するように
 	// CItem _HaveItemData;
@@ -32,13 +34,12 @@ public class CPlayer : NetworkBehaviour
 	private float Dash_Speed = 5.0f;
 	private float Dash_Time = 0.5f;
 	private float Now_Time;
+	[SerializeField] private float _rotAngle = 0;
 
 	/// </summary>
 	/// // Start is called before the first frame update
 	void Start()
 	{
-		GameRuleManager.instance.AddPlayerData(this);
-
 		Start_Position = this.transform.position;
 		Jump_Type = eJump_Type.UP;
 	}
@@ -46,6 +47,7 @@ public class CPlayer : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		// 今のシーンを確認してから入力機構切りたい
 		// オブジェクト移動
 		this.gameObject.transform.position += Velocity * Time.deltaTime;
 
@@ -73,12 +75,13 @@ public class CPlayer : NetworkBehaviour
 				}
 			}
 		}
+
 	}
 
 	//	[Command]
 	private void OnMove(InputValue value)
 	{
-		Debug.Log("動く");
+		//Debug.Log("動く");
 		// MoveActionの入力値を取得
 		var axis = value.Get<Vector2>();
 
@@ -96,14 +99,18 @@ public class CPlayer : NetworkBehaviour
 		{
 			if (Jump_Type == eJump_Type.UP)
 			{
+				Debug.Log("上ジャンプ");
 				Jump_Switch = true;
 				NowJump_speed = Jump_Speed;
 			}
 			else if (Jump_Type == eJump_Type.SIDE)
 			{
+				Debug.Log("横ジャンプ");
 				Jump_Switch = true;
 				Now_Time = 0.0f;
 			}
+			// ジャンプするタイミングで渦潮生成する
+			CreateWhirloop(1.0f);
 		}
 	}
 
@@ -133,9 +140,22 @@ public class CPlayer : NetworkBehaviour
 			_isNowOrga = false;
 		}
 	}
-
 	public void ChangeToOrga(){
 		_isNowOrga = true;
+	}
+
+	private void CreateWhirloop(float size){
+		Debug.Log("うずしおせいせい");
+		// 渦潮を生成する座標を自分の現在の座標を格納する
+		Vector3 whirloopPosition = this.transform.position;
+		// 回転角をクオータニオンに変換
+		Quaternion qtAngle = Quaternion.AngleAxis(_rotAngle, this.transform.up);
+		// オブジェクトを生成する
+		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
+		// 大きさの更新
+		obj.transform.localScale = new Vector3(size,size,size);
+		// 向きの更新
+		obj.transform.rotation = qtAngle * obj.transform.rotation;
 	}
 
 }
