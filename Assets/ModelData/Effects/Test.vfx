@@ -540,7 +540,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614747}
   m_ExposedName: RingRadius
   m_Exposed: 1
-  m_Order: 1
+  m_Order: 0
   m_Category: 
   m_Min:
     m_Type:
@@ -2546,7 +2546,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614839}
   m_ExposedName: RingSpeed
   m_Exposed: 1
-  m_Order: 2
+  m_Order: 1
   m_Category: 
   m_Min:
     m_Type:
