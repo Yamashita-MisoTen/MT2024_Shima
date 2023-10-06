@@ -1366,15 +1366,15 @@ namespace Mirror
         // The default implementation for this function creates a new player object from the playerPrefab.
         public virtual void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            Transform startPos = GetStartPosition();
-            GameObject player = startPos != null
-                ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
-                : Instantiate(playerPrefab);
+            // Transform startPos = GetStartPosition();
+            // GameObject player = startPos != null
+            //     ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+            //     : Instantiate(playerPrefab);
 
-            // instantiating a "Player" prefab gives it the name "Player(clone)"
-            // => appending the connectionId is WAY more useful for debugging!
-            player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
-            NetworkServer.AddPlayerForConnection(conn, player);
+            // // instantiating a "Player" prefab gives it the name "Player(clone)"
+            // // => appending the connectionId is WAY more useful for debugging!
+            // player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+            // NetworkServer.AddPlayerForConnection(conn, player);
         }
 
         /// <summary>Called on server when transport raises an exception. NetworkConnection may be null.</summary>
