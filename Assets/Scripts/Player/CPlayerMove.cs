@@ -175,4 +175,15 @@ public partial class CPlayer : NetworkBehaviour
             }
         }
     }
+
+    //ƒJƒƒ‰‚ÌˆÚ“®
+    private void OnCameraRotationL()
+    {
+
+    }
+
+    private void OnCameraRotationR()
+    {
+
+    }
 }
