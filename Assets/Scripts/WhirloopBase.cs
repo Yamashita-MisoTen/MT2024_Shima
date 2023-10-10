@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Diagnostics;
+using UnityEngine.VFX;
+using Unity.VisualScripting;
 
 public class WhirloopBase : NetworkBehaviour
 {
 	[SerializeField] [Header("加速する速度(1fごとに加算していく距離)")]private float _accelerationSpeed = 1.5f;
 	List<GameObject> otherObj = null;	// 複数対応用に配列にしておく
+	[SerializeField]VisualEffect whirloopFX = null;
 	bool _isOnObject = false;	// 乗ってるかどうか
 	// Start is called before the first frame update
 	void Start()
 	{
 		otherObj = new List<GameObject>();
+		if(whirloopFX == null) return;
+		whirloopFX.SendEvent("OnStart");
 	}
 
 	// Update is called once per frame
