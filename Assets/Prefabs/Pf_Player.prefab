@@ -239,6 +239,8 @@ MonoBehaviour:
     type: 3}
   testMove: 1
   _rotAngle: 0
+  Velocity_Limit: 1
+  Acceleration: 1
 --- !u!114 &8857170424990527049
 MonoBehaviour:
   m_ObjectHideFlags: 0

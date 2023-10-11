@@ -15,6 +15,13 @@ public partial class CPlayer : NetworkBehaviour
 
     // ** 移動類のパラメータ
     private Vector3 Velocity;
+    private Vector3 NowVelocity;
+    [SerializeField, Header("速度制限")]
+    private float Velocity_Limit;
+
+    [SerializeField,Header("加速度")]
+    private float Acceleration;
+
     private float NowJump_speed;
     private float Jump_Speed = 10;
     private bool Jump_Switch;
@@ -32,7 +39,7 @@ public partial class CPlayer : NetworkBehaviour
     //現在の速度
     private float SJump_Speed;
 
-　　//ダッシュ落下速度
+    //ダッシュ落下速度
     private float Jump_Fall = 1.0f;
 
     // ** 縦ダッシュのパラメーター
@@ -46,25 +53,35 @@ public partial class CPlayer : NetworkBehaviour
     //落下速度
     private float Fall_Speed;
     //落下加速度
-    private float Fall_Acceleration  = 1.0f;
+    private float Fall_Acceleration = 1.0f;
+
+    //プレイヤーカメラ
+    private GameObject PlayerCamera;
+    //カメラ回転のパラメーター
+    private float CameraMove = 0;
+    //現在の
+    private float CameraMoveNow = 0.0f;
 
     // Start is called before the first frame update
     void CPlayerMoveStart()
     {
         Start_Position = this.transform.position;
         Jump_Type = eJump_Type.UP;
+        PlayerCamera = GameObject.Find("PlayerCamera");
+        NowVelocity = Vector3.zero;
     }
 
     // Update is called once per frame
     void CplayerMoveUpdate()
     {
-        // オブジェクト移動
-        this.gameObject.transform.position += Velocity * Time.deltaTime;
-
+        //カメラ移動
+        CameraMoveNow += CameraMove;
+        PlayerCamera.gameObject.transform.rotation = Quaternion.AngleAxis(CameraMoveNow, PlayerCamera.gameObject.transform.up);
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
-            { Debug.Log("縦じゃん");
+            {
+                Debug.Log("縦じゃん");
                 //縦ジャンプの予備動作
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
@@ -110,15 +127,29 @@ public partial class CPlayer : NetworkBehaviour
                     }
                 }
             }
+            else
+            {
+                NowVelocity += Velocity;
+                //速度制限
+                if (NowVelocity.x >= Velocity_Limit)
+                    NowVelocity.x = Velocity_Limit;
+                if (NowVelocity.y >= Velocity_Limit)
+                    NowVelocity.y = Velocity_Limit;
+                if (NowVelocity.z >= Velocity_Limit)
+                    NowVelocity.z = Velocity_Limit;
+                // オブジェクト移動
+                this.gameObject.transform.position += NowVelocity * Time.deltaTime;
+            }
+
         }
 
         //落下速度計算
         if (this.gameObject.transform.position.y > 0)
         {
             this.gameObject.transform.position += -this.gameObject.transform.up * Fall_Speed * Time.deltaTime;
-            Fall_Speed += Fall_Acceleration  * Time.deltaTime;
+            Fall_Speed += Fall_Acceleration * Time.deltaTime;
 
-            if(this.gameObject.transform.position.y <= 0)
+            if (this.gameObject.transform.position.y <= 0)
             {
                 this.gameObject.transform.position = new Vector3(this.transform.position.x, 0.0f, this.gameObject.transform.position.z);
                 Fall_Speed = 0.0f;
@@ -134,6 +165,7 @@ public partial class CPlayer : NetworkBehaviour
 
         // 移動速度を保持
         Velocity = new Vector3(axis.x, 0, axis.y);
+        Velocity *= 0.01f * Acceleration;
         //var axis = value.Get<Vector2>();
         //	Vector3 pos = this.transform.position;
         //	pos.x += value.;
@@ -156,8 +188,9 @@ public partial class CPlayer : NetworkBehaviour
                 SJump_NowTime = 0.0f;
 
                 //ここで現在のプレイヤーの速度を代入
-                SJump_Speed = 1.0f;
+                SJump_Speed = 0.0f;
             }
+            CreateWhirloop(1);  //水流を出す
         }
     }
 
@@ -176,14 +209,12 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
-    //カメラの移動
-    private void OnCameraRotationL()
+    private void OnCameraRotation(InputValue value)
     {
+        Debug.Log("動く");
+        // MoveActionの入力値を取得
+        var axis = value.Get<Vector2>();
 
-    }
-
-    private void OnCameraRotationR()
-    {
-
+        CameraMove = axis.x;
     }
 }
