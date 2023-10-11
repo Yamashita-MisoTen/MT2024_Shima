@@ -19,7 +19,7 @@ public partial class CPlayer : NetworkBehaviour
     [SerializeField, Header("速度制限")]
     private float Velocity_Limit;
 
-    [SerializeField,Header("加速度")]
+    [SerializeField, Header("加速度")]
     private float Acceleration;
 
     private float NowJump_speed;
@@ -127,22 +127,24 @@ public partial class CPlayer : NetworkBehaviour
                     }
                 }
             }
-            else
-            {
-                NowVelocity += Velocity;
-                //速度制限
-                if (NowVelocity.x >= Velocity_Limit)
-                    NowVelocity.x = Velocity_Limit;
-                if (NowVelocity.y >= Velocity_Limit)
-                    NowVelocity.y = Velocity_Limit;
-                if (NowVelocity.z >= Velocity_Limit)
-                    NowVelocity.z = Velocity_Limit;
-                // オブジェクト移動
-                this.gameObject.transform.position += NowVelocity * Time.deltaTime;
-            }
+
 
         }
-
+        else
+        {
+            NowVelocity += Velocity;
+            //速度制限
+            if (NowVelocity.x >= Velocity_Limit)
+                NowVelocity.x = Velocity_Limit;
+            if (NowVelocity.x <= -Velocity_Limit)
+                NowVelocity.x = -Velocity_Limit;
+            if (NowVelocity.z >= Velocity_Limit)
+                NowVelocity.z = Velocity_Limit;
+            if (NowVelocity.z <= -Velocity_Limit)
+                NowVelocity.z = -Velocity_Limit;
+            // オブジェクト移動
+            this.gameObject.transform.position += NowVelocity * Time.deltaTime;
+        }
         //落下速度計算
         if (this.gameObject.transform.position.y > 0)
         {
