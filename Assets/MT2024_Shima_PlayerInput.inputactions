@@ -6,6 +6,15 @@
             "id": "81bae45e-5d7f-4ab3-b345-92e742b53e33",
             "actions": [
                 {
+                    "name": "CameraRotation",
+                    "type": "Value",
+                    "id": "4c65caf6-b576-435b-a0d4-65a6637f18c2",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Move",
                     "type": "Value",
                     "id": "f62e0f13-5da8-4159-8ccc-f5fd140ac354",
@@ -315,6 +324,61 @@
                     "action": "JumpChange",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "58599b17-3410-463d-b5d6-b50c9c88f0b3",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CameraRotation",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Up",
+                    "id": "e5d61953-2d2a-4bb2-9342-bad72cab33d3",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CameraRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Down",
+                    "id": "d5762810-4bfa-44b0-ab7e-bd7a0d87bc5c",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CameraRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Left",
+                    "id": "dba9ddf6-6df4-4d2b-a5fd-20c660657ccf",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CameraRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Right",
+                    "id": "41204493-0600-45af-ab8a-e1743c2cb521",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CameraRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
