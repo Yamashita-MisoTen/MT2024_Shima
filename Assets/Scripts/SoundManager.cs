@@ -47,8 +47,19 @@ public class SoundManager : NetworkBehaviour
 		source.clip = audioDatas[(int)id].audioClip;
 		source.Play();
 	}
-
-	void ChangeVolume(){
-
+	/// <summary>
+	/// ボリュームの変更を行う
+	/// </summary>
+	/// <param name="volume"> 音の大きさ 0.0 ~ 1.0 </param>
+	void ChangeVolume(float volume){
+		_source.volume = volume;
+	}
+	/// <summary>
+	/// AudioSourceごとのボリュームの変更を行う
+	/// </summary>
+	/// <param name="volume"> 音の大きさ 0.0 ~ 1.0 </param>
+	/// <param name="source"> 指定するAudioSoruce </param>
+	void ChangeVolume(float volume, AudioSource source){
+		source.volume = volume;
 	}
 }
