@@ -7,12 +7,14 @@ using Mirror.Examples.Basic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameRuleManager : NetworkBehaviour
 {
 	// ** シングルトン定義
 	public static GameRuleManager instance;
 	private void Awake(){
+		Debug.Log("マネージャー生成");
 		if(instance == null){
 			instance = this;
 			DontDestroyOnLoad(gameObject);
@@ -39,7 +41,7 @@ public class GameRuleManager : NetworkBehaviour
 	// 鬼のタッチ後のクールタイム
 	[SerializeField]
 	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
-	[SerializeField] private TextMeshProUGUI timerText;
+	[Header("UI関連")][SerializeField] private TextMeshProUGUI timerText;
 	[SerializeField] private TextMeshProUGUI gameStateText;
 	float _progressCoolTime;	// 経過時間
 	bool _isCoolTimeNow = false;
@@ -51,10 +53,27 @@ public class GameRuleManager : NetworkBehaviour
 	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
 	CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
 
+	// ** 共通のUI
+	GameObject UICanvas = null;
+
 	bool _isFinishGame = false;
+
+	public struct SendPlayerData : NetworkMessage{
+		public List<CPlayer> _sendPlayerData;
+	}
 	void Start()
 	{
-		_playerData = new List<CPlayer>(0);
+		Debug.Log("YesIam");
+		for(int i = 0; i < this.transform.childCount; i++){
+			var obj = this.transform.GetChild(i);
+			if(obj.name == "GameUICanvas"){
+				UICanvas = obj.gameObject;
+				UICanvas.SetActive(false);
+			}
+		}
+
+		// データを送る用の関数をここに格納する
+		NetworkClient.RegisterHandler<SendPlayerData>(ReceivedPlayerInfo);
 	}
 
 	// Update is called once per frame
@@ -74,9 +93,26 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** ゲームの開始終了関連の関数
+	public void ReadyGame(){
+		Debug.LogError("準備" + _playerData.Count);
+		// プレイヤーの準備
+		foreach(CPlayer p in _playerData){
+			Debug.Log(p);
+			Debug.Log(p.isLocalPlayer);
+			p.DataSetUPforMainScene();
+		}
+
+		// UIの準備
+		UICanvas.SetActive(true);
+	}
+
 	void StartGame(){	// ゲーム開始時に呼び出される関数
+		Debug.Log("ゲーム開始するで");
 		gameStateText.text = "now play";
 		gameState = GameState.NowPlay;
+		foreach(CPlayer p in _playerData){
+			p.isCanMove = true;
+		}
 		RandomSetOrgaPlayer();
 	}
 	void FinishGame(){	// ゲーム終了時に呼び出される関数
@@ -93,9 +129,9 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	void UpdateReady(){
-		gameStateText.text = "Ready";
+		gameStateText.text = "Ready Push 'L'Key ";
 		// 開始前にカウントダウン入れたりする
-		if(Input.GetKeyDown(KeyCode.Space)){
+		if(Input.GetKeyDown(KeyCode.L)){
 			StartGame();
 			_isGameReady = false;
 		}
@@ -173,16 +209,76 @@ public class GameRuleManager : NetworkBehaviour
 			return;
 		}
 
+		// 配列のnullチェック
+		if(_playerData == null){
+			_playerData = new List<CPlayer>();
+		}
+
 		// 同一のデータがある場合は追加しない
 		for(int i = 0; i < _playerData.Count(); i++){
 			if(_playerData[i] == player) return;
+			Debug.Log(_playerData[i].name);
+			Debug.Log(_playerData[i].connectionToClient.connectionId);
+			Debug.Log(player.connectionToClient.connectionId);
+			if(_playerData[i].connectionToClient.connectionId == player.connectionToClient.connectionId) return;
 		}
 
 		_playerData.Add(player);	// プレイヤーのデータを格納する
 		Debug.Log("プレイヤーを追加しました");
 		Debug.Log("追加したプレイヤー" + player.name);
 		Debug.Log("現在のプレイヤー数" + _playerData.Count());
+
+		// ロビーでの座標を調整する
+		int detail = _playerData.Count() - 1;
+		Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
+		playerObj.transform.position = pos;
+
+		// プレイヤーのデータを送信する
+		SendPlayerDataInfo();
 	}
 
+	public List<CPlayer> GetAllPlayerData(){
+		return _playerData;
+	}
 
+	public void RemovePlayerData(GameObject playerObj){
+		CPlayer player = playerObj.GetComponent<CPlayer>();
+		// nullチェック
+		if(player == null) return;
+		if(_playerData == null) return;
+
+		CPlayer deleteObj = null;
+		foreach(CPlayer p in _playerData){
+			if(p == player){
+				Debug.Log("プレイヤーを削除しました");
+				Debug.Log("削除したプレイヤー" + player.name);
+				Debug.Log("現在のプレイヤー数" + (_playerData.Count() - 1));
+				deleteObj = player;
+			}
+		}
+		if(deleteObj != null){
+			_playerData.Remove(player);
+		}
+	}
+
+	public void RemoveAllPlayerData(){
+		_playerData.Clear();
+		Debug.Log("プレイヤーを全て削除しました");
+	}
+
+	/// <summary>
+	/// クライアントにプレイヤーのデータを送信する
+	/// </summary>
+	public void SendPlayerDataInfo(){
+		SendPlayerData send = new SendPlayerData{_sendPlayerData = _playerData};
+		NetworkServer.SendToAll(send);
+	}
+
+	private void ReceivedPlayerInfo(SendPlayerData sendData){
+		_playerData = sendData._sendPlayerData;
+		foreach(CPlayer p in _playerData){
+			Debug.Log(p.name);
+			DontDestroyOnLoad(p);	// 破壊不可オブジェクトとして定義してあげる
+		}
+	}
 }

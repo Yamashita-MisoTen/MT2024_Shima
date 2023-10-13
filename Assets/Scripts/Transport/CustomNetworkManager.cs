@@ -13,7 +13,7 @@ public class CustomNetworkManager : NetworkManager
 		Debug.Log("プレイヤー生成するで");
 		// 現在の接続人数を加算していく
 		connectPlayerCount++;
-		Debug.Log(connectPlayerCount);
+		Debug.Log("プレイヤーの人数" + connectPlayerCount);
 
 		GameObject prefab;
 		if(pPlayer.Count < connectPlayerCount){
@@ -34,7 +34,38 @@ public class CustomNetworkManager : NetworkManager
 		GameRuleManager.instance.AddPlayerData(player);
 	}
 
-	public Transform GetStartPosition(int num){
+	override public void OnServerDisconnect(NetworkConnectionToClient conn){
+		Debug.LogError("削除神聖してるで");
+		// 確認用にプレイヤーのデータを持ってきておく
+		var allPlayer = GameRuleManager.instance.GetAllPlayerData();
+		GameObject deleteObj = null;
+		foreach(CPlayer p in allPlayer){
+			if(p.connectionToClient.connectionId == conn.connectionId){
+				deleteObj = p.gameObject;
+				connectPlayerCount--;
+				break;
+			}
+		}
+		if(deleteObj != null){
+			GameRuleManager.instance.RemovePlayerData(deleteObj);
+		}
+		base.OnServerDisconnect(conn);
+	}
+
+	public override void OnStopHost()
+	{
+		base.OnStopHost();
+		GameRuleManager.instance.RemoveAllPlayerData();
+		connectPlayerCount = 0;
+	}
+	public override void OnStopServer()
+	{
+		base.OnStopServer();
+		GameRuleManager.instance.RemoveAllPlayerData();
+		connectPlayerCount = 0;
+	}
+
+    public Transform GetStartPosition(int num){
 		Transform result = GetStartPosition();
 		if(StartPos.Count < num){
 			result.position = StartPos[0];

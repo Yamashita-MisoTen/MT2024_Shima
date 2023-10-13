@@ -14,8 +14,9 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] bool _isNowOrga = false;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
-	public bool testMove = true;
+	public bool isCanMove = false;
 	[SerializeField] float _rotAngle;
+	[SerializeField] PlayerUI ui;
 	// アイテム所持するように
 	// CItem _HaveItemData;
 
@@ -30,7 +31,15 @@ public partial class CPlayer : NetworkBehaviour
 	void Update()
 	{
 		// 今のシーンを確認してから入力機構切りたい
-		CplayerMoveUpdate();	// 移動系の更新
+		if(isCanMove){
+			CplayerMoveUpdate();	// 移動系の更新
+		}
+	}
+
+	public void DataSetUPforMainScene(){
+		// メインシーンでのセットアップで使用する
+		this.GetComponent<PlayerUI>().MainSceneUICanvas();
+		this.GetComponent<PlayerCamera>().MainSceneCamera();
 	}
 
 	private void OnCollisionEnter(Collision other) {
@@ -38,14 +47,17 @@ public partial class CPlayer : NetworkBehaviour
 		if(!other.gameObject.CompareTag("Player")) return;
 
 		// 自分が鬼のときのみ通知をする
+		Debug.Log("いまは" + GameRuleManager.instance.CheckOverCoolTime());
 		if(_isNowOrga && GameRuleManager.instance.CheckOverCoolTime()){
 			Debug.Log("当たり判定発生");
 			GameRuleManager.instance.ChangeOrgaPlayer(other.gameObject.GetComponent<CPlayer>());
 			_isNowOrga = false;
+			ui.ChangeOrgaPlayer(_isNowOrga);
 		}
 	}
 	public void ChangeToOrga(){
 		_isNowOrga = true;
+		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
 
 	private void CreateWhirloop(float size){

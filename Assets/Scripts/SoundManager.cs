@@ -27,7 +27,7 @@ public class SoundManager : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Space)) PlayAudio(AudioID.decide);
+		//if(Input.GetKeyDown(KeyCode.Space)) PlayAudio(AudioID.decide);
 	}
 
 	/// <summary>
