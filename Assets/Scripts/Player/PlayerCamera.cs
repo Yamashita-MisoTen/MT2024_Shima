@@ -24,7 +24,7 @@ public class PlayerCamera : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		
+
 	}
 
 	public void MainSceneCamera(){
@@ -36,8 +36,6 @@ public class PlayerCamera : NetworkBehaviour
 		if(!isLocalPlayer){
 			Debug.Log("カメラOff");
 			CameraObj.SetActive(false);
-		}else{
-			Debug.LogError("");
 		}
 	}
 

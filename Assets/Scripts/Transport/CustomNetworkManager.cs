@@ -22,20 +22,21 @@ public class CustomNetworkManager : NetworkManager
 			prefab = pPlayer[connectPlayerCount - 1];
 		}
 		Debug.Log("プレイヤーを生成する");
-        Transform startPos = GetStartPosition();
-        GameObject player = startPos != null
-            ? Instantiate(prefab, startPos.position, startPos.rotation)
-            : Instantiate(prefab);
+		Transform startPos = GetStartPosition();
+		GameObject player = startPos != null
+			? Instantiate(prefab, startPos.position, startPos.rotation)
+			: Instantiate(prefab);
 
 		player.name = $"{prefab.name} [connId={conn.connectionId}]";
 		DontDestroyOnLoad(player);	// 破壊不可オブジェクトとして生成する
-        NetworkServer.AddPlayerForConnection(conn, player);
+		NetworkServer.AddPlayerForConnection(conn, player);
 		// ゲームのマネージャーにデータを渡す
 		GameRuleManager.instance.AddPlayerData(player);
 	}
 
 	override public void OnServerDisconnect(NetworkConnectionToClient conn){
-		Debug.LogError("削除神聖してるで");
+		Debug.LogError("クライアントの接続切れたで");
+		Debug.Log(conn);
 		// 確認用にプレイヤーのデータを持ってきておく
 		var allPlayer = GameRuleManager.instance.GetAllPlayerData();
 		GameObject deleteObj = null;
@@ -65,7 +66,12 @@ public class CustomNetworkManager : NetworkManager
 		connectPlayerCount = 0;
 	}
 
-    public Transform GetStartPosition(int num){
+	public override void OnClientError(TransportError error, string reason){
+		base.OnClientError(error,reason);
+		print("OnClientError : "+reason);
+	}
+
+	public Transform GetStartPosition(int num){
 		Transform result = GetStartPosition();
 		if(StartPos.Count < num){
 			result.position = StartPos[0];
@@ -74,7 +80,6 @@ public class CustomNetworkManager : NetworkManager
 		}
 		return result;
 	}
-
 
 	private void AddPlayerCharacter(){
 		

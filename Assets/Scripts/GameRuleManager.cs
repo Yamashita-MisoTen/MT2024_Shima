@@ -72,6 +72,12 @@ public class GameRuleManager : NetworkBehaviour
 			}
 		}
 
+		// 配列のnullチェック
+		if(_playerData == null){
+			_playerData = new List<CPlayer>();
+		}
+
+
 		// データを送る用の関数をここに格納する
 		NetworkClient.RegisterHandler<SendPlayerData>(ReceivedPlayerInfo);
 	}
@@ -201,7 +207,6 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** 通信関連の関数
-
 	public void AddPlayerData(GameObject playerObj){
 		CPlayer player = playerObj.GetComponent<CPlayer>();
 		if(player == null){
@@ -209,17 +214,9 @@ public class GameRuleManager : NetworkBehaviour
 			return;
 		}
 
-		// 配列のnullチェック
-		if(_playerData == null){
-			_playerData = new List<CPlayer>();
-		}
-
 		// 同一のデータがある場合は追加しない
 		for(int i = 0; i < _playerData.Count(); i++){
 			if(_playerData[i] == player) return;
-			Debug.Log(_playerData[i].name);
-			Debug.Log(_playerData[i].connectionToClient.connectionId);
-			Debug.Log(player.connectionToClient.connectionId);
 			if(_playerData[i].connectionToClient.connectionId == player.connectionToClient.connectionId) return;
 		}
 
@@ -234,7 +231,7 @@ public class GameRuleManager : NetworkBehaviour
 		playerObj.transform.position = pos;
 
 		// プレイヤーのデータを送信する
-		SendPlayerDataInfo();
+		//SendPlayerDataInfo();
 	}
 
 	public List<CPlayer> GetAllPlayerData(){
@@ -270,6 +267,8 @@ public class GameRuleManager : NetworkBehaviour
 	/// クライアントにプレイヤーのデータを送信する
 	/// </summary>
 	public void SendPlayerDataInfo(){
+		Debug.Log(_playerData);
+		Debug.Log(_playerData.Count);
 		SendPlayerData send = new SendPlayerData{_sendPlayerData = _playerData};
 		NetworkServer.SendToAll(send);
 	}
