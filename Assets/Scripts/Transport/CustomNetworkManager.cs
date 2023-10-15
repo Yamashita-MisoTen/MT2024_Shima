@@ -2,18 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CustomNetworkManager : NetworkManager
 {
-	[Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ—ãƒ¬ãƒãƒ–ã‚’æ ¼ç´ã™ã‚‹")]
+	[Header("ƒvƒŒƒCƒ„[‚ªg—p‚·‚éƒvƒŒƒnƒu")]
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
-	private int connectPlayerCount = 0;	// æ¥ç¶šäººæ•°
+	GameRuleManager mgr;
+	private int connectPlayerCount = 0;	// Œ»İ‚ÌÚ‘±l”
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
-		Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆã™ã‚‹ã§");
-		// ç¾åœ¨ã®æ¥ç¶šäººæ•°ã‚’åŠ ç®—ã—ã¦ã„ã
+		// if(SceneManager.GetActiveScene().name != "Title"){
+		// 	Debug.Log("ƒ^ƒCƒgƒ‹ƒV[ƒ“ˆÈŠO‚Å‘‚¦‚æ‚¤‚Æ‚µ‚Ä‚é");
+		// 	return;
+		// }
+		Debug.Log("ƒvƒŒƒCƒ„[‚ğ¶¬");
+		// Œ»İ‚ÌÚ‘±l”‚ğ‰ÁZ
 		connectPlayerCount++;
-		Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®äººæ•°" + connectPlayerCount);
+		Debug.Log("ƒvƒŒƒCƒ„[‚Ìl” : " + connectPlayerCount);
 
 		GameObject prefab;
 		if(pPlayer.Count < connectPlayerCount){
@@ -21,24 +27,25 @@ public class CustomNetworkManager : NetworkManager
 		}else{
 			prefab = pPlayer[connectPlayerCount - 1];
 		}
-		Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç”Ÿæˆã™ã‚‹");
 		Transform startPos = GetStartPosition();
 		GameObject player = startPos != null
 			? Instantiate(prefab, startPos.position, startPos.rotation)
 			: Instantiate(prefab);
 
 		player.name = $"{prefab.name} [connId={conn.connectionId}]";
-		DontDestroyOnLoad(player);	// ç ´å£Šä¸å¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã—ã¦ç”Ÿæˆã™ã‚‹
+		DontDestroyOnLoad(player);	// ƒV[ƒ“‘JˆÚ—p‚ÉƒvƒŒƒCƒ„[ƒf[ƒ^‚ğc‚µ‚½‚Ü‚Ü‚É‚µ‚Ä‚¨‚­
 		NetworkServer.AddPlayerForConnection(conn, player);
-		// ã‚²ãƒ¼ãƒ ã®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã«ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã™
-		GameRuleManager.instance.AddPlayerData(player);
+		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
+		// ƒ}ƒl[ƒWƒƒ[‚Éƒf[ƒ^‚ğ•ÛŠÇ‚·‚é
+		mgr.AddPlayerData(player);
 	}
 
 	override public void OnServerDisconnect(NetworkConnectionToClient conn){
-		Debug.LogError("ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æ¥ç¶šåˆ‡ã‚ŒãŸã§");
+		Debug.LogError("ƒNƒ‰ƒCƒAƒ“ƒg‚ÌÚ‘±Ø‚ê‚Ü‚µ‚½");
 		Debug.Log(conn);
-		// ç¢ºèªç”¨ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ‡ãƒ¼ã‚¿ã‚’æŒã£ã¦ãã¦ãŠã
-		var allPlayer = GameRuleManager.instance.GetAllPlayerData();
+
+		// ƒvƒŒƒCƒ„[‚Ìƒf[ƒ^‚ğŠm”F‚·‚é
+		var allPlayer = mgr.GetAllPlayerData();
 		GameObject deleteObj = null;
 		foreach(CPlayer p in allPlayer){
 			if(p.connectionToClient.connectionId == conn.connectionId){
@@ -48,7 +55,7 @@ public class CustomNetworkManager : NetworkManager
 			}
 		}
 		if(deleteObj != null){
-			GameRuleManager.instance.RemovePlayerData(deleteObj);
+			mgr.RemovePlayerData(deleteObj);
 		}
 		base.OnServerDisconnect(conn);
 	}
@@ -56,13 +63,13 @@ public class CustomNetworkManager : NetworkManager
 	public override void OnStopHost()
 	{
 		base.OnStopHost();
-		GameRuleManager.instance.RemoveAllPlayerData();
+		mgr.RemoveAllPlayerData();
 		connectPlayerCount = 0;
 	}
 	public override void OnStopServer()
 	{
 		base.OnStopServer();
-		GameRuleManager.instance.RemoveAllPlayerData();
+		mgr.RemoveAllPlayerData();
 		connectPlayerCount = 0;
 	}
 

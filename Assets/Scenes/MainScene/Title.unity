@@ -359,7 +359,12 @@ PrefabInstance:
     - target: {fileID: 10298624091981889, guid: 1eb795ff541f54649b81b78e9bd33893,
         type: 3}
       propertyPath: serverOnly
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037683293593439326, guid: 1eb795ff541f54649b81b78e9bd33893,
+        type: 3}
+      propertyPath: gameMgrClient
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3483711175090110456, guid: 1eb795ff541f54649b81b78e9bd33893,
         type: 3}

@@ -17,6 +17,8 @@ public partial class CPlayer : NetworkBehaviour
 	public bool isCanMove = false;
 	[SerializeField] float _rotAngle;
 	[SerializeField] PlayerUI ui;
+
+	GameRuleManager mgr;
 	// アイテム所持するように
 	// CItem _HaveItemData;
 
@@ -25,6 +27,7 @@ public partial class CPlayer : NetworkBehaviour
 	void Start()
 	{
 		CPlayerMoveStart();
+		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 	}
 
 	// Update is called once per frame
@@ -51,15 +54,22 @@ public partial class CPlayer : NetworkBehaviour
 		if(!other.gameObject.CompareTag("Player")) return;
 
 		// 自分が鬼のときのみ通知をする
-		Debug.Log("いまは" + GameRuleManager.instance.CheckOverCoolTime());
-		if(_isNowOrga && GameRuleManager.instance.CheckOverCoolTime()){
+		Debug.Log("いまは" + mgr.CheckOverCoolTime());
+		if(_isNowOrga && mgr.CheckOverCoolTime()){
 			Debug.Log("当たり判定発生");
-			GameRuleManager.instance.ChangeOrgaPlayer(other.gameObject.GetComponent<CPlayer>());
-			_isNowOrga = false;
-			ui.ChangeOrgaPlayer(_isNowOrga);
+			CmdChangeOrga(other.gameObject);
 		}
 	}
+
+	[Command]
+	void CmdChangeOrga(GameObject otherObj){
+		mgr.CmdChangeOrgaPlayer(otherObj.GetComponent<CPlayer>());
+		_isNowOrga = false;
+		ui.ChangeOrgaPlayer(_isNowOrga);
+	}
+
 	public void ChangeToOrga(){
+		Debug.Log("鬼になったで");
 		_isNowOrga = true;
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}

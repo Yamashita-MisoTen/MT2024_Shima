@@ -9,8 +9,8 @@ public class MainScene : NetworkBehaviour
 	// Start is called before the first frame update
 	void Awake()
 	{
-		GameRuleManager.instance.SendPlayerDataInfo();
-		GameRuleManager.instance.ReadyGame();
+		GameRuleManager mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
+		mgr.ReadyGame();
 	}
 
 	// Update is called once per frame
