@@ -7,20 +7,10 @@ using Mirror.Examples.Basic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameRuleManager : NetworkBehaviour
 {
-	// ** シングルトン定義
-	public static GameRuleManager instance;
-	private void Awake(){
-		if(instance == null){
-			instance = this;
-			DontDestroyOnLoad(gameObject);
-		}else{
-			Destroy(gameObject);
-		}
-	}
-
 	//// **** 変数定義 **** ////
 
 	// ** ゲームの状態関連
@@ -39,8 +29,9 @@ public class GameRuleManager : NetworkBehaviour
 	// 鬼のタッチ後のクールタイム
 	[SerializeField]
 	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
-	[SerializeField] private TextMeshProUGUI timerText;
+	[Header("UI関連")][SerializeField] private TextMeshProUGUI timerText;
 	[SerializeField] private TextMeshProUGUI gameStateText;
+	[SerializeField] private GameRuleManagerClient gameMgrClient;
 	float _progressCoolTime;	// 経過時間
 	bool _isCoolTimeNow = false;
 
@@ -48,13 +39,29 @@ public class GameRuleManager : NetworkBehaviour
 	bool _isGameReady = true;
 
 	// ** プレイヤー関係
-	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
+	[SyncVar]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
+	[SyncVar]CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
+
+	// ** 共通のUI
+	GameObject UICanvas = null;
 
 	bool _isFinishGame = false;
 	void Start()
 	{
-		_playerData = new List<CPlayer>(0);
+		for(int i = 0; i < this.transform.childCount; i++){
+			var obj = this.transform.GetChild(i);
+			if(obj.name == "GameUICanvas"){
+				UICanvas = obj.gameObject;
+				UICanvas.SetActive(false);
+			}
+		}
+
+		// 配列のnullチェック
+		if(_playerData == null){
+			_playerData = new List<CPlayer>();
+		}
+
+		DontDestroyOnLoad(this);
 	}
 
 	// Update is called once per frame
@@ -74,12 +81,32 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** ゲームの開始終了関連の関数
-	void StartGame(){	// ゲーム開始時に呼び出される関数
+	public void ReadyGame(){
+		Debug.LogError("準備" + _playerData.Count);
+		// プレイヤーの準備
+		foreach(CPlayer p in _playerData){
+			Debug.Log(p);
+			Debug.Log(p.isLocalPlayer);
+			p.DataSetUPforMainScene();
+		}
+
+		RandomSetOrgaPlayer();
+
+		// UIの準備
+		UICanvas.SetActive(true);
+	}
+
+	[ClientRpc]
+	void RpcStartGame(){	// ゲーム開始時に呼び出される関数
+		Debug.Log("ゲーム開始するで");
 		gameStateText.text = "now play";
 		gameState = GameState.NowPlay;
-		RandomSetOrgaPlayer();
+		foreach(CPlayer p in _playerData){
+			p.isCanMove = true;
+		}
 	}
-	void FinishGame(){	// ゲーム終了時に呼び出される関数
+	[ClientRpc]
+	void RpcFinishGame(){	// ゲーム終了時に呼び出される関数
 		if(_isFinishGame) return;
 		Debug.Log("ゲームを終了します");
 		_isFinishGame = true;
@@ -93,15 +120,15 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	void UpdateReady(){
-		gameStateText.text = "Ready";
+		gameStateText.text = "Ready Push 'L'Key ";
 		// 開始前にカウントダウン入れたりする
-		if(Input.GetKeyDown(KeyCode.Space)){
-			StartGame();
+		if(Input.GetKeyDown(KeyCode.L)){
+			RpcStartGame();
 			_isGameReady = false;
 		}
 	}
 	void UpdateGame(){
-		if(_LimitTime < _progressLimitTime) FinishGame();	// 制限時間を過ぎたらゲーム終了する
+		if(_LimitTime < _progressLimitTime) RpcFinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
 		var timer = (int)(_LimitTime - _progressLimitTime);
 		// UI用に時間を計算しなおす
@@ -127,9 +154,16 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** 単発系の関数
+	[ServerCallback]	// サーバー側でのみ起動する
 	void RandomSetOrgaPlayer(){		// 鬼をランダムで変更する
 		int num = UnityEngine.Random.Range(0,_playerData.Count());
-		//ChangeOrgaPlayer(_playerData[num]);
+		Debug.Log("始めの鬼の番号 : " + num);
+		// サーバー側の設定
+		_orgaPlayer = _playerData[num];
+		_orgaPlayer.ChangeToOrga();
+		// クライアント側にもデータを送る必要があるのでここで設定
+		RpcSendChangeOrga(_orgaPlayer);
+		Debug.Log("初期の鬼が設定されました : " + _orgaPlayer.name);
 	}
 
 	bool CheckIdentityPlayer(int plNum, CPlayer player){	// 同一のプレイヤーか確認する
@@ -139,20 +173,27 @@ public class GameRuleManager : NetworkBehaviour
 		}
 		return false;
 	}
-
-	public void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){	// 鬼が変わるタイミングで呼ぶ関数
-		Debug.Log(_playerData.Count());
+	[Command]
+	public void CmdChangeOrgaPlayer(CPlayer nextOrgaPlayer){	// 鬼が変わるタイミングで呼ぶ関数
 		for(int i = 0; i < _playerData.Count(); i++){
 			// オブジェクトが同一かどうか確認する
 			if(CheckIdentityPlayer(i, nextOrgaPlayer)){
-				nextOrgaPlayer.ChangeToOrga();	// 鬼になった通知を送る
-				_orgaPlayer = nextOrgaPlayer;
-				SetCoolTime();					// クールタイムを設定する
+				RpcSendChangeOrga(nextOrgaPlayer);
 				Debug.Log("鬼が変更されました 次の鬼は" + _orgaPlayer.name);
+				SetCoolTime();					// クールタイムを設定する
 				continue;
 			}
 		}
 	}
+
+	[ClientRpc]
+	void RpcSendChangeOrga(CPlayer nextOrgaPlayer){
+		// クライアント側にデータを渡す用の更新関数
+		Debug.Log("クライアントへ通知処理");
+		nextOrgaPlayer.ChangeToOrga();
+		_orgaPlayer = nextOrgaPlayer;
+	}
+
 	private void SetCoolTime(){		// クールタイムの設定
 		Debug.Log("クールタイムを開始する");
 		_isCoolTimeNow = true;
@@ -165,7 +206,6 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** 通信関連の関数
-
 	public void AddPlayerData(GameObject playerObj){
 		CPlayer player = playerObj.GetComponent<CPlayer>();
 		if(player == null){
@@ -176,13 +216,58 @@ public class GameRuleManager : NetworkBehaviour
 		// 同一のデータがある場合は追加しない
 		for(int i = 0; i < _playerData.Count(); i++){
 			if(_playerData[i] == player) return;
+			if(_playerData[i].connectionToClient.connectionId == player.connectionToClient.connectionId) return;
 		}
 
 		_playerData.Add(player);	// プレイヤーのデータを格納する
 		Debug.Log("プレイヤーを追加しました");
 		Debug.Log("追加したプレイヤー" + player.name);
 		Debug.Log("現在のプレイヤー数" + _playerData.Count());
+
+		// ロビーでの座標を調整する
+		int detail = _playerData.Count() - 1;
+		Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
+		playerObj.transform.position = pos;
+
+		RpcSendPlayerData(_playerData);
 	}
 
+	public List<CPlayer> GetAllPlayerData(){
+		return _playerData;
+	}
 
+	public void RemovePlayerData(GameObject playerObj){
+		CPlayer player = playerObj.GetComponent<CPlayer>();
+		// nullチェック
+		if(player == null) return;
+		if(_playerData == null) return;
+
+		CPlayer deleteObj = null;
+		foreach(CPlayer p in _playerData){
+			if(p == player){
+				Debug.Log("プレイヤーを削除しました");
+				Debug.Log("削除したプレイヤー" + player.name);
+				Debug.Log("現在のプレイヤー数" + (_playerData.Count() - 1));
+				deleteObj = player;
+			}
+		}
+		if(deleteObj != null){
+			_playerData.Remove(player);
+		}
+	}
+
+	public void RemoveAllPlayerData(){
+		_playerData.Clear();
+		Debug.Log("プレイヤーを全て削除しました");
+	}
+
+	[ClientRpc]
+	void RpcSendPlayerData(List<CPlayer> players){
+		_playerData = players;
+		Debug.Log("クライアントにデータを送信しました 人数 : " + _playerData.Count);
+
+		foreach(CPlayer p in players){
+			DontDestroyOnLoad(p);
+		}
+	}
 }

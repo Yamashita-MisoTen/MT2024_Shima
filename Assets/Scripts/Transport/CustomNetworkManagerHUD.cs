@@ -33,7 +33,7 @@ namespace Mirror
 		{
 			if(!_isValue) return;
 
-			GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 250, 9999));
+			GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 500, 10000));
 			if (!NetworkClient.isConnected && !NetworkServer.active)
 			{
 				StartButtons();

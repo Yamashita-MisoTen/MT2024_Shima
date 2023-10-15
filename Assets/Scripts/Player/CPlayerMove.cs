@@ -28,7 +28,6 @@ public partial class CPlayer : NetworkBehaviour
     private Vector3 Start_Position;
     private eJump_Type Jump_Type;
 
-
     // ** 横ダッシュのパラメーター
     //横ダッシュ加速度
     private float SJump_Acceleration = 20.0f;
@@ -161,7 +160,9 @@ public partial class CPlayer : NetworkBehaviour
 
     private void OnMove(InputValue value)
     {
-        Debug.Log("動く");
+        if(!isCanMove) return;
+
+        //Debug.Log("動く");
         // MoveActionの入力値を取得
         var axis = value.Get<Vector2>();
 
@@ -176,6 +177,8 @@ public partial class CPlayer : NetworkBehaviour
 
     private void OnJump()
     {
+        if(!isCanMove) return;
+
         if (!Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
@@ -198,6 +201,8 @@ public partial class CPlayer : NetworkBehaviour
 
     private void OnJumpChange()
     {
+        if(!isCanMove) return;
+
         if (!Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
@@ -213,10 +218,11 @@ public partial class CPlayer : NetworkBehaviour
 
     private void OnCameraRotation(InputValue value)
     {
-        Debug.Log("動く");
+        if(!isCanMove) return;
+
+        //Debug.Log("動く");
         // MoveActionの入力値を取得
         var axis = value.Get<Vector2>();
-
         CameraMove = axis.x;
     }
 }
