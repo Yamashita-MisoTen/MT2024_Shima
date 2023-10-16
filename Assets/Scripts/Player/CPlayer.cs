@@ -45,8 +45,10 @@ public partial class CPlayer : NetworkBehaviour
 		this.GetComponent<PlayerCamera>().MainSceneCamera();
 
 		// 入力系をつける
-		var inputComp = this.gameObject.GetComponent<PlayerInput>();
-		inputComp.enabled = true;
+		if(isLocalPlayer){
+			var inputComp = this.gameObject.GetComponent<PlayerInput>();
+			inputComp.enabled = true;
+		}
 	}
 
 	private void OnCollisionEnter(Collision other) {
