@@ -11,22 +11,28 @@ public class Item_Destroy : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         //衝突した相手にPlayerタグが付いているとき
-        if(collision.gameObject.tag == "Player")
+        if(collision.gameObject.tag == "Item")
         {
-            //0.2秒後に消える
-            Destroy(gameObject);
+            //消える
+            Destroy(collision.gameObject);
+            Debug.Log("アイテム取得");
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public virtual void UseEffect()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    //// Start is called before the first frame update
+    //void Start()
+    //{
         
-    }
+    //}
+
+    //// Update is called once per frame
+    //void Update()
+    //{
+        
+    //}
 }

@@ -35,7 +35,6 @@ public class WhirloopBase : NetworkBehaviour
 			// 向いてる方向に対して速度を増やす
 			trans.position += this.transform.forward * _accelerationSpeed;
 		}
-
 	}
 
 	// 当たったときにオブジェクトを指定する

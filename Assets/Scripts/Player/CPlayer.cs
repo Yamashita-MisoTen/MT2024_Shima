@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
+using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
 {
@@ -17,6 +18,8 @@ public partial class CPlayer : NetworkBehaviour
 	public bool isCanMove = false;
 	[SerializeField] float _rotAngle;
 	[SerializeField] PlayerUI ui;
+	[Header("鬼のオーラエフェクト")]
+	[SerializeField]VisualEffect orgaFX = null;
 
 	GameRuleManager mgr;
 	// アイテム所持するように
@@ -54,6 +57,18 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	private void OnCollisionEnter(Collision other) {
+		// Debug.Log("あたり");
+		// if(!other.gameObject.CompareTag("Player")) return;
+
+		// // 自分が鬼のときのみ通知をする
+		// Debug.Log("いまは" + mgr.CheckOverCoolTime());
+		// if(_isNowOrga && mgr.CheckOverCoolTime()){
+		// 	Debug.Log("当たり判定発生");
+		// 	CmdChangeOrga(other.gameObject);
+		// }
+	}
+
+	private void OnTriggerEnter(Collider other){
 		Debug.Log("あたり");
 		if(!other.gameObject.CompareTag("Player")) return;
 
