@@ -14,8 +14,8 @@ public partial class CPlayer : NetworkBehaviour
     }
 
     // ** 移動類のパラメータ
-    private Vector3 Velocity;
-    private Vector3 NowVelocity;
+    private float Velocity;
+    private float NowVelocity;
     [SerializeField, Header("速度制限")]
     private float Velocity_Limit;
 
@@ -54,33 +54,25 @@ public partial class CPlayer : NetworkBehaviour
     //落下加速度
     private float Fall_Acceleration = 1.0f;
 
-    //プレイヤーカメラ
-    private GameObject PlayerCamera;
-    //カメラ回転のパラメーター
-    private float CameraMove = 0;
-    //現在の
-    private float CameraMoveNow = 0.0f;
+    //横回転のパラメーター
+    private float Side_Move = 0.0f;
+    private float Side_MoveNow = 0.0f;
 
     // Start is called before the first frame update
     void CPlayerMoveStart()
     {
         Start_Position = this.transform.position;
         Jump_Type = eJump_Type.UP;
-        PlayerCamera = GameObject.Find("PlayerCamera");
-        NowVelocity = Vector3.zero;
+        NowVelocity = 0.0f;
     }
 
     // Update is called once per frame
     void CplayerMoveUpdate()
     {
-        //カメラ移動
-        CameraMoveNow += CameraMove;
-        PlayerCamera.gameObject.transform.rotation = Quaternion.AngleAxis(CameraMoveNow, PlayerCamera.gameObject.transform.up);
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
             {
-                Debug.Log("縦じゃん");
                 //縦ジャンプの予備動作
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
@@ -102,9 +94,6 @@ public partial class CPlayer : NetworkBehaviour
             }
             else if (Jump_Type == eJump_Type.SIDE)
             {
-                Debug.Log("横ジャンプ");
-                Debug.Log(SJump_NowTime);
-                Debug.Log(SJump_AllTime);
                 //横ジャンプの予備動作
                 if (SJump_NowTime <= SJump_AllTime * 0.2f)
                 {
@@ -131,19 +120,26 @@ public partial class CPlayer : NetworkBehaviour
         }
         else
         {
+            /*    NowVelocity += Velocity;
+             //速度制限
+                NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
+                NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
+                NowVelocity.z = Mathf.Clamp(NowVelocity.z, -Velocity_Limit, Velocity_Limit);
+
+                // オブジェクト移動
+                this.gameObject.transform.position += NowVelocity * Time.deltaTime;*/
+
             NowVelocity += Velocity;
             //速度制限
-            if (NowVelocity.x >= Velocity_Limit)
-                NowVelocity.x = Velocity_Limit;
-            if (NowVelocity.x <= -Velocity_Limit)
-                NowVelocity.x = -Velocity_Limit;
-            if (NowVelocity.z >= Velocity_Limit)
-                NowVelocity.z = Velocity_Limit;
-            if (NowVelocity.z <= -Velocity_Limit)
-                NowVelocity.z = -Velocity_Limit;
+            NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
+
             // オブジェクト移動
-            this.gameObject.transform.position += NowVelocity * Time.deltaTime;
-        }
+            this.gameObject.transform.Translate(this.gameObject.transform.forward * NowVelocity * Time.deltaTime);
+           // this.gameObject.transform.forward *= NowVelocity;
+
+            //オブジェクト横回転
+            this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_Move, this.gameObject.transform.up);
+    }
         //落下速度計算
         if (this.gameObject.transform.position.y > 0)
         {
@@ -158,6 +154,7 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
+    //横回転
     private void OnMove(InputValue value)
     {
         if(!isCanMove) return;
@@ -166,9 +163,12 @@ public partial class CPlayer : NetworkBehaviour
         // MoveActionの入力値を取得
         var axis = value.Get<Vector2>();
 
+        Side_Move = axis.x;
+
+        //入力情報を保持
         // 移動速度を保持
-        Velocity = new Vector3(axis.x, 0, axis.y);
-        Velocity *= 0.01f * Acceleration;
+  //      Velocity = new Vector3(axis.x, 0, axis.y);
+ //       Velocity *= 0.01f * Acceleration;
         //var axis = value.Get<Vector2>();
         //	Vector3 pos = this.transform.position;
         //	pos.x += value.;
@@ -181,6 +181,9 @@ public partial class CPlayer : NetworkBehaviour
 
         if (!Jump_Switch)
         {
+            //速度停止
+            Emergency_Stop();
+        
             if (Jump_Type == eJump_Type.UP)
             {
                 Jump_Switch = true;
@@ -216,13 +219,24 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
-    private void OnCameraRotation(InputValue value)
+    //アクセル操作
+    private void OnAccelerator(InputValue value)
     {
-        if(!isCanMove) return;
+        if (!isCanMove) return;
 
-        //Debug.Log("動く");
-        // MoveActionの入力値を取得
-        var axis = value.Get<Vector2>();
-        CameraMove = axis.x;
+        var axis = value.Get<float>();
+
+
+        // 移動速度を保持
+        Velocity = axis;
+
+        Velocity *= Acceleration;
+    }
+
+    //緊急停止
+    private void Emergency_Stop()
+    {
+        NowVelocity = 0.0f;
+        Velocity = 0.0f;
     }
 }

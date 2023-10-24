@@ -82,7 +82,7 @@ public class GameRuleManager : NetworkBehaviour
 
 	// ** ゲームの開始終了関連の関数
 	public void ReadyGame(){
-		Debug.LogError("準備" + _playerData.Count);
+		//Debug.LogError("準備" + _playerData.Count);
 		// プレイヤーの準備
 		foreach(CPlayer p in _playerData){
 			Debug.Log(p);

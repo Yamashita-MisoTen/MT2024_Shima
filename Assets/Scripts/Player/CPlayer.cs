@@ -40,6 +40,8 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
 		}
+		_rotAngle = this.gameObject.transform.rotation.y * 180.0f;
+		Debug.Log(_rotAngle);
 	}
 
 	public void DataSetUPforMainScene(){
