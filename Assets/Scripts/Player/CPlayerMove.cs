@@ -13,13 +13,13 @@ public partial class CPlayer : NetworkBehaviour
         SIDE,
     }
 
-    // ** ˆÚ“®—Ş‚Ìƒpƒ‰ƒ[ƒ^
+    // ** ?????????p?????[?^
     private float Velocity;
     private float NowVelocity;
-    [SerializeField, Header("‘¬“x§ŒÀ")]
+    [SerializeField, Header("???x?˜??")]
     private float Velocity_Limit;
 
-    [SerializeField, Header("‰Á‘¬“x")]
+    [SerializeField, Header("?????x")]
     private float Acceleration;
 
     private float NowJump_speed;
@@ -28,33 +28,33 @@ public partial class CPlayer : NetworkBehaviour
     private Vector3 Start_Position;
     private eJump_Type Jump_Type;
 
-    // ** ‰¡ƒ_ƒbƒVƒ…‚Ìƒpƒ‰ƒ[ƒ^[
-    //‰¡ƒ_ƒbƒVƒ…‰Á‘¬“x
+    // ** ???_?b?V?????p?????[?^?[
+    //???_?b?V???????x
     private float SJump_Acceleration = 20.0f;
-    //‘S‘Ì‚ÌŠÔ
+    //?S????????
     private float SJump_AllTime = 1.0f;
-    //ƒWƒƒƒ“ƒvŒo‰ßŠÔ
+    //?W?????v?o??????
     private float SJump_NowTime;
-    //Œ»İ‚Ì‘¬“x
+    //?????????x
     private float SJump_Speed;
 
-    //ƒ_ƒbƒVƒ…—‰º‘¬“x
+    //?_?b?V?????????x
     private float Jump_Fall = 1.0f;
 
-    // ** cƒ_ƒbƒVƒ…‚Ìƒpƒ‰ƒ[ƒ^[
-    //‘S‘Ì‚ÌŠÔ
+    // ** ?c?_?b?V?????p?????[?^?[
+    //?S????????
     private float HJump_AllTime = 1.0f;
-    //ƒWƒƒƒ“ƒvŒo‰ßŠÔ
+    //?W?????v?o??????
     private float HJump_NowTime;
 
 
-    // ** —‰º‚Ìƒpƒ‰ƒ[ƒ^[
-    //—‰º‘¬“x
+    // ** ???????p?????[?^?[
+    //???????x
     private float Fall_Speed;
-    //—‰º‰Á‘¬“x
+    //?????????x
     private float Fall_Acceleration = 1.0f;
 
-    //‰¡‰ñ“]‚Ìƒpƒ‰ƒ[ƒ^[
+    //?????]???p?????[?^?[
     private float Side_Move = 0.0f;
     private float Side_MoveNow = 0.0f;
 
@@ -73,18 +73,18 @@ public partial class CPlayer : NetworkBehaviour
         {
             if (Jump_Type == eJump_Type.UP)
             {
-                //cƒWƒƒƒ“ƒv‚Ì—\”õ“®ì
+                //?c?W?????v???\??????
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
                     this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
                     HJump_NowTime += Time.deltaTime;
                 }
-                else//cƒWƒƒƒ“ƒv
+                else//?c?W?????v
                 {
                     this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y + NowJump_speed * Time.deltaTime, this.gameObject.transform.position.z);
 
                     NowJump_speed -= 0.1f;
-                    Debug.Log(this.gameObject.transform.position.y);
+//                    Debug.Log(this.gameObject.transform.position.y);
                     if (this.transform.position.y < Start_Position.y && NowJump_speed <= 0.0f)
                     {
                         this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, Start_Position.y, this.gameObject.transform.position.z);
@@ -94,14 +94,14 @@ public partial class CPlayer : NetworkBehaviour
             }
             else if (Jump_Type == eJump_Type.SIDE)
             {
-                //‰¡ƒWƒƒƒ“ƒv‚Ì—\”õ“®ì
+                //???W?????v???\??????
                 if (SJump_NowTime <= SJump_AllTime * 0.2f)
                 {
                     this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
                     this.gameObject.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
                     SJump_NowTime += Time.deltaTime;
                 }
-                else  //‰¡ƒWƒƒƒ“ƒv
+                else  //???W?????v
                 {
                     this.gameObject.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
                     this.gameObject.transform.position += this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
@@ -121,26 +121,26 @@ public partial class CPlayer : NetworkBehaviour
         else
         {
             /*    NowVelocity += Velocity;
-             //‘¬“x§ŒÀ
+             //???x?˜??
                 NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.z = Mathf.Clamp(NowVelocity.z, -Velocity_Limit, Velocity_Limit);
 
-                // ƒIƒuƒWƒFƒNƒgˆÚ“®
+                // ?I?u?W?F?N?g????
                 this.gameObject.transform.position += NowVelocity * Time.deltaTime;*/
 
             NowVelocity += Velocity;
-            //‘¬“x§ŒÀ
+            //???x?˜??
             NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
-            // ƒIƒuƒWƒFƒNƒgˆÚ“®
+            // ?I?u?W?F?N?g????
             this.gameObject.transform.Translate(this.gameObject.transform.forward * NowVelocity * Time.deltaTime);
            // this.gameObject.transform.forward *= NowVelocity;
 
-            //ƒIƒuƒWƒFƒNƒg‰¡‰ñ“]
+            //?I?u?W?F?N?g?????]
             this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_Move, this.gameObject.transform.up);
     }
-        //—‰º‘¬“xŒvZ
+        //???????x?v?Z
         if (this.gameObject.transform.position.y > 0)
         {
             this.gameObject.transform.position += -this.gameObject.transform.up * Fall_Speed * Time.deltaTime;
@@ -154,19 +154,20 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
-    //‰¡‰ñ“]
+    //?????]
     private void OnMove(InputValue value)
     {
         if(!isCanMove) return;
+        if(isOnWhirloop) return;
 
-        //Debug.Log("“®‚­");
-        // MoveAction‚Ì“ü—Í’l‚ğæ“¾
+        //Debug.Log("????");
+        // MoveAction???????l??????
         var axis = value.Get<Vector2>();
 
         Side_Move = axis.x;
 
-        //“ü—Íî•ñ‚ğ•Û
-        // ˆÚ“®‘¬“x‚ğ•Û
+        //??????????????
+        // ???????x??????
   //      Velocity = new Vector3(axis.x, 0, axis.y);
  //       Velocity *= 0.01f * Acceleration;
         //var axis = value.Get<Vector2>();
@@ -178,10 +179,11 @@ public partial class CPlayer : NetworkBehaviour
     private void OnJump()
     {
         if(!isCanMove) return;
+        if(isOnWhirloop) return;
 
         if (!Jump_Switch)
         {
-            //‘¬“x’â~
+            //???x???~
             Emergency_Stop();
         
             if (Jump_Type == eJump_Type.UP)
@@ -195,16 +197,17 @@ public partial class CPlayer : NetworkBehaviour
                 Jump_Switch = true;
                 SJump_NowTime = 0.0f;
 
-                //‚±‚±‚ÅŒ»İ‚ÌƒvƒŒƒCƒ„[‚Ì‘¬“x‚ğ‘ã“ü
+                //?????????????v???C???[?????x??????
                 SJump_Speed = 0.0f;
             }
-            CreateWhirloop(1);  //…—¬‚ğo‚·
+            CmdCreateWhrloop();  //???????o??
         }
     }
 
     private void OnJumpChange()
     {
         if(!isCanMove) return;
+        if(isOnWhirloop) return;
 
         if (!Jump_Switch)
         {
@@ -219,21 +222,22 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
-    //ƒAƒNƒZƒ‹‘€ì
+    //?A?N?Z???€??
     private void OnAccelerator(InputValue value)
     {
-        if (!isCanMove) return;
+        if(!isCanMove) return;
+        if(isOnWhirloop) return;
 
         var axis = value.Get<float>();
 
 
-        // ˆÚ“®‘¬“x‚ğ•Û
+        // ???????x??????
         Velocity = axis;
 
         Velocity *= Acceleration;
     }
 
-    //‹Ù‹}’â~
+    //???}???~
     private void Emergency_Stop()
     {
         NowVelocity = 0.0f;

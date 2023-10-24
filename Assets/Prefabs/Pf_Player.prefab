@@ -145,7 +145,6 @@ GameObject:
   - component: {fileID: 8857170424990527049}
   - component: {fileID: 837816968325431735}
   - component: {fileID: 6588729522021269647}
-  - component: {fileID: -664808229577040092}
   m_Layer: 0
   m_Name: Pf_Player
   m_TagString: Player
@@ -242,8 +241,9 @@ MonoBehaviour:
   _isNowOrga: 0
   _WhirloopPrefab: {fileID: 8917630142182620420, guid: e1c964221159fc2429dff286cdc0fd0e,
     type: 3}
+  _whirloopLength: 2
   isCanMove: 0
-  _rotAngle: 0
+  isOnWhirloop: 0
   ui: {fileID: 7762816088404949649}
   orgaFX: {fileID: 5482269560650414336}
   Velocity_Limit: 20
@@ -435,23 +435,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-664808229577040092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1790004077252208956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 0
-  animator: {fileID: 0}
 --- !u!1 &3400874386075374455
 GameObject:
   m_ObjectHideFlags: 0
