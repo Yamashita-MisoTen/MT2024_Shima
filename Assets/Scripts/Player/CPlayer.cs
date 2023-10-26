@@ -15,8 +15,10 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] bool _isNowOrga = false;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
+	[SerializeField] float _whirloopLength = 2.0f;
 	public bool isCanMove = false;
-	[SerializeField] float _rotAngle;
+	public bool isOnWhirloop = false;
+	float _rotAngle;
 	[SerializeField] PlayerUI ui;
 	[Header("鬼のオーラエフェクト")]
 	[SerializeField]VisualEffect orgaFX = null;
@@ -40,8 +42,7 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
 		}
-		_rotAngle = this.gameObject.transform.rotation.y * 180.0f;
-		Debug.Log(_rotAngle);
+		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
 	public void DataSetUPforMainScene(){
@@ -93,7 +94,13 @@ public partial class CPlayer : NetworkBehaviour
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
 
-	private void CreateWhirloop(float size){
+	[Command]
+	private void CmdCreateWhrloop(){
+		RpcCreateWhirloop();
+	}
+
+	[ClientRpc]
+	private void RpcCreateWhirloop(){
 		Debug.Log("うずしおせいせい");
 		// 渦潮を生成する座標を自分の現在の座標を格納する
 		Vector3 whirloopPosition = this.transform.position;
@@ -101,10 +108,20 @@ public partial class CPlayer : NetworkBehaviour
 		Quaternion qtAngle = Quaternion.AngleAxis(_rotAngle, this.transform.up);
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
-		// 大きさの更新
-		obj.transform.localScale = new Vector3(size,size,size);
+		// 渦潮のセットアップ
+		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f);
 		// 向きの更新
 		obj.transform.rotation = qtAngle * obj.transform.rotation;
+		NetworkServer.Spawn(obj);
+	}
+
+	public void InWhirloopSetUp(){
+		Emergency_Stop();
+		isOnWhirloop = true;
+	}
+
+	public void OutWhirloop(){
+		isOnWhirloop = false;
 	}
 
 }
