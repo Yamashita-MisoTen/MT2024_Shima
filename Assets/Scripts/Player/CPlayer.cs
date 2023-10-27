@@ -106,7 +106,12 @@ public partial class CPlayer : NetworkBehaviour
 		// 渦潮を生成する座標を自分の現在の座標を格納する
 		Vector3 whirloopPosition = this.transform.position;
 		// 回転角をクオータニオンに変換
-		Quaternion qtAngle = Quaternion.AngleAxis(_rotAngle, this.transform.up);
+		Quaternion qtAngle;
+		if(Jump_Type == eJump_Type.SIDE){
+			qtAngle = Quaternion.AngleAxis(_rotAngle, this.transform.up);
+		}else{
+			qtAngle = Quaternion.AngleAxis(270, new Vector3(1,0,0));
+		}
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
