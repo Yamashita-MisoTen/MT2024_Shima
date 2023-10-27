@@ -56,7 +56,7 @@ public partial class CPlayer : NetworkBehaviour
 
     //?????]???p?????[?^?[
     private float Side_Move = 0.0f;
-    private float Side_MoveNow = 0.0f;
+    // private float Side_MoveNow = 0.0f;
 
     // Start is called before the first frame update
     void CPlayerMoveStart()

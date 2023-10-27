@@ -22,6 +22,10 @@ public class GameRuleManager : NetworkBehaviour
 
 	GameState gameState = GameState.Ready;
 
+	public struct SendOrgaPlayerData : NetworkMessage{
+		public CPlayer nextOrgaPlayerData;
+	}
+
 	// ** 時間関係
 	// ゲームの制限時間
 	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
@@ -31,21 +35,22 @@ public class GameRuleManager : NetworkBehaviour
 	[Header("鬼変更後のクールタイム")]int _changeCoolTime = 5;
 	[Header("UI関連")][SerializeField] private TextMeshProUGUI timerText;
 	[SerializeField] private TextMeshProUGUI gameStateText;
-	[SerializeField] private GameRuleManagerClient gameMgrClient;
-	float _progressCoolTime;	// 経過時間
+	[SerializeField]float _progressCoolTime = 0.0f;	// 経過時間
 	bool _isCoolTimeNow = false;
 
 	// ** ゲーム開始前の準備時間関連
-	bool _isGameReady = true;
 
 	// ** プレイヤー関係
 	[SyncVar]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	[SyncVar]CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
+	[SerializeField]CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
 
 	// ** 共通のUI
 	GameObject UICanvas = null;
 
 	bool _isFinishGame = false;
+	void Awake() {
+		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
+	}
 	void Start()
 	{
 		for(int i = 0; i < this.transform.childCount; i++){
@@ -90,10 +95,11 @@ public class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene();
 		}
 
-		RandomSetOrgaPlayer();
-
 		// UIの準備
 		UICanvas.SetActive(true);
+		if(isServer){
+			RandomSetOrgaPlayer();
+		}
 	}
 
 	[ClientRpc]
@@ -124,7 +130,6 @@ public class GameRuleManager : NetworkBehaviour
 		// 開始前にカウントダウン入れたりする
 		if(Input.GetKeyDown(KeyCode.L)){
 			RpcStartGame();
-			_isGameReady = false;
 		}
 	}
 	void UpdateGame(){
@@ -140,7 +145,7 @@ public class GameRuleManager : NetworkBehaviour
 
 		// タッチのクールタイムの設定
 		if(_isCoolTimeNow){	// キャラクターの点滅とか入れたい
-			if(_changeCoolTime < _progressCoolTime){
+			if(_changeCoolTime > _progressCoolTime){
 				_progressCoolTime += Time.deltaTime;
 			}else{
 				_isCoolTimeNow = false;
@@ -154,55 +159,73 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	// ** 単発系の関数
-	[ServerCallback]	// サーバー側でのみ起動する
 	void RandomSetOrgaPlayer(){		// 鬼をランダムで変更する
 		int num = UnityEngine.Random.Range(0,_playerData.Count());
 		Debug.Log("始めの鬼の番号 : " + num);
 		// サーバー側の設定
-		_orgaPlayer = _playerData[num];
-		_orgaPlayer.ChangeToOrga();
+		_orgaPlayer = _playerData[num];		// サーバー側だけ先に更新しても問題ないため念の為早めに鬼の設定をしておく
+		SendChangeOrga(_playerData[num]);	// クライアントのマネージャーのデータを更新する
 		// クライアント側にもデータを送る必要があるのでここで設定
-		RpcSendChangeOrga(_orgaPlayer);
-		Debug.Log("初期の鬼が設定されました : " + _orgaPlayer.name);
+		Debug.Log("初期の鬼が設定されました : " + _playerData[num].name);
 	}
-
 	bool CheckIdentityPlayer(int plNum, CPlayer player){	// 同一のプレイヤーか確認する
 		if(_playerData[plNum] == player){
-			Debug.Log(player.name);
 			return true;
 		}
 		return false;
 	}
-	[Command]
-	public void CmdChangeOrgaPlayer(CPlayer nextOrgaPlayer){	// 鬼が変わるタイミングで呼ぶ関数
+
+	// ** 鬼変更関連の関数群
+	[Server]
+	public void ServerGetChangeOrga(CPlayer nextOrgaPlayer){
+		if(!CheckOverCoolTime()) return;
+		SetCoolTime();
+		SendChangeOrga(nextOrgaPlayer);
+	}
+	void SendChangeOrga(CPlayer nextOrgaPlayer){
+		if(!isClient) return;
+		// クライアント側に次の鬼を通知する為にメッセージを送る
+		var sendData = new SendOrgaPlayerData() {nextOrgaPlayerData = nextOrgaPlayer};
+		NetworkServer.SendToAll(sendData);
+	}
+
+	private void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){
+		// 各クライアント内でのプレイヤーデータの更新を行う
+		Debug.Log("データ送信します" + isServer);
+		Debug.Log("次の鬼は " + nextOrgaPlayer.name);
 		for(int i = 0; i < _playerData.Count(); i++){
-			// オブジェクトが同一かどうか確認する
+			Debug.Log("鬼の確認中 :" + i + "番");
+			bool orgaFlg = false;
 			if(CheckIdentityPlayer(i, nextOrgaPlayer)){
-				RpcSendChangeOrga(nextOrgaPlayer);
-				Debug.Log("鬼が変更されました 次の鬼は" + _orgaPlayer.name);
-				SetCoolTime();					// クールタイムを設定する
-				continue;
+				orgaFlg = true;
 			}
+			_playerData[i].ChangeOrgaPlayer(orgaFlg);
 		}
 	}
 
-	[ClientRpc]
-	void RpcSendChangeOrga(CPlayer nextOrgaPlayer){
-		// クライアント側にデータを渡す用の更新関数
-		Debug.Log("クライアントへ通知処理");
-		nextOrgaPlayer.ChangeToOrga();
-		_orgaPlayer = nextOrgaPlayer;
+	/// <summary>
+	/// サーバーから受け取ったデータを各クライアントで使う
+	/// </summary>
+	/// <param name="conn">コネクション情報　関数内で使ってないけど必要みたい</param>
+	/// <param name="receivedData">受け取ったデータ</param>
+	private void ReciveOrgaPlayerDataInfo(SendOrgaPlayerData receivedData)
+	{
+		//ローカルのフラグに反映
+		_orgaPlayer = receivedData.nextOrgaPlayerData;
+		Debug.Log(_orgaPlayer);
+		ChangeOrgaPlayer(receivedData.nextOrgaPlayerData);
 	}
 
 	private void SetCoolTime(){		// クールタイムの設定
+		// これももしかしたらサーバー通知のほうがいいかも
+		// ラグがあるからね
 		Debug.Log("クールタイムを開始する");
 		_isCoolTimeNow = true;
 		_progressCoolTime = 0f;
 	}
 
 	public bool CheckOverCoolTime(){	// クールタイム終わってるか確認
-		if(_isCoolTimeNow) return false;
-		return true;
+		return !_isCoolTimeNow;
 	}
 
 	// ** 通信関連の関数

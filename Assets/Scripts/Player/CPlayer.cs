@@ -70,27 +70,28 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	private void OnTriggerEnter(Collider other){
-		Debug.Log("あたり");
 		if(!other.gameObject.CompareTag("Player")) return;
 
+		// ローカルプレイヤーのときのみ
+		if(!isLocalPlayer) return;
+		// マネージャを獲得してなければもう一度所得をこころみる
+		if(mgr == null) mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 		// 自分が鬼のときのみ通知をする
-		Debug.Log("いまは" + mgr.CheckOverCoolTime());
+		Debug.Log("クールタイム中華確認 : " + mgr.CheckOverCoolTime());
 		if(_isNowOrga && mgr.CheckOverCoolTime()){
-			Debug.Log("当たり判定発生");
+			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
 		}
 	}
 
 	[Command]
 	void CmdChangeOrga(GameObject otherObj){
-		mgr.CmdChangeOrgaPlayer(otherObj.GetComponent<CPlayer>());
-		_isNowOrga = false;
-		ui.ChangeOrgaPlayer(_isNowOrga);
+		mgr.ServerGetChangeOrga(otherObj.GetComponent<CPlayer>());
 	}
 
-	public void ChangeToOrga(){
-		Debug.Log("鬼になったで");
-		_isNowOrga = true;
+	public void ChangeOrgaPlayer(bool orgaflg){
+		_isNowOrga = orgaflg;
+		orgaFX.gameObject.SetActive(orgaflg);
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
 

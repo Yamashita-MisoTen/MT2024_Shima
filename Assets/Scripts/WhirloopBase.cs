@@ -34,8 +34,11 @@ public class WhirloopBase : NetworkBehaviour
 	/// <param name="length"> 渦潮の長さ </param>
 	/// <param name="size">　渦潮の大きさ 基本は1.0f </param>
 	public void SetUpWhrloop(float length, float size){
-		colliderObj.size = new Vector3(size,size,length);
-		colliderObj.center = new Vector3(0.0f,0.0f,length / 2.0f);
+		whirloopLength = length;
+		whirloopSize = size;
+
+		colliderObj.size = new Vector3(whirloopSize,whirloopSize,whirloopLength);
+		colliderObj.center = new Vector3(0.0f,0.0f,whirloopLength / 2.0f);
 
 		// エフェクト起動
 		if(whirloopFX == null) return;
