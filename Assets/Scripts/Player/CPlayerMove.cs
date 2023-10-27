@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public partial class CPlayer : NetworkBehaviour
 {
-    enum eJump_Type
+    public enum eJump_Type
     {
         UP,
         SIDE,
@@ -16,7 +16,7 @@ public partial class CPlayer : NetworkBehaviour
     // ** ?????????p?????[?^
     private float Velocity;
     private float NowVelocity;
-    [SerializeField, Header("???x?Åò??")]
+    [SerializeField, Header("???x??øΩ?øΩ??")]
     private float Velocity_Limit;
 
     [SerializeField, Header("?????x")]
@@ -121,7 +121,7 @@ public partial class CPlayer : NetworkBehaviour
         else
         {
             /*    NowVelocity += Velocity;
-             //???x?Åò??
+             //???x??øΩ?øΩ??
                 NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.z = Mathf.Clamp(NowVelocity.z, -Velocity_Limit, Velocity_Limit);
@@ -130,7 +130,7 @@ public partial class CPlayer : NetworkBehaviour
                 this.gameObject.transform.position += NowVelocity * Time.deltaTime;*/
 
             NowVelocity += Velocity;
-            //???x?Åò??
+            //???x??øΩ?øΩ??
             NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
             // ?I?u?W?F?N?g????
@@ -200,7 +200,10 @@ public partial class CPlayer : NetworkBehaviour
                 //?????????????v???C???[?????x??????
                 SJump_Speed = 0.0f;
             }
-            CmdCreateWhrloop();  //???????o??
+
+            if(_isNowOrga){
+                CmdCreateWhrloop();  //???????o??
+            }
         }
     }
 
@@ -219,10 +222,12 @@ public partial class CPlayer : NetworkBehaviour
             {
                 Jump_Type = eJump_Type.UP;
             }
+
+            ui.ChangeJumpType(Jump_Type);
         }
     }
 
-    //?A?N?Z???Ä??
+    //?A?N?Z????øΩ??
     private void OnAccelerator(InputValue value)
     {
         if(!isCanMove) return;
