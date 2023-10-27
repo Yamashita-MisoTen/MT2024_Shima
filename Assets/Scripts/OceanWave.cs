@@ -6,7 +6,7 @@ public class OceanWave : MonoBehaviour
 {
 	[SerializeField] Vector2 _waveSpeed;
 	Material _material;
-	string _texName = "_MainTex";
+	//string _texName = "_MainTex";
 	// Start is called before the first frame update
 	void Start()
 	{

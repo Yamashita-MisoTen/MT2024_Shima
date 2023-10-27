@@ -246,8 +246,8 @@ MonoBehaviour:
   isOnWhirloop: 0
   ui: {fileID: 7762816088404949649}
   orgaFX: {fileID: 5482269560650414336}
-  Velocity_Limit: 20
-  Acceleration: 10
+  Velocity_Limit: 10
+  Acceleration: 1
 --- !u!114 &-3769720418302859395
 MonoBehaviour:
   m_ObjectHideFlags: 0
