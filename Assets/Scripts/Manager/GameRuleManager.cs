@@ -282,6 +282,7 @@ public class GameRuleManager : NetworkBehaviour
 	public void RemoveAllPlayerData(){
 		_playerData.Clear();
 		Debug.Log("プレイヤーを全て削除しました");
+		NetworkServer.Destroy(this.gameObject);
 	}
 
 	[ClientRpc]

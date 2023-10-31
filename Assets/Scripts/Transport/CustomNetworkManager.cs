@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +10,7 @@ public class CustomNetworkManager : NetworkManager
 	[Header("プレイヤーが使用するプレハブ")]
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
-	GameRuleManager mgr;
+	[SerializeField] GameRuleManager mgr;
 	private int connectPlayerCount = 0;	// 現在の接続人数
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
 		// if(SceneManager.GetActiveScene().name != "Title"){
@@ -40,6 +41,13 @@ public class CustomNetworkManager : NetworkManager
 		mgr.AddPlayerData(player);
 	}
 
+	public override void OnClientConnect()
+	{
+		base.OnClientConnect();
+
+		print("クライアントで接続?");
+	}
+
 	override public void OnServerDisconnect(NetworkConnectionToClient conn){
 		Debug.LogError("クライアントの接続切れました");
 		Debug.Log(conn);
@@ -57,19 +65,46 @@ public class CustomNetworkManager : NetworkManager
 		if(deleteObj != null){
 			mgr.RemovePlayerData(deleteObj);
 		}
+		if(mgr != null){
+			NetworkServer.Destroy(mgr.gameObject);
+		}
 		base.OnServerDisconnect(conn);
+	}
+
+	public override void OnClientDisconnect()
+	{
+		Debug.LogError("接続切れました");
+
+		if(mgr != null){
+			mgr.RemoveAllPlayerData();
+			NetworkServer.Destroy(mgr.gameObject);
+		}
+
+		base.OnClientDisconnect();
 	}
 
 	public override void OnStopHost()
 	{
 		base.OnStopHost();
-		mgr.RemoveAllPlayerData();
+		if(mgr != null){
+			mgr.RemoveAllPlayerData();
+		}
 		connectPlayerCount = 0;
 	}
 	public override void OnStopServer()
 	{
 		base.OnStopServer();
-		mgr.RemoveAllPlayerData();
+		if(mgr != null){
+			mgr.RemoveAllPlayerData();
+		}
+		connectPlayerCount = 0;
+	}
+
+	public override void OnStopClient(){
+		base.OnStopClient();
+		if(mgr != null){
+			mgr.RemoveAllPlayerData();
+		}
 		connectPlayerCount = 0;
 	}
 
