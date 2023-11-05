@@ -5,6 +5,7 @@ using Mirror;
 using UnityEngine.VFX;
 using Unity.VisualScripting;
 using DG.Tweening;
+using UnityEngine.UIElements.Experimental;
 
 public class WhirloopBase : NetworkBehaviour
 {
@@ -28,11 +29,13 @@ public class WhirloopBase : NetworkBehaviour
 	float whirloopSize = 1.0f;		// 渦潮の大きさ(馬鹿でか渦潮作るならつかう)
 	int remainUseNum = 1;
 	bool _isOnObject = false;	// 乗ってるかどうか
+	List<bool> isWaitFinish;
 	// Start is called before the first frame update
 	void Start()
 	{
 		otherObj = new List<GameObject>();	// オブジェクトのデータを格納する
-		fxData = new List<GameObject>();	// エフェクトのデータを格納する
+		// fxData = new List<GameObject>();	// エフェクトのデータを格納する
+		// isWaitFinish = new List<bool>();	// オブジェクトごとの待ちが終了したかどうかを確認
 		remainUseNum = maxUseNum;
 	}
 
@@ -41,12 +44,11 @@ public class WhirloopBase : NetworkBehaviour
 	{
 		if(!_isOnObject) return;
 
-		// ここで待ち時間入れる
-		DOTween.Sequence()
-		.SetDelay(3);
 
 		for(int i = 0; i < otherObj.Count; i++){
-			ForcingToMove(otherObj[i]);
+			if(isWaitFinish[i]){
+				ForcingToMove(otherObj[i]);
+			}
 		}
 		// transform.forwardで正面方向に生成できる
 	}
@@ -57,6 +59,9 @@ public class WhirloopBase : NetworkBehaviour
 	/// <param name="length"> 渦潮の長さ </param>
 	/// <param name="size">　渦潮の大きさ 基本は1.0f </param>
 	public void SetUpWhrloop(float length, float size){
+		if(isWaitFinish == null) isWaitFinish = new List<bool>();
+		isWaitFinish.Add(false);
+
 		// 必要情報を格納する
 		whirloopLength = length;	// 長さ
 		whirloopSize = size;		// 大きさ　
@@ -91,18 +96,25 @@ public class WhirloopBase : NetworkBehaviour
 			fxData.Add(obj.gameObject);
 			Debug.Log("エフェクト確認3" + fxData.Count);
 		}
+
+		// ここで待ち時間入れる
+		DOTween.Sequence()
+		.SetDelay(waitTime);
+
+		DOVirtual.DelayedCall(waitTime, () => isWaitFinish[isWaitFinish.Count] = true);
 	}
 
 	void ForcingToMove(GameObject obj){
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
 		// 向いてる方向に対して速度を増やす
-		trans.position += this.transform.forward * accelerationSpeed;
+		//trans.position += this.transform.forward;
+		//* Easing.InBack(Time.deltaTime)
 	}
 
 	// 当たったときにオブジェクトを指定する
 	private void OnTriggerEnter(Collider other){
-		if(remainUseNum ==  otherObj.Count) return;
+		if(remainUseNum == otherObj.Count) return;
 		otherObj.Add(other.gameObject);
 		// プレイヤーの時は変更する
 		if(other.gameObject.CompareTag("Player")){

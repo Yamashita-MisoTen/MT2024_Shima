@@ -108,7 +108,7 @@ public partial class CPlayer : NetworkBehaviour
 
                     SJump_NowTime += Time.deltaTime;
                     SJump_Speed += SJump_Acceleration * Time.deltaTime;
-                    Debug.Log(SJump_Acceleration);
+                    // Debug.Log(SJump_Acceleration);
                     if (SJump_NowTime > SJump_AllTime)
                     {
                         Jump_Switch = false;
