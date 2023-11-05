@@ -32,6 +32,7 @@ public partial class CPlayer : NetworkBehaviour
 	void Start()
 	{
 		CPlayerMoveStart();
+		CPlayerWhirloopPerfomanceStart();
 		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 	}
 
@@ -41,6 +42,10 @@ public partial class CPlayer : NetworkBehaviour
 		// 今のシーンを確認してから入力機構切りたい
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
+		}
+
+		if(isOnWhirloop){
+			CPlayerWhirloopPerfomanceUpdate();
 		}
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
