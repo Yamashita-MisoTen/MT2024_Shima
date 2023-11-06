@@ -10,7 +10,7 @@ public class PlayerUI : NetworkBehaviour
 	// Start is called before the first frame update
 	[SerializeField] GameObject UICanvasObj;
 	TextMeshProUGUI playerStateText;		// プレイヤーの状態を表示しておく
-	TextMeshPro playerJumpStateText;
+	TextMeshProUGUI playerJumpStateText;
 	Image		playerHaveItemImage;
 	void Start()
 	{
@@ -18,6 +18,9 @@ public class PlayerUI : NetworkBehaviour
 			var childObj = UICanvasObj.transform.GetChild(i);
 			if(childObj.name == "PlayerState"){
 				playerStateText = childObj.GetComponent<TextMeshProUGUI>();
+			}
+			if(childObj.name == "JumpState"){
+				playerJumpStateText = childObj.GetComponent<TextMeshProUGUI>();
 			}
 		}
 		UICanvasObj.SetActive(false);
@@ -36,6 +39,10 @@ public class PlayerUI : NetworkBehaviour
 		}else{
 			playerStateText.text = "";
 		}
+	}
+
+	public void ChangeJumpType(CPlayer.eJump_Type jumptype){
+		playerJumpStateText.text = jumptype.ToString();
 	}
 
 	public void MainSceneUICanvas(){
