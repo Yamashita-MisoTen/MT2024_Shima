@@ -11,6 +11,8 @@ public class PlayerCamera : NetworkBehaviour
 	public float CameraMove = 0.0f;
 	//現在の
 	private float CameraMoveNow = 0.0f;
+	//実際のカメラ回転
+	private float CameraMoveReal = 0.0f;
 	//カメラ回転の最大値
 	private float Camera_Maximum = 90.0f;
 
@@ -86,15 +88,14 @@ public class PlayerCamera : NetworkBehaviour
 		{
 			//カメラ移動
 			CameraMoveNow += CameraMove;
+			CameraMoveReal = CameraMove;
 			//PlayerCamera.gameObject.transform.rotation = Quaternion.AngleAxis(CameraMoveNow, PlayerCamera.gameObject.transform.up);
 			//カメラ移動の制限
 			CameraMoveNow = Mathf.Clamp(CameraMoveNow, -Camera_Maximum, Camera_Maximum);
 			if (Mathf.Abs(CameraMoveNow) >= Camera_Maximum)
 			{
-				CameraMove = 0.0f;
+				CameraMoveReal = 0.0f;
 			}
-
-
 
 			//	Player_Camera.gameObject.transform.rotation = Player_Camera.gameObject.transform.rotation * Quaternion.Euler(0.0f, CameraMove, 0.0f,this.gameObject.transform.position);
 			//    CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);

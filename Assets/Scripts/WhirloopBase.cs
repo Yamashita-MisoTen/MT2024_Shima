@@ -14,7 +14,7 @@ public class WhirloopBase : NetworkBehaviour
 	[SerializeField] [Tooltip("抜けるまでに必要な時間(s)")] private float moveTime = 1.0f;
 	[SerializeField] [Tooltip("触れてからの停止時間(s)")] private float waitTime = 0.1f;
 	[SerializeField] [Tooltip("使用回数")] private int maxUseNum = 1;	// 使用回数
-	[SerializeField] [Tooltip("通過地点")] private Vector3 endPoint;
+	[SerializeField] [Tooltip("終了地点")] private Vector3 endPoint;
 	[SerializeField] [Tooltip("通過地点")] private List<Vector3> checkPoint;
 
 	[Space]
@@ -47,7 +47,7 @@ public class WhirloopBase : NetworkBehaviour
 
 		for(int i = 0; i < otherObj.Count; i++){
 			if(isWaitFinish[i]){
-				ForcingToMove(otherObj[i]);
+				//ForcingToMove(otherObj[i]);
 			}
 		}
 		// transform.forwardで正面方向に生成できる
@@ -96,20 +96,40 @@ public class WhirloopBase : NetworkBehaviour
 			fxData.Add(obj.gameObject);
 			Debug.Log("エフェクト確認3" + fxData.Count);
 		}
-
-		// ここで待ち時間入れる
-		DOTween.Sequence()
-		.SetDelay(waitTime);
-
-		DOVirtual.DelayedCall(waitTime, () => isWaitFinish[isWaitFinish.Count] = true);
 	}
 
-	void ForcingToMove(GameObject obj){
+	int CheckNextPos(Vector3 objpos){
+		int result = 0;
+		if(wayPoint == null) {
+			wayPoint = new List<Vector3>(); 
+			// 始まりの地点
+			wayPoint.Add(this.transform.position);
+			for(int i = 0; i < checkPoint.Count; i++){
+				wayPoint.Add(this.transform.position + checkPoint[i]);
+			}
+			wayPoint.Add(this.transform.position + endPoint);
+		}
+
+		// 絶対値化した座標　現在の座標 と ウェイポイントごとを比較していく
+		for(int i = 0; i < wayPoint.Count; i++){
+			float posAx = objpos.x * this.transform.forward.x;
+			float posAy = objpos.y * this.transform.forward.y;
+			float posAz = objpos.z * this.transform.forward.z;
+			float posBx = wayPoint[i].x * this.transform.forward.x;
+			float posBy = wayPoint[i].y * this.transform.forward.y;
+			float posBz = wayPoint[i].z * this.transform.forward.z;
+
+			// if(wayPoint > objpos){
+			// }
+		}
+
+		return result;
+	}
+
+	void ForcingToMove(GameObject obj, Vector3 endpos, float time){
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
-		// 向いてる方向に対して速度を増やす
-		//trans.position += this.transform.forward;
-		//* Easing.InBack(Time.deltaTime)
+		trans.DOMove(endpos,time);
 	}
 
 	// 当たったときにオブジェクトを指定する
@@ -119,6 +139,9 @@ public class WhirloopBase : NetworkBehaviour
 		// プレイヤーの時は変更する
 		if(other.gameObject.CompareTag("Player")){
 			other.gameObject.GetComponent<CPlayer>().InWhirloopSetUp();
+			
+			// 遅延後に処理
+			//DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1]), false);
 		}
 		_isOnObject = true;	//　触れたオブジェクトがある場合にフラグをtrueに
 	}
