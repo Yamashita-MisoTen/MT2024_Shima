@@ -6,15 +6,16 @@ using UnityEngine.InputSystem;
 
 public class PlayerCamera : NetworkBehaviour
 {
-    //カメラ回転のパラメーター
+    //カメラ回転の速度
     public float CameraMove = 0.0f;
-    //現在の
+    //現在のカメラ回転度
     private float CameraMoveNow = 0.0f;
+    //実際のカメラ回転
+    private float CameraMoveReal = 0.0f;
     //カメラ回転の最大値
     private float Camera_Maximum = 90.0f;
 
     //プレイヤーオブジェクト
-    private GameObject Player_Object;
     private CPlayer C_Player;
 
     //水流に入っているかどうか
@@ -35,7 +36,6 @@ public class PlayerCamera : NetworkBehaviour
                 break;
             }
         }
-
         C_Player = GetComponent<CPlayer>();
         InWireLoop = false;
     }
@@ -70,20 +70,19 @@ public class PlayerCamera : NetworkBehaviour
         {
             //カメラ移動
             CameraMoveNow += CameraMove;
+            CameraMoveReal = CameraMove;
             //PlayerCamera.gameObject.transform.rotation = Quaternion.AngleAxis(CameraMoveNow, PlayerCamera.gameObject.transform.up);
             //カメラ移動の制限
             CameraMoveNow = Mathf.Clamp(CameraMoveNow, -Camera_Maximum, Camera_Maximum);
             if (Mathf.Abs(CameraMoveNow) >= Camera_Maximum)
             {
-                CameraMove = 0.0f;              
+                CameraMoveReal = 0.0f;
             }
-
-
 
             //	Player_Camera.gameObject.transform.rotation = Player_Camera.gameObject.transform.rotation * Quaternion.Euler(0.0f, CameraMove, 0.0f,this.gameObject.transform.position);
             //    CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);
             //     CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);
-            CameraObj.gameObject.transform.RotateAround(this.gameObject.transform.position, this.gameObject.transform.up, CameraMove);
+            CameraObj.gameObject.transform.RotateAround(this.gameObject.transform.position, this.gameObject.transform.up, CameraMoveReal);
         }
 
         /*		Debug.Log("カメラ更新");
@@ -92,7 +91,6 @@ public class PlayerCamera : NetworkBehaviour
                     CameraMove = Camera_Maximum;
                 }
                 this.gameObject.transform.rotation = Quaternion.Euler(0.0f, CameraMove,0.0f);*/
-
     }
 
     public void MainSceneCamera()
@@ -120,11 +118,9 @@ public class PlayerCamera : NetworkBehaviour
     {
         if (!C_Player.isCanMove) return;
 
-
         //Debug.Log("動く");
         // MoveActionの入力値を取得
         var axis = valus.Get<Vector2>();
         CameraMove = axis.x;
     }
-
 }

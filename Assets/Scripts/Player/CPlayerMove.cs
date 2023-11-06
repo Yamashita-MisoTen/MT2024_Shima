@@ -14,13 +14,16 @@ public partial class CPlayer : NetworkBehaviour
     }
 
     // ** 移動類のパラメータ
-    private float Velocity;
-    private float NowVelocity;
+    private float Velocity;  //入力されている速度
+    private float NowVelocity;  //現在の速度
     [SerializeField, Header("速度制限")]
     private float Velocity_Limit;
 
     [SerializeField, Header("加速度")]
     private float Acceleration;
+
+    //減速度
+    private float Deceleration = 0.5f;
 
     private float NowJump_speed;
     private float Jump_Speed = 10;
@@ -47,7 +50,6 @@ public partial class CPlayer : NetworkBehaviour
     //ジャンプ経過時間
     private float HJump_NowTime;
 
-
     // ** 落下のパラメーター
     //落下速度
     private float Fall_Speed;
@@ -56,7 +58,11 @@ public partial class CPlayer : NetworkBehaviour
 
     //横回転のパラメーター
     private float Side_Move = 0.0f;
+    //横回転のパラメーター
     private float Side_MoveNow = 0.0f;
+    //横回転の速度制限
+    private float Side_Move_Limit = 1.0f;
+    private float Side_Acceleration = 0.4f;
 
     // Start is called before the first frame update
     void CPlayerMoveStart()
@@ -76,15 +82,15 @@ public partial class CPlayer : NetworkBehaviour
                 //縦ジャンプの予備動作
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
-                    this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
+                    //     this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
+                    this.gameObject.transform.Translate(-Vector3.up * Jump_Fall * Time.deltaTime);
                     HJump_NowTime += Time.deltaTime;
                 }
                 else//縦ジャンプ
                 {
-                    this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y + NowJump_speed * Time.deltaTime, this.gameObject.transform.position.z);
-
+                    // this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y + NowJump_speed * Time.deltaTime, this.gameObject.transform.position.z);
+                    this.gameObject.transform.Translate(Vector3.up * NowJump_speed * Time.deltaTime);
                     NowJump_speed -= 0.1f;
-                    Debug.Log(this.gameObject.transform.position.y);
                     if (this.transform.position.y < Start_Position.y && NowJump_speed <= 0.0f)
                     {
                         this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, Start_Position.y, this.gameObject.transform.position.z);
@@ -115,8 +121,6 @@ public partial class CPlayer : NetworkBehaviour
                     }
                 }
             }
-
-
         }
         else
         {
@@ -129,17 +133,37 @@ public partial class CPlayer : NetworkBehaviour
                 // オブジェクト移動
                 this.gameObject.transform.position += NowVelocity * Time.deltaTime;*/
 
-            NowVelocity += Velocity;
+            if (Velocity == 0 && NowVelocity > 0)
+            {
+                NowVelocity -= Deceleration * Time.deltaTime;
+                if (NowVelocity < 0)
+                    NowVelocity = 0;
+
+                Debug.Log(NowVelocity);
+            }
+            else
+            {
+                NowVelocity += Velocity;
+            }
             //速度制限
             NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
             // オブジェクト移動
-            this.gameObject.transform.Translate(this.gameObject.transform.forward * NowVelocity * Time.deltaTime);
-           // this.gameObject.transform.forward *= NowVelocity;
+            this.gameObject.transform.Translate(Vector3.forward * NowVelocity * Time.deltaTime);
+            // this.gameObject.transform.forward *= NowVelocity;
+
+            //横移動制限
+            Side_MoveNow += Side_Move * Time.deltaTime;
+            if (Side_Move == 0.0f)
+            {
+                Side_MoveNow = 0.0f;
+            }
+            Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
 
             //オブジェクト横回転
-            this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_Move, this.gameObject.transform.up);
-    }
+            this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
+
+        }
         //落下速度計算
         if (this.gameObject.transform.position.y > 0)
         {
@@ -157,33 +181,32 @@ public partial class CPlayer : NetworkBehaviour
     //横回転
     private void OnMove(InputValue value)
     {
-        if(!isCanMove) return;
+        if (!isCanMove) return;
 
         //Debug.Log("動く");
         // MoveActionの入力値を取得
         var axis = value.Get<Vector2>();
 
-        Side_Move = axis.x;
-
+        Side_Move = axis.x * Side_Acceleration;
         //入力情報を保持
         // 移動速度を保持
-  //      Velocity = new Vector3(axis.x, 0, axis.y);
- //       Velocity *= 0.01f * Acceleration;
+        //      Velocity = new Vector3(axis.x, 0, axis.y);
+        //       Velocity *= 0.01f * Acceleration;
         //var axis = value.Get<Vector2>();
         //	Vector3 pos = this.transform.position;
         //	pos.x += value.;
-        //	this.gameObject.transform.position = pos;
+        //	this.gameObject.transform.position = pos
     }
 
     private void OnJump()
     {
-        if(!isCanMove) return;
+        if (!isCanMove) return;
 
         if (!Jump_Switch)
         {
             //速度停止
             Emergency_Stop();
-        
+
             if (Jump_Type == eJump_Type.UP)
             {
                 Jump_Switch = true;
@@ -198,13 +221,13 @@ public partial class CPlayer : NetworkBehaviour
                 //ここで現在のプレイヤーの速度を代入
                 SJump_Speed = 0.0f;
             }
-            CreateWhirloop(1);  //水流を出す
+            // CreateWhirloop(1);  //水流を出す
         }
     }
 
     private void OnJumpChange()
     {
-        if(!isCanMove) return;
+        if (!isCanMove) return;
 
         if (!Jump_Switch)
         {
@@ -238,5 +261,6 @@ public partial class CPlayer : NetworkBehaviour
     {
         NowVelocity = 0.0f;
         Velocity = 0.0f;
+        Side_MoveNow = 0.0f;
     }
 }
