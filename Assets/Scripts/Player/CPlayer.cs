@@ -122,9 +122,7 @@ public partial class CPlayer : NetworkBehaviour
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
-		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f);
-		// 向きの更新
-		obj.transform.rotation = qtAngle * obj.transform.rotation;
+		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
 		NetworkServer.Spawn(obj);
 	}
 

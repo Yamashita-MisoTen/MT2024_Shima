@@ -100,7 +100,7 @@ public class PlayerCamera : NetworkBehaviour
 			//	Player_Camera.gameObject.transform.rotation = Player_Camera.gameObject.transform.rotation * Quaternion.Euler(0.0f, CameraMove, 0.0f,this.gameObject.transform.position);
 			//    CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);
 			//     CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);
-			CameraObj.gameObject.transform.RotateAround(this.gameObject.transform.position, this.gameObject.transform.up, CameraMove);
+			CameraObj.gameObject.transform.RotateAround(this.gameObject.transform.position, this.gameObject.transform.up, CameraMoveReal);
 		}
 
 		/*		Debug.Log("カメラ更新");

@@ -58,7 +58,7 @@ public class WhirloopBase : NetworkBehaviour
 	/// </summary>
 	/// <param name="length"> 渦潮の長さ </param>
 	/// <param name="size">　渦潮の大きさ 基本は1.0f </param>
-	public void SetUpWhrloop(float length, float size){
+	public void SetUpWhrloop(float length, float size, Quaternion qt){
 		if(isWaitFinish == null) isWaitFinish = new List<bool>();
 		isWaitFinish.Add(false);
 
@@ -69,6 +69,29 @@ public class WhirloopBase : NetworkBehaviour
 		// 大きさと長さに当たり判定を大きくする
 		colliderObj.size = new Vector3(whirloopSize,whirloopSize,whirloopLength);
 		colliderObj.center = new Vector3(0.0f,0.0f,whirloopLength / 2.0f);
+		endPoint = whirloopLength * this.transform.forward;
+		Debug.Log("endPoint : "+endPoint);
+
+		if(wayPoint == null) {
+			// 通過地点をそれぞれ設定する
+			wayPoint = new List<Vector3>();
+			// 始まりの地点
+			wayPoint.Add(new Vector3(0,0,0));
+			for(int i = 0; i < checkPoint.Count; i++){
+				wayPoint.Add(checkPoint[i]);
+			}
+			wayPoint.Add(endPoint);
+
+			var qtA = qt * this.transform.rotation;
+			// 回転に合わせて修正をかける
+			for(int i = 0; i < wayPoint.Count; i++){
+				Debug.Log("回転設定");
+				Debug.Log("前 :" + wayPoint[i]);
+				wayPoint[i] = qtA * wayPoint[i];
+				wayPoint[i] += this.transform.position;
+				Debug.Log("後 :" + wayPoint[i]);
+			}
+		}
 
 		// エフェクト起動
 		if(whirloopFX == null) return;
@@ -79,7 +102,6 @@ public class WhirloopBase : NetworkBehaviour
 			// 生成したオブジェクトを自分の子供に変更する
 			obj.gameObject.transform.parent = this.gameObject.transform;
 			// 座標変更
-			Debug.Log(fxpos);
 			obj.transform.localPosition = fxpos;
 			// 起動
 			obj.SendEvent("OnStart");
@@ -89,26 +111,17 @@ public class WhirloopBase : NetworkBehaviour
 			// 次のエフェクト用に座標を＋する
 			fxpos.z += 1.0f;
 
-			Debug.Log("エフェクト確認");
 			// エフェクトのデータを配列に格納
 			if(fxData == null) fxData = new List<GameObject>();
-			Debug.Log("エフェクト確認2");
 			fxData.Add(obj.gameObject);
-			Debug.Log("エフェクト確認3" + fxData.Count);
 		}
+
+		// 向きの更新
+		this.transform.rotation = qt * this.transform.rotation;
 	}
 
 	int CheckNextPos(Vector3 objpos){
 		int result = 0;
-		if(wayPoint == null) {
-			wayPoint = new List<Vector3>(); 
-			// 始まりの地点
-			wayPoint.Add(this.transform.position);
-			for(int i = 0; i < checkPoint.Count; i++){
-				wayPoint.Add(this.transform.position + checkPoint[i]);
-			}
-			wayPoint.Add(this.transform.position + endPoint);
-		}
 
 		// 絶対値化した座標　現在の座標 と ウェイポイントごとを比較していく
 		for(int i = 0; i < wayPoint.Count; i++){
@@ -126,10 +139,17 @@ public class WhirloopBase : NetworkBehaviour
 		return result;
 	}
 
-	void ForcingToMove(GameObject obj, Vector3 endpos, float time){
+	void ForcingToMove(GameObject obj, float time, int waypoint){
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
-		trans.DOMove(endpos,time);
+		Debug.Log("time" + time + "wayPoint" + waypoint);
+		Debug.Log(wayPoint.Count);
+		if(waypoint == wayPoint.Count - 1){
+			trans.DOMove(wayPoint[waypoint], time);
+		}else{
+			trans.DOMove(wayPoint[waypoint], time)
+				.OnComplete(() => ForcingToMove(obj,time,waypoint + 1));
+		}
 	}
 
 	// 当たったときにオブジェクトを指定する
@@ -139,9 +159,8 @@ public class WhirloopBase : NetworkBehaviour
 		// プレイヤーの時は変更する
 		if(other.gameObject.CompareTag("Player")){
 			other.gameObject.GetComponent<CPlayer>().InWhirloopSetUp();
-			
 			// 遅延後に処理
-			//DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1]), false);
+			DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1], 0.5f, 0));
 		}
 		_isOnObject = true;	//　触れたオブジェクトがある場合にフラグをtrueに
 	}
