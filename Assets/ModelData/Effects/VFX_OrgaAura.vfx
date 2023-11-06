@@ -34,7 +34,7 @@ MonoBehaviour:
     x: 206
     y: -190
     width: 1186
-    height: 1530
+    height: 1491
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -881,7 +881,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: False
+      m_SerializableObject: True
     m_Space: 2147483647
   m_Property:
     name: _vfx_enabled
@@ -2298,7 +2298,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"x":250.0,"y":250.0,"z":250.0}'
+      m_SerializableObject: '{"x":10.0,"y":10.0,"z":10.0}'
     m_Space: 2147483647
   m_Property:
     name: Scale
@@ -2966,7 +2966,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: True
+      m_SerializableObject: False
     m_Space: 2147483647
   m_Property:
     name: _vfx_enabled
@@ -3837,7 +3837,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: True
+      m_SerializableObject: False
     m_Space: 2147483647
   m_Property:
     name: _vfx_enabled

@@ -50,7 +50,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _accelerationSpeed: 0.1
+  accelerationSpeed: 0.1
+  moveTime: 1
+  waitTime: 5
+  maxUseNum: 3
+  endPoint: {x: 0, y: 0, z: 0}
+  checkPoint: []
   colliderObj: {fileID: 7769661871840437489}
   whirloopFX: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
     type: 3}
