@@ -52,7 +52,7 @@ MonoBehaviour:
   syncInterval: 0
   accelerationSpeed: 0.1
   moveTime: 1
-  waitTime: 5
+  waitTime: 0.1
   maxUseNum: 3
   endPoint: {x: 0, y: 0, z: 0}
   checkPoint: []

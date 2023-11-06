@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public partial class CPlayer : NetworkBehaviour
 {
-    enum eJump_Type
+    public enum eJump_Type
     {
         UP,
         SIDE,
@@ -221,7 +221,7 @@ public partial class CPlayer : NetworkBehaviour
                 //ここで現在のプレイヤーの速度を代入
                 SJump_Speed = 0.0f;
             }
-            // CreateWhirloop(1);  //水流を出す
+            CmdCreateWhrloop();  //水流を出す
         }
     }
 
