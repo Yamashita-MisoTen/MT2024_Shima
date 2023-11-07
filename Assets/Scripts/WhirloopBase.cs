@@ -43,13 +43,6 @@ public class WhirloopBase : NetworkBehaviour
 	void Update()
 	{
 		if(!_isOnObject) return;
-
-
-		for(int i = 0; i < otherObj.Count; i++){
-			if(isWaitFinish[i]){
-				//ForcingToMove(otherObj[i]);
-			}
-		}
 		// transform.forwardで正面方向に生成できる
 	}
 
@@ -172,9 +165,14 @@ public class WhirloopBase : NetworkBehaviour
 				if(other.gameObject.CompareTag("Player")){
 					other.gameObject.GetComponent<CPlayer>().OutWhirloop();
 				}
+				Debug.Log("削除" + i);
 				Debug.Log(fxData.Count);
-				Debug.Log(fxData[i]);
-				fxData.RemoveAt(i);
+				if(isLocalPlayer){
+					CmdDeleteFX(i);
+				}else if(isClient){
+					RpcDeleteFX(i);
+				}
+				Debug.Log(fxData.Count);
 				otherObj.RemoveAt(i);
 				// フラグを削除する
 				if(otherObj.Count == 0) _isOnObject = false;
@@ -184,6 +182,7 @@ public class WhirloopBase : NetworkBehaviour
 
 		// 使用回数を減らす
 		remainUseNum -= 1;
+		// エフェクト削除
 
 		// 使用回数がなくなった場合の処理
 		if(remainUseNum == 0){
@@ -191,4 +190,13 @@ public class WhirloopBase : NetworkBehaviour
 		}
 	}
 
+	[Command]
+	private void CmdDeleteFX(int i){
+		RpcDeleteFX(i);
+	}
+	[ClientRpc]
+	private void RpcDeleteFX(int i){
+		Destroy(fxData[i]);
+		fxData.RemoveAt(i);
+	}
 }
