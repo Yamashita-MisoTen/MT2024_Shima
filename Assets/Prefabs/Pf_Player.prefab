@@ -382,6 +382,7 @@ MonoBehaviour:
   orgaFX: {fileID: 5482269560650414336}
   Velocity_Limit: 10
   Acceleration: 1
+  Camera_Deferred_Power: 20
 --- !u!114 &-3769720418302859395
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -64,12 +64,38 @@ public partial class CPlayer : NetworkBehaviour
     private float Side_Move_Limit = 1.0f;
     private float Side_Acceleration = 0.4f;
 
+    //カメラオブジェクト
+    private GameObject CameraObject;
+
+    //カメラスクリプト
+    private PlayerCamera C_Camera;
+
+    private Vector3 CameraCopy;
+
+    [SerializeField, Header("カメラ遅延の大きさ")]
+    private float Camera_Deferred_Power;
+
     // Start is called before the first frame update
     void CPlayerMoveStart()
     {
         Start_Position = this.transform.position;
         Jump_Type = eJump_Type.UP;
         NowVelocity = 0.0f;
+
+        // 子供を検索してカメラを確認する
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            GameObject childObj = this.transform.GetChild(i).gameObject;
+            // 接続時にプレイヤーごとにカメラを分ける
+            if (childObj.name == "PlayerCamera")
+            {
+                CameraObject = childObj;
+                CameraObject.SetActive(false);
+                break;
+            }
+        }
+        CameraCopy = CameraObject.gameObject.transform.eulerAngles;
+        C_Camera = GetComponent<PlayerCamera>();
     }
 
     // Update is called once per frame
@@ -152,17 +178,58 @@ public partial class CPlayer : NetworkBehaviour
             this.gameObject.transform.Translate(Vector3.forward * NowVelocity * Time.deltaTime);
             // this.gameObject.transform.forward *= NowVelocity;
 
-            //横移動制限
-            Side_MoveNow += Side_Move * Time.deltaTime;
-            if (Side_Move == 0.0f)
+            //カメラを横回転していないときだけ横移動ができる
+            if (C_Camera.Looking_lLeft_Right())
             {
-                Side_MoveNow = 0.0f;
+                //横移動制限
+                if (Side_Move != 0)
+                {
+                    Side_MoveNow += Side_Move * Time.deltaTime;
+                }
+
+                //横移動減速
+                if (Side_Move == 0.0f)
+                {
+                    if (Side_MoveNow > 0.1f)
+                    {
+                        Side_MoveNow -= 0.01f;
+                    }
+                    else if (Side_MoveNow <= 0.1f && Side_MoveNow > 0.0f)
+                    {
+                        Side_MoveNow -= Side_MoveNow;
+
+                        if (Side_MoveNow < 0.00f)
+                        {
+                            Side_MoveNow = Vector2.zero.x;
+                        }
+                    }
+                    else if (Side_MoveNow < -0.1f)
+                    {
+                        Side_MoveNow += 0.01f;
+                    }
+                    else if (Side_MoveNow >= -0.1f && Side_MoveNow < 0.0f)
+                    {
+                        Side_MoveNow -= Side_MoveNow;
+
+                        if (Side_MoveNow > 0.00f)
+                        {
+                            Side_MoveNow = Vector2.zero.x;
+                        }
+                    }
+                }
+
+                if (Side_MoveNow != 0.0f)
+                {
+                    Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
+
+                    Vector3 Position = this.gameObject.transform.position;
+                    //オブジェクト横回転
+                    this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
+
+                    CameraObject.gameObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.gameObject.transform.eulerAngles.y, this.gameObject.transform.eulerAngles.z);
+                    CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.gameObject.transform.up);
+                }
             }
-            Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
-
-            //オブジェクト横回転
-            this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-
         }
         //落下速度計算
         if (this.gameObject.transform.position.y > 0)
@@ -262,5 +329,17 @@ public partial class CPlayer : NetworkBehaviour
         NowVelocity = 0.0f;
         Velocity = 0.0f;
         Side_MoveNow = 0.0f;
+    }
+
+    public bool Moving_lLeft_Right()
+    {
+        Debug.Log(Side_Move);
+        Debug.Log(Side_MoveNow);
+        if (Side_MoveNow != 0.0f || Side_Move != 0.0f)
+        {
+            Debug.Log("当たり");
+            return false;
+        }
+        return true;
     }
 }
