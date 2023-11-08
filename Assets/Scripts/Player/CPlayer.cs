@@ -24,6 +24,7 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField]VisualEffect orgaFX = null;
 
 	GameRuleManager mgr;
+	PlayerCamera cameraComp;
 	// アイテム所持するように
 	// CItem _HaveItemData;
 
@@ -32,6 +33,7 @@ public partial class CPlayer : NetworkBehaviour
 	void Start()
 	{
 		CPlayerMoveStart();
+		CPlayerWhirloopPerfomanceStart();
 		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 	}
 
@@ -42,13 +44,18 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
 		}
+
+		if(isOnWhirloop){
+			CPlayerWhirloopPerfomanceUpdate();
+		}
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
 	public void DataSetUPforMainScene(){
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
-		this.GetComponent<PlayerCamera>().MainSceneCamera();
+		cameraComp = this.GetComponent<PlayerCamera>();
+		cameraComp.MainSceneCamera();
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -115,19 +122,19 @@ public partial class CPlayer : NetworkBehaviour
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
-		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f);
-		// 向きの更新
-		obj.transform.rotation = qtAngle * obj.transform.rotation;
+		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
 		NetworkServer.Spawn(obj);
 	}
 
 	public void InWhirloopSetUp(){
 		Emergency_Stop();
 		isOnWhirloop = true;
+		cameraComp.SetCameraInWhirloop();
 	}
 
 	public void OutWhirloop(){
 		isOnWhirloop = false;
+		cameraComp.SetCameraOutWhirloop();
 	}
 
 }
