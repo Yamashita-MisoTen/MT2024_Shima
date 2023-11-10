@@ -10,7 +10,6 @@ using UnityEngine.UIElements.Experimental;
 public class WhirloopBase : NetworkBehaviour
 {
 	[Header("---- 調整項目 -----")]
-	[SerializeField] [Tooltip("1f前に加速する速度")]private float accelerationSpeed = 0.1f;
 	[SerializeField] [Tooltip("抜けるまでに必要な時間(s)")] private float moveTime = 1.0f;
 	[SerializeField] [Tooltip("触れてからの停止時間(s)")] private float waitTime = 0.1f;
 	[SerializeField] [Tooltip("使用回数")] private int maxUseNum = 1;	// 使用回数
@@ -56,7 +55,7 @@ public class WhirloopBase : NetworkBehaviour
 		isWaitFinish.Add(false);
 
 		// 必要情報を格納する
-		whirloopLength = length;	// 長さ
+		whirloopLength = length + 50;	// 長さ
 		whirloopSize = size;		// 大きさ　
 
 		// 大きさと長さに当たり判定を大きくする
@@ -153,7 +152,7 @@ public class WhirloopBase : NetworkBehaviour
 		if(other.gameObject.CompareTag("Player")){
 			other.gameObject.GetComponent<CPlayer>().InWhirloopSetUp();
 			// 遅延後に処理
-			DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1], 0.5f, 0));
+			DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1], moveTime, 0));
 		}
 		_isOnObject = true;	//　触れたオブジェクトがある場合にフラグをtrueに
 	}
