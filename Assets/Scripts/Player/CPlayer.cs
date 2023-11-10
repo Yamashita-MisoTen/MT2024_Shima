@@ -44,6 +44,14 @@ public partial class CPlayer : NetworkBehaviour
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
+	public void InitData(){
+		isCanMove = false;
+		isOnWhirloop = false;
+		_isNowOrga = false;
+		_rotAngle = 0f;
+		orgaFX.gameObject.SetActive(false);
+	}
+
 	public void DataSetUPforMainScene(GameRuleManager manager){
 		mgr = manager;
 		// メインシーンでのセットアップで使用する
@@ -112,7 +120,7 @@ public partial class CPlayer : NetworkBehaviour
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
-		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f);
+		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f,qtAngle);
 		// 向きの更新
 		obj.transform.rotation = qtAngle * obj.transform.rotation;
 		NetworkServer.Spawn(obj);

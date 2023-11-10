@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Networking;
@@ -22,11 +23,8 @@ public class Title : NetworkBehaviour{
 
 	void Start()
 	{
-		var obj = GameObject.Find("Pf_GameRuleManager");
-		if(obj == null){
-			Debug.Log("マネージャーないから追加する");
-			Instantiate(gameManager);
-		}
+		CustomNetworkManager netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		netMgr.PlayerDataInit();
 	}
 
 	// Update is called once per frame

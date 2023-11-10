@@ -13,7 +13,7 @@ public class CustomNetworkManager : NetworkManager
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
 	[SerializeField] GameObject dataMgrPrefab;
-	NetWorkDataManager dataManager;
+	[SerializeField,Header("ああああ")]NetWorkDataManager dataManager;
 	private int connectPlayerCount = 0;	// 現在の接続人数
 
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
@@ -40,6 +40,7 @@ public class CustomNetworkManager : NetworkManager
 		player.name = $"{prefab.name} [connId={conn.connectionId}]";
 		DontDestroyOnLoad(player);	// シーン遷移用にプレイヤーデータを残したままにしておく
 		NetworkServer.AddPlayerForConnection(conn, player);
+
 		if(dataManager == null){
 			var obj = Instantiate(dataMgrPrefab);
 			dataManager = obj.GetComponent<NetWorkDataManager>();
@@ -85,9 +86,6 @@ public class CustomNetworkManager : NetworkManager
 		print("OnClientError : "+reason);
 	}
 
-	// public List<GameObject> GetPlayerDatas(){
-	// 	return playerInfo.ObjDatas;
-	// }
 	public List<GameObject> GetPlayerDatas(List<GameObject> obj){
 		if(dataManager == null){
 			dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
@@ -98,8 +96,8 @@ public class CustomNetworkManager : NetworkManager
 	}
 	public List<CPlayer> GetPlayerDatas(List<CPlayer> obj){
 		if(dataManager == null){
-			dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
-			dataManager.CmdSetPlayerData();
+			//dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
+			//dataManager.CmdSetPlayerData();
 			Debug.Log(dataManager.GetPlayerData(obj));
 		}
 		return dataManager.GetPlayerData(obj);
@@ -111,5 +109,13 @@ public class CustomNetworkManager : NetworkManager
 			Debug.Log(dataManager.GetPlayerData(obj));
 		}
 		return dataManager.GetPlayerData(obj);
+	}
+
+	public void SetDataMgr(NetWorkDataManager mgr){
+		dataManager = mgr;
+	}
+
+	public void PlayerDataInit(){
+		dataManager.PlayerDataInit();
 	}
 }
