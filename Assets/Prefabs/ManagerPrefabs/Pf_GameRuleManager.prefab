@@ -53,6 +53,8 @@ MonoBehaviour:
   _changeCoolTime: 5
   timerText: {fileID: 4045357071421669982}
   gameStateText: {fileID: 4112230514525495790}
+  _progressCoolTime: 0
+  _orgaPlayer: {fileID: 0}
 --- !u!114 &10298624091981889
 MonoBehaviour:
   m_ObjectHideFlags: 0

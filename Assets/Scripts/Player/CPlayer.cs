@@ -32,7 +32,6 @@ public partial class CPlayer : NetworkBehaviour
 	void Start()
 	{
 		CPlayerMoveStart();
-		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 	}
 
 	// Update is called once per frame
@@ -45,7 +44,8 @@ public partial class CPlayer : NetworkBehaviour
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
-	public void DataSetUPforMainScene(){
+	public void DataSetUPforMainScene(GameRuleManager manager){
+		mgr = manager;
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
 		this.GetComponent<PlayerCamera>().MainSceneCamera();
@@ -74,10 +74,7 @@ public partial class CPlayer : NetworkBehaviour
 
 		// ローカルプレイヤーのときのみ
 		if(!isLocalPlayer) return;
-		// マネージャを獲得してなければもう一度所得をこころみる
-		if(mgr == null) mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 		// 自分が鬼のときのみ通知をする
-		Debug.Log("クールタイム中華確認 : " + mgr.CheckOverCoolTime());
 		if(_isNowOrga && mgr.CheckOverCoolTime()){
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
