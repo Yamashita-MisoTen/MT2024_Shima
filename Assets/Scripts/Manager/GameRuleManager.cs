@@ -26,6 +26,9 @@ public class GameRuleManager : NetworkBehaviour
 		public CPlayer nextOrgaPlayerData;
 	}
 
+	public struct SendCompleyeChangeSceme : NetworkMessage{
+		public bool isChangeSceneComplete;
+	}
 	// ** 時間関係
 	// ゲームの制限時間
 	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
@@ -37,12 +40,13 @@ public class GameRuleManager : NetworkBehaviour
 	[SerializeField] private TextMeshProUGUI gameStateText;
 	[SerializeField]float _progressCoolTime = 0.0f;	// 経過時間
 	bool _isCoolTimeNow = false;
+	int completeChangeSceneClient = 0;
 
 	// ** ゲーム開始前の準備時間関連
 
 	// ** プレイヤー関係
-	List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	[SerializeField]CPlayer _orgaPlayer;		// 現在鬼のプレイヤーを格納しておく
+	[SerializeField][SyncVar]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
+	[SerializeField][SyncVar]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
 
 	// ** 共通のUI
 	GameObject UICanvas = null;
@@ -51,6 +55,7 @@ public class GameRuleManager : NetworkBehaviour
 	bool _isFinishGame = false;
 	void Awake() {
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
+		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
 		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
 	}
 	void Start()
@@ -82,14 +87,13 @@ public class GameRuleManager : NetworkBehaviour
 		}
 	}
 
-	// ** ゲームの開始終了関連の関数
-	public void ReadyGame(){
+	private void ReadyGame(){
 		if(_playerData == null) {
 			_playerData = new List<CPlayer>();
 			Debug.Log(_playerData);
 			Debug.Log(netMgr);
-			_playerData = netMgr.GetPlayerDatas(_playerData);
 		}
+		_playerData = netMgr.GetPlayerDatas(_playerData);
 		Debug.LogError("準備" + _playerData.Count);
 		// プレイヤーの準備
 		foreach(CPlayer p in _playerData){
@@ -97,9 +101,7 @@ public class GameRuleManager : NetworkBehaviour
 			Debug.Log(p.isLocalPlayer);
 			p.DataSetUPforMainScene(this);
 		}
-
-		// UIの準備
-		//UICanvas.SetActive(true);
+		RandomSetOrgaPlayer();
 	}
 
 	[ClientRpc]
@@ -107,6 +109,7 @@ public class GameRuleManager : NetworkBehaviour
 		Debug.Log("ゲーム開始するで");
 		gameStateText.text = "now play";
 		gameState = GameState.NowPlay;
+		ChangeOrgaPlayer(_orgaPlayer);
 		foreach(CPlayer p in _playerData){
 			p.isCanMove = true;
 		}
@@ -123,6 +126,8 @@ public class GameRuleManager : NetworkBehaviour
 		// 敗者一応置いといたほうがよき？
 
 		// 接続しているプレイヤーすべてに終了命令を送る
+
+		netMgr.ServerChangeScene("Title");
 	}
 
 	void UpdateReady(){
@@ -163,9 +168,7 @@ public class GameRuleManager : NetworkBehaviour
 	void RandomSetOrgaPlayer(){		// 鬼をランダムで変更する
 		int num = UnityEngine.Random.Range(0,_playerData.Count());
 		Debug.Log("始めの鬼の番号 : " + num);
-		// サーバー側の設定
-		_orgaPlayer = _playerData[num];		// サーバー側だけ先に更新しても問題ないため念の為早めに鬼の設定をしておく
-		SendChangeOrga(_playerData[num]);	// クライアントのマネージャーのデータを更新する
+		_orgaPlayer = _playerData[num];
 		// クライアント側にもデータを送る必要があるのでここで設定
 		Debug.Log("初期の鬼が設定されました : " + _playerData[num].name);
 	}
@@ -187,7 +190,8 @@ public class GameRuleManager : NetworkBehaviour
 		if(!isClient) return;
 		// クライアント側に次の鬼を通知する為にメッセージを送る
 		var sendData = new SendOrgaPlayerData() {nextOrgaPlayerData = nextOrgaPlayer};
-		NetworkServer.SendToAll(sendData);
+		ChangeOrgaPlayer(nextOrgaPlayer);
+		//NetworkServer.SendToAll(sendData);
 	}
 
 	private void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){
@@ -214,7 +218,15 @@ public class GameRuleManager : NetworkBehaviour
 		//ローカルのフラグに反映
 		_orgaPlayer = receivedData.nextOrgaPlayerData;
 		Debug.Log(_orgaPlayer);
-		ChangeOrgaPlayer(receivedData.nextOrgaPlayerData);
+		// ChangeOrgaPlayer(receivedData.nextOrgaPlayerData);
+	}
+
+	private void ReciveChangeSceneClient(SendCompleyeChangeSceme receivedData){
+		completeChangeSceneClient++;
+		Debug.Log("シーン遷移完了通知");
+		if(_playerData.Count == completeChangeSceneClient){
+			RandomSetOrgaPlayer();
+		}
 	}
 
 	private void SetCoolTime(){		// クールタイムの設定

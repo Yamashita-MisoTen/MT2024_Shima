@@ -15,6 +15,19 @@ public class NetWorkDataManager : NetworkBehaviour {
 	void Start()
 	{
 		DontDestroyOnLoad(this.gameObject);
+		GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>().SetDataMgr(this);
+	}
+	public void PlayerDataInit(){
+		if(playerInfo.ObjDatas == null) return;
+		int Count = 0;
+		foreach(CPlayer obj in playerInfo.CompDatas){
+			obj.InitData();
+			// ロビーでの座標を調整する
+			int detail = Count - 1;
+			Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
+			obj.transform.position = pos;
+			Count++;
+		}
 	}
 
 	// ** プレイヤーデータを格納する
@@ -29,15 +42,15 @@ public class NetWorkDataManager : NetworkBehaviour {
 		Debug.Log("プレイヤーを追加しました");
 		Debug.Log("追加したプレイヤー" + obj.name);
 		Debug.Log("現在のプレイヤー数" + playerInfo.ObjDatas.Count);
+		Debug.Log("現在のプレイヤー数Comp" + playerInfo.CompDatas.Count);
+		Debug.Log("現在のプレイヤー数id" + playerInfo.ConnId.Count);
 
 		// ロビーでの座標を調整する
 		int detail = playerInfo.ObjDatas.Count - 1;
 		Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
 		obj.transform.position = pos;
 		// クライアントにデータを送る
-		if(isServer){
-			RpcSendPlayerData(playerInfo);
-		}
+		RpcSendPlayerData(playerInfo);
 	}
 
 	// ** データが必要ならデータを格納する
@@ -72,6 +85,8 @@ public class NetWorkDataManager : NetworkBehaviour {
 			count += 1;
 		}
 
+		// 各クライアントにデータを送信
+		RpcSendPlayerData(playerInfo);
 	}
 	public void DeleteObj(CPlayer comp){
 		int count = 0;
@@ -86,6 +101,9 @@ public class NetWorkDataManager : NetworkBehaviour {
 			}
 			count += 1;
 		}
+
+		// 各クライアントにデータを送信
+		RpcSendPlayerData(playerInfo);
 	}
 	public void DeleteObj(int id){
 		int count = 0;
@@ -100,12 +118,17 @@ public class NetWorkDataManager : NetworkBehaviour {
 			}
 			count += 1;
 		}
+
+		// 各クライアントにデータを送信
+		RpcSendPlayerData(playerInfo);
 	}
 
 	public void DeleteAllObj(){
 		playerInfo.ObjDatas.Clear();
 		playerInfo.CompDatas.Clear();
 		playerInfo.ConnId.Clear();
+		// 各クライアントにデータを送信
+		RpcSendPlayerData(playerInfo);
 	}
 
 	// ** データが同一かどうかを確認する関数群
