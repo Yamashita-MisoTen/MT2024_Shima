@@ -10,15 +10,23 @@ using UnityEngine.UIElements;
 public class Title : NetworkBehaviour{
 	// Start is called before the first frame update
 	[SerializeField]NetworkManager manager;
-	[SerializeField]GameRuleManager gameManager;
+	[SerializeField]GameObject gameManager;
 
 	[Serializable]
 	public struct TitleSendData : NetworkMessage{
 		public bool _isHostReady;
 	}
+	void Awake(){
+
+	}
 
 	void Start()
 	{
+		var obj = GameObject.Find("Pf_GameRuleManager");
+		if(obj == null){
+			Debug.Log("マネージャーないから追加する");
+			Instantiate(gameManager);
+		}
 	}
 
 	// Update is called once per frame
@@ -30,13 +38,13 @@ public class Title : NetworkBehaviour{
 	}
 
 	[ClientRpc]
-	void RpcChangeSceneMainGame(){
+	void RpcChangeSceneMainGame(string sceneName){
 		// フェードの命令いれる
-		manager.ServerChangeScene("MainGame");
+		manager.ServerChangeScene(sceneName);
 	}
 
 	[ServerCallback]
 	void StartGame(){
-		RpcChangeSceneMainGame();
+		RpcChangeSceneMainGame("MainGame");
 	}
 }
