@@ -66,7 +66,7 @@ public class CustomNetworkManager : NetworkManager
 			mgr.RemovePlayerData(deleteObj);
 		}
 		if(mgr != null){
-			NetworkServer.Destroy(mgr.gameObject);
+			//NetworkServer.Destroy(mgr.gameObject);
 		}
 		base.OnServerDisconnect(conn);
 	}
@@ -77,7 +77,7 @@ public class CustomNetworkManager : NetworkManager
 
 		if(mgr != null){
 			mgr.RemoveAllPlayerData();
-			NetworkServer.Destroy(mgr.gameObject);
+			//NetworkServer.Destroy(mgr.gameObject);
 		}
 
 		base.OnClientDisconnect();

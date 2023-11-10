@@ -21,6 +21,8 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	GameState gameState = GameState.Ready;
+	CustomNetworkManager manager;
+	EventMgr eventMgr;
 
 	public struct SendOrgaPlayerData : NetworkMessage{
 		public CPlayer nextOrgaPlayerData;
@@ -39,6 +41,9 @@ public class GameRuleManager : NetworkBehaviour
 	bool _isCoolTimeNow = false;
 
 	// ** ゲーム開始前の準備時間関連
+	[Header("イベント")]
+	[SerializeField][Tooltip("イベントが発生するタイミング")] List<int> eventHappenTime;
+	int nextTiming = 0;
 
 	// ** プレイヤー関係
 	[SyncVar]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
@@ -49,10 +54,16 @@ public class GameRuleManager : NetworkBehaviour
 
 	bool _isFinishGame = false;
 	void Awake() {
+		var mgrObj = GameObject.Find(this.name);
+		if(mgrObj.gameObject != this.gameObject){
+			Destroy(this.gameObject);
+			Debug.Log("違うノアンデ");
+		}
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 	}
 	void Start()
 	{
+		manager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
 		for(int i = 0; i < this.transform.childCount; i++){
 			var obj = this.transform.GetChild(i);
 			if(obj.name == "GameUICanvas"){
@@ -65,6 +76,7 @@ public class GameRuleManager : NetworkBehaviour
 		if(_playerData == null){
 			_playerData = new List<CPlayer>();
 		}
+		eventMgr = this.GetComponent<EventMgr>();
 
 		DontDestroyOnLoad(this);
 	}
@@ -83,6 +95,14 @@ public class GameRuleManager : NetworkBehaviour
 				UpdateFinsh();	// ゲーム終了の更新
 				break;
 		}
+	}
+
+	void Init(){
+		_orgaPlayer = null;
+		_progressLimitTime = 0f;
+		_progressCoolTime = 0f;
+		_isFinishGame = false;
+		nextTiming = 0;
 	}
 
 	// ** ゲームの開始終了関連の関数
@@ -116,6 +136,9 @@ public class GameRuleManager : NetworkBehaviour
 		if(_isFinishGame) return;
 		Debug.Log("ゲームを終了します");
 		_isFinishGame = true;
+		foreach(CPlayer p in _playerData){
+			p.isCanMove = true;
+		}
 		gameStateText.text = "Finish";
 		gameState = GameState.Finish;
 		timerText.text = "";
@@ -123,6 +146,13 @@ public class GameRuleManager : NetworkBehaviour
 		// 敗者一応置いといたほうがよき？
 
 		// 接続しているプレイヤーすべてに終了命令を送る
+		RpcChangeScene("Title");
+	}
+
+	[ClientRpc]
+	public void RpcChangeScene(string sceneName){
+		// フェードの命令いれる
+		manager.ServerChangeScene(sceneName);
 	}
 
 	void UpdateReady(){
@@ -142,6 +172,16 @@ public class GameRuleManager : NetworkBehaviour
 		string sec = secNum.ToString();
 		if(secNum < 10) sec = "0" + sec;	// 10秒以下の場合09などのように2桁表記に変更
 		timerText.text = min +":"+ sec;	// UIに更新入れる
+
+		// 時間ごとにイベント発生する
+		if(eventHappenTime != null){
+			if(timer == eventHappenTime[nextTiming]){
+				EventHappen();
+				if(nextTiming < eventHappenTime.Count){
+					nextTiming += 1;
+				}
+			}
+		}
 
 		// タッチのクールタイムの設定
 		if(_isCoolTimeNow){	// キャラクターの点滅とか入れたい
@@ -193,6 +233,7 @@ public class GameRuleManager : NetworkBehaviour
 		// 各クライアント内でのプレイヤーデータの更新を行う
 		Debug.Log("データ送信します" + isServer);
 		Debug.Log("次の鬼は " + nextOrgaPlayer.name);
+		Debug.Log(_playerData);
 		for(int i = 0; i < _playerData.Count(); i++){
 			Debug.Log("鬼の確認中 :" + i + "番");
 			bool orgaFlg = false;
@@ -293,5 +334,9 @@ public class GameRuleManager : NetworkBehaviour
 		foreach(CPlayer p in players){
 			DontDestroyOnLoad(p);
 		}
+	}
+
+	void EventHappen(){
+		eventMgr.RandomEventLottery();
 	}
 }

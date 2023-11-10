@@ -117,6 +117,6 @@ public class ScreenShot : MonoBehaviour
 
     private void DeleteFile(string filePath)
     {
-        AssetDatabase.DeleteAsset(filePath);
+        File.Delete(filePath);
     }
 }
