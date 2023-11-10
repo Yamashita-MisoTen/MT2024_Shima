@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6197444463666319764
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43fd70c9b64e53a4e8702dbd00412a0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Enabled: 1
+  Settings: {fileID: 7266398046568773078}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 546069fd762786f4da89225e1989d105, type: 3}
+  m_Name: SampleDot_Sequence
+  m_EditorClassIdentifier: 
+  inputFrameGUIDs:
+  - 8166484146c522d46b1724961d5cec70
+  - 0aae51c2c1491a94d80dfb35d6657192
+  - 8937a40d59c68b943a50094a6faabda6
+  - 366f7166813c35b4da5a6e87345aff8b
+  - f13cb0afebdbf2b43aa17bbab0c35f51
+  - eba282ca44d66d94fb9d5ccf3880276d
+  - be25e9c7aaff8924f83f7400c90af0ac
+  - 1c18be40b3b336f4da6a49e23f463abd
+  processorInfos:
+  - {fileID: -6197444463666319764}
+  exportSettings:
+    fileName: Assets/VFX_Graph_BookData/Chapter06/Sample_Onigiri/Textures/SampleDot_Sequence_4x2.tga
+    frameCount: 1
+    outputShape: 1
+    exportMode: 0
+    exportAlpha: 1
+    exportSeparateAlpha: 0
+    sRGB: 0
+    highDynamicRange: 0
+    compress: 1
+    generateMipMaps: 1
+    wrapMode: 0
+    filterMode: 1
+    dataContents: 0
+  editSettings:
+    selectedProcessor: 0
+    lockedProcessor: -1
+  inheritSettingsReference: {fileID: 0}
+--- !u!114 &7266398046568773078
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77e015c9f1a1eb44a23bc84ec1b265d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FlipbookNumU: 4
+  FlipbookNumV: 2
+  Mode: 0
