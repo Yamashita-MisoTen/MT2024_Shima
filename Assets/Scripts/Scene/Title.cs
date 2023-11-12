@@ -10,8 +10,7 @@ using UnityEngine.UIElements;
 
 public class Title : NetworkBehaviour{
 	// Start is called before the first frame update
-	[SerializeField]NetworkManager manager;
-	[SerializeField]GameObject gameManager;
+	[SerializeField]CustomNetworkManager netMgr;
 
 	[Serializable]
 	public struct TitleSendData : NetworkMessage{
@@ -23,7 +22,7 @@ public class Title : NetworkBehaviour{
 
 	void Start()
 	{
-		CustomNetworkManager netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		if(netMgr == null) netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
 		netMgr.PlayerDataInit();
 	}
 
@@ -38,7 +37,7 @@ public class Title : NetworkBehaviour{
 	[ClientRpc]
 	void RpcChangeSceneMainGame(string sceneName){
 		// フェードの命令いれる
-		manager.ServerChangeScene(sceneName);
+		netMgr.ServerChangeScene(sceneName);
 	}
 
 	[ServerCallback]
