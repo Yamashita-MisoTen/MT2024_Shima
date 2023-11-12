@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameRuleManager : NetworkBehaviour
+public partial class GameRuleManager : NetworkBehaviour
 {
 	//// **** 変数定義 **** ////
 
@@ -29,6 +29,7 @@ public class GameRuleManager : NetworkBehaviour
 	public struct SendCompleyeChangeSceme : NetworkMessage{
 		public bool isChangeSceneComplete;
 	}
+	[SerializeField, Header("デバッグモード")] bool isDebugMode = false;
 	// ** 時間関係
 	// ゲームの制限時間
 	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
@@ -53,6 +54,9 @@ public class GameRuleManager : NetworkBehaviour
 	CustomNetworkManager netMgr = null;
 
 	bool _isFinishGame = false;
+	// **　リザルト関連
+	bool isResultAnnounce = false;	// 結果発表が終われば
+
 	void Awake() {
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
@@ -65,6 +69,10 @@ public class GameRuleManager : NetworkBehaviour
 			if(obj.name == "GameUICanvas"){
 				UICanvas = obj.gameObject;
 				UICanvas.SetActive(true);
+			}
+			if(obj.name == "ReadyCanvas"){
+				readyCanvasObj = obj.gameObject;
+				readyCanvasObj.SetActive(true);
 			}
 		}
 		if(netMgr == null)GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
@@ -102,6 +110,11 @@ public class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene(this);
 		}
 		RandomSetOrgaPlayer();
+
+		// デバッグの時は演出いれない
+		if(!isDebugMode){
+			StartReadyPerformance();
+		}
 	}
 
 	[ClientRpc]
@@ -124,17 +137,23 @@ public class GameRuleManager : NetworkBehaviour
 		timerText.text = "";
 
 		// 敗者一応置いといたほうがよき？
+		StartResultPerforamce();
 
 		// 接続しているプレイヤーすべてに終了命令を送る
-
-		netMgr.ServerChangeScene("Title");
 	}
 
 	void UpdateReady(){
-		gameStateText.text = "Ready Push 'L'Key ";
-		// 開始前にカウントダウン入れたりする
-		if(Input.GetKeyDown(KeyCode.L)){
-			RpcStartGame();
+		if(isDebugMode){
+			gameStateText.text = "Ready Push 'L'Key ";
+			// 開始前にカウントダウン入れたりする
+			if(Input.GetKeyDown(KeyCode.L)){
+				RpcStartGame();
+			}
+		}else{
+			UpdateReadyPerformance();
+			if(isCompleteCountdown){
+				RpcStartGame();
+			}
 		}
 	}
 	void UpdateGame(){
@@ -160,7 +179,14 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	void UpdateFinsh(){
-
+		if(!isResultAnnounce){
+			UpdateResultPerformance();
+		}else{
+			if(!isServer) return;
+			if(Input.GetKeyDown(KeyCode.L)){
+				netMgr.ServerChangeScene("Title");
+			}
+		}
 	}
 
 	// ** 単発系の関数

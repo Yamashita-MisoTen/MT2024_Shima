@@ -45,6 +45,7 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InitData(){
+		transform.position = new Vector3(0,0,0);
 		isCanMove = false;
 		isOnWhirloop = false;
 		_isNowOrga = false;
@@ -52,10 +53,19 @@ public partial class CPlayer : NetworkBehaviour
 		orgaFX.gameObject.SetActive(false);
 	}
 
+	public void ResultData(){
+		isCanMove = false;
+		isOnWhirloop = false;
+		orgaFX.gameObject.SetActive(false);
+		ui.SetActiveUICanvas(false);
+		this.GetComponent<PlayerCamera>().SetCamera(false);
+	}
+
 	public void DataSetUPforMainScene(GameRuleManager manager){
 		mgr = manager;
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
+		this.GetComponent<PlayerUI>().ChangeJumpType(Jump_Type);
 		this.GetComponent<PlayerCamera>().MainSceneCamera();
 
 		// 入力系をつける

@@ -13,6 +13,7 @@ public class CustomNetworkManager : NetworkManager
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
 	[SerializeField] GameObject dataMgrPrefab;
+	[SerializeField] GameObject dataManagerObj;
 	[SerializeField,Header("Ç†Ç†Ç†Ç†")]NetWorkDataManager dataManager;
 	private int connectPlayerCount = 0;	// åªç›ÇÃê⁄ë±êlêî
 
@@ -42,9 +43,9 @@ public class CustomNetworkManager : NetworkManager
 		NetworkServer.AddPlayerForConnection(conn, player);
 
 		if(dataManager == null){
-			var obj = Instantiate(dataMgrPrefab);
-			dataManager = obj.GetComponent<NetWorkDataManager>();
-			NetworkServer.Spawn(obj.gameObject);
+			dataManagerObj = Instantiate(dataMgrPrefab);
+			dataManager = dataManagerObj.GetComponent<NetWorkDataManager>();
+			NetworkServer.Spawn(dataManagerObj.gameObject);
 		}
 
 		var pComp = player.GetComponent<CPlayer>();
@@ -116,6 +117,7 @@ public class CustomNetworkManager : NetworkManager
 	}
 
 	public void PlayerDataInit(){
+		if(dataManagerObj == null) return;
 		dataManager.PlayerDataInit();
 	}
 }

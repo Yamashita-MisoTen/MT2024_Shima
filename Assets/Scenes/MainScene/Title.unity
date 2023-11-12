@@ -391,9 +391,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  manager: {fileID: 2126568975}
-  gameManager: {fileID: 3037683293593439326, guid: 1eb795ff541f54649b81b78e9bd33893,
-    type: 3}
+  netMgr: {fileID: 2126568975}
 --- !u!114 &1323554384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -800,9 +798,12 @@ MonoBehaviour:
   timeInterpolationGui: 0
   pPlayer:
   - {fileID: 1790004077252208956, guid: 6ca9cad79ae1457498e55bbf50da7afb, type: 3}
+  - {fileID: 1790004077252208956, guid: 5ab8a9925101832478749cafb53210a2, type: 3}
   StartPos: []
   dataMgrPrefab: {fileID: 8884316973802009957, guid: 41bf8f1ec17465149b7216bc28425389,
     type: 3}
+  dataManagerObj: {fileID: 0}
+  dataManager: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
