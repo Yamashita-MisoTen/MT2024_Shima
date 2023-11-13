@@ -56,4 +56,8 @@ public class PlayerUI : NetworkBehaviour
 			UICanvasObj.SetActive(false);
 		}
 	}
+
+	public void SetActiveUICanvas(bool flg){
+		UICanvasObj.SetActive(flg);
+	}
 }
