@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
+using System.Collections;
+
 
 public partial class CPlayer : NetworkBehaviour
 {
@@ -13,16 +15,16 @@ public partial class CPlayer : NetworkBehaviour
         SIDE,
     }
 
-    // ** ˆÚ“®—Ş‚Ìƒpƒ‰ƒ[ƒ^
-    private float Velocity;  //“ü—Í‚³‚ê‚Ä‚¢‚é‘¬“x
-    private float NowVelocity;  //Œ»İ‚Ì‘¬“x
-    [SerializeField, Header("‘¬“x§ŒÀ")]
+    // ** ç§»å‹•é¡ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+    private float Velocity;  //å…¥åŠ›ã•ã‚Œã¦ã„ã‚‹é€Ÿåº¦
+    private float NowVelocity;  //ç¾åœ¨ã®é€Ÿåº¦
+    [SerializeField, Header("ç§»å‹•ã®é€Ÿåº¦åˆ¶é™")]
     private float Velocity_Limit;
 
-    [SerializeField, Header("‰Á‘¬“x")]
+    [SerializeField, Header("ç§»å‹•ã®åŠ é€Ÿåº¦")]
     private float Acceleration;
 
-    //Œ¸‘¬“x
+    //æ¸›é€Ÿåº¦
     private float Deceleration = 0.5f;
 
     private float NowJump_speed;
@@ -31,49 +33,54 @@ public partial class CPlayer : NetworkBehaviour
     private Vector3 Start_Position;
     private eJump_Type Jump_Type;
 
-    // ** ‰¡ƒ_ƒbƒVƒ…‚Ìƒpƒ‰ƒ[ƒ^[
-    //‰¡ƒ_ƒbƒVƒ…‰Á‘¬“x
+    // ** æ¨ªãƒ€ãƒƒã‚·ãƒ¥ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
+    //æ¨ªãƒ€ãƒƒã‚·ãƒ¥åŠ é€Ÿåº¦
     private float SJump_Acceleration = 20.0f;
-    //‘S‘Ì‚ÌŠÔ
+    //å…¨ä½“ã®æ™‚é–“
     private float SJump_AllTime = 1.0f;
-    //ƒWƒƒƒ“ƒvŒo‰ßŠÔ
+    //ã‚¸ãƒ£ãƒ³ãƒ—çµŒéæ™‚é–“
     private float SJump_NowTime;
-    //Œ»İ‚Ì‘¬“x
+    //ç¾åœ¨ã®é€Ÿåº¦
     private float SJump_Speed;
 
-    //ƒ_ƒbƒVƒ…—‰º‘¬“x
+    //ãƒ€ãƒƒã‚·ãƒ¥è½ä¸‹é€Ÿåº¦
     private float Jump_Fall = 1.0f;
 
-    // ** cƒ_ƒbƒVƒ…‚Ìƒpƒ‰ƒ[ƒ^[
-    //‘S‘Ì‚ÌŠÔ
+    // ** ç¸¦ãƒ€ãƒƒã‚·ãƒ¥ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
+    //å…¨ä½“ã®æ™‚é–“
     private float HJump_AllTime = 1.0f;
-    //ƒWƒƒƒ“ƒvŒo‰ßŠÔ
+    //ã‚¸ãƒ£ãƒ³ãƒ—çµŒéæ™‚é–“
     private float HJump_NowTime;
 
-    // ** —‰º‚Ìƒpƒ‰ƒ[ƒ^[
-    //—‰º‘¬“x
+    // ** è½ä¸‹ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
+    //è½ä¸‹é€Ÿåº¦
     private float Fall_Speed;
-    //—‰º‰Á‘¬“x
+    //è½ä¸‹åŠ é€Ÿåº¦
     private float Fall_Acceleration = 1.0f;
 
-    //‰¡‰ñ“]‚Ìƒpƒ‰ƒ[ƒ^[
+    //æ¨ªå›è»¢ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
     private float Side_Move = 0.0f;
-    //‰¡‰ñ“]‚Ìƒpƒ‰ƒ[ƒ^[
+    //æ¨ªå›è»¢ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
     private float Side_MoveNow = 0.0f;
-    //‰¡‰ñ“]‚Ì‘¬“x§ŒÀ
+    //æ¨ªå›è»¢ã®é€Ÿåº¦åˆ¶é™
     private float Side_Move_Limit = 1.0f;
     private float Side_Acceleration = 0.4f;
 
-    //ƒJƒƒ‰ƒIƒuƒWƒFƒNƒg
+    //ã‚«ãƒ¡ãƒ©ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     private GameObject CameraObject;
 
-    //ƒJƒƒ‰ƒXƒNƒŠƒvƒg
+    //ã‚«ãƒ¡ãƒ©ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
     private PlayerCamera C_Camera;
 
     private Vector3 CameraCopy;
 
-    [SerializeField, Header("ƒJƒƒ‰’x‰„‚Ì‘å‚«‚³")]
+    [SerializeField, Header("ã‚«ãƒ¡ãƒ©é…å»¶ã®å¤§ãã•")]
     private float Camera_Deferred_Power;
+
+    [Header("æ³³ãã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³")]
+    private Animator Swimming;
+
+    private float AttenRate = 0.01f;
 
     // Start is called before the first frame update
     void CPlayerMoveStart()
@@ -82,16 +89,22 @@ public partial class CPlayer : NetworkBehaviour
         Jump_Type = eJump_Type.UP;
         NowVelocity = 0.0f;
 
-        // q‹Ÿ‚ğŒŸõ‚µ‚ÄƒJƒƒ‰‚ğŠm”F‚·‚é
+        // å­ä¾›ã‚’æ¤œç´¢ã—ã¦ã‚«ãƒ¡ãƒ©ã‚’ç¢ºèªã™ã‚‹
         for (int i = 0; i < this.transform.childCount; i++)
-        {
+        {      
+           
             GameObject childObj = this.transform.GetChild(i).gameObject;
-            // Ú‘±‚ÉƒvƒŒƒCƒ„[‚²‚Æ‚ÉƒJƒƒ‰‚ğ•ª‚¯‚é
+            // æ¥ç¶šæ™‚ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã”ã¨ã«ã‚«ãƒ¡ãƒ©ã‚’åˆ†ã‘ã‚‹
             if (childObj.name == "PlayerCamera")
             {
                 CameraObject = childObj;
                 CameraObject.SetActive(false);
-                break;
+            }
+   
+            //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä»£å…¥
+            if (childObj.name == "PenguinFBX")
+            {
+                Swimming = childObj.GetComponent<Animator>();
             }
         }
         CameraCopy = CameraObject.gameObject.transform.eulerAngles;
@@ -101,42 +114,55 @@ public partial class CPlayer : NetworkBehaviour
     // Update is called once per frame
     void CplayerMoveUpdate()
     {
+        Vector3 motion = this.transform.position;
+
+        //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã«æ•°å€¤ä»£å…¥
+        Swimming.SetFloat("MoveSpeed", NowVelocity);
+        if (Mathf.Abs(NowVelocity) >= Velocity_Limit)
+        {
+            Swimming.SetBool("MoveFastest", true);
+        }
+        else
+        {
+            Swimming.SetBool("MoveFastest", false);
+        }
+         
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
             {
-                //cƒWƒƒƒ“ƒv‚Ì—\”õ“®ì
+                //ç¸¦ã‚¸ãƒ£ãƒ³ãƒ—ã®äºˆå‚™å‹•ä½œ
                 if (HJump_NowTime <= HJump_AllTime * 0.2f)
                 {
-                    //     this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
+                    //     motion += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
                     this.gameObject.transform.Translate(-Vector3.up * Jump_Fall * Time.deltaTime);
                     HJump_NowTime += Time.deltaTime;
                 }
-                else//cƒWƒƒƒ“ƒv
+                else//ç¸¦ã‚¸ãƒ£ãƒ³ãƒ—
                 {
-                    // this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y + NowJump_speed * Time.deltaTime, this.gameObject.transform.position.z);
+                    // motion = new Vector3(motion.x, motion.y + NowJump_speed * Time.deltaTime, motion.z);
                     this.gameObject.transform.Translate(Vector3.up * NowJump_speed * Time.deltaTime);
                     NowJump_speed -= 0.1f;
                     if (this.transform.position.y < Start_Position.y && NowJump_speed <= 0.0f)
                     {
-                        this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, Start_Position.y, this.gameObject.transform.position.z);
+                        motion = new Vector3(motion.x, Start_Position.y, motion.z);
                         Jump_Switch = false;
                     }
                 }
             }
             else if (Jump_Type == eJump_Type.SIDE)
             {
-                //‰¡ƒWƒƒƒ“ƒv‚Ì—\”õ“®ì
+                //æ¨ªã‚¸ãƒ£ãƒ³ãƒ—ã®äºˆå‚™å‹•ä½œ
                 if (SJump_NowTime <= SJump_AllTime * 0.2f)
                 {
-                    this.gameObject.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
-                    this.gameObject.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
+                    motion += -this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
+                    motion += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
                     SJump_NowTime += Time.deltaTime;
                 }
-                else  //‰¡ƒWƒƒƒ“ƒv
+                else  //æ¨ªã‚¸ãƒ£ãƒ³ãƒ—
                 {
-                    this.gameObject.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
-                    this.gameObject.transform.position += this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
+                    motion += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
+                    motion += this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
 
                     SJump_NowTime += Time.deltaTime;
                     SJump_Speed += SJump_Acceleration * Time.deltaTime;
@@ -151,13 +177,13 @@ public partial class CPlayer : NetworkBehaviour
         else
         {
             /*    NowVelocity += Velocity;
-             //‘¬“x§ŒÀ
+             //é€Ÿåº¦åˆ¶é™
                 NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
                 NowVelocity.z = Mathf.Clamp(NowVelocity.z, -Velocity_Limit, Velocity_Limit);
 
-                // ƒIƒuƒWƒFƒNƒgˆÚ“®
-                this.gameObject.transform.position += NowVelocity * Time.deltaTime;*/
+                // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç§»å‹•
+                motion += NowVelocity * Time.deltaTime;*/
 
             if (Velocity == 0 && NowVelocity > 0)
             {
@@ -165,29 +191,28 @@ public partial class CPlayer : NetworkBehaviour
                 if (NowVelocity < 0)
                     NowVelocity = 0;
 
-                Debug.Log(NowVelocity);
             }
             else
             {
                 NowVelocity += Velocity;
             }
-            //‘¬“x§ŒÀ
+            //é€Ÿåº¦åˆ¶é™
             NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
-            // ƒIƒuƒWƒFƒNƒgˆÚ“®
-            this.gameObject.transform.Translate(Vector3.forward * NowVelocity * Time.deltaTime);
+            // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç§»å‹•
+            motion += Vector3.forward * NowVelocity * Time.deltaTime;
             // this.gameObject.transform.forward *= NowVelocity;
 
-            //ƒJƒƒ‰‚ğ‰¡‰ñ“]‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚¾‚¯‰¡ˆÚ“®‚ª‚Å‚«‚é
-            if (C_Camera.Looking_lLeft_Right())
+            //ã‚«ãƒ¡ãƒ©ã‚’æ¨ªå›è»¢ã—ã¦ã„ãªã„ã¨ãã ã‘æ¨ªç§»å‹•ãŒã§ãã‚‹
+     //       if (C_Camera.Looking_Left_Right())
             {
-                //‰¡ˆÚ“®§ŒÀ
+                //æ¨ªç§»å‹•åˆ¶é™
                 if (Side_Move != 0)
                 {
                     Side_MoveNow += Side_Move * Time.deltaTime;
                 }
 
-                //‰¡ˆÚ“®Œ¸‘¬
+                //æ¨ªç§»å‹•æ¸›é€Ÿ
                 if (Side_Move == 0.0f)
                 {
                     if (Side_MoveNow > 0.1f)
@@ -222,41 +247,57 @@ public partial class CPlayer : NetworkBehaviour
                 {
                     Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
 
-                    Vector3 Position = this.gameObject.transform.position;
-                    //ƒIƒuƒWƒFƒNƒg‰¡‰ñ“]
+                    Vector3 eulerAngles = this.gameObject.transform.eulerAngles;
+                    //ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ¨ªå›è»¢
                     this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-
-                    CameraObject.gameObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.gameObject.transform.eulerAngles.y, this.gameObject.transform.eulerAngles.z);
-                    CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.gameObject.transform.up);
+                     Debug.Log(eulerAngles);
+                    Debug.Log(this.gameObject.transform.eulerAngles);
+                    CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
+                    CameraObject.gameObject.transform.eulerAngles = new Vector3(CameraCopy.x, CameraObject.gameObject.transform.eulerAngles.y, this.gameObject.transform.eulerAngles.z);
+                    //      CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.gameObject.transform.up);
+                    //    if (!C_Camera.Looking_Left_Right())
+                   
+                    {
+                        C_Camera.Horizontal_Rotation();
+                    }
                 }
             }
         }
-        //—‰º‘¬“xŒvZ
-        if (this.gameObject.transform.position.y > 0)
+        //è½ä¸‹é€Ÿåº¦è¨ˆç®—
+        if (motion.y > 0)
         {
-            this.gameObject.transform.position += -this.gameObject.transform.up * Fall_Speed * Time.deltaTime;
+            motion += -this.transform.up * Fall_Speed * Time.deltaTime;
             Fall_Speed += Fall_Acceleration * Time.deltaTime;
 
-            if (this.gameObject.transform.position.y <= 0)
+            if (motion.y <= 0)
             {
-                this.gameObject.transform.position = new Vector3(this.transform.position.x, 0.0f, this.gameObject.transform.position.z);
+                motion = new Vector3(motion.x, 0.0f, motion.z);
                 Fall_Speed = 0.0f;
             }
         }
+        this.gameObject.transform.position = motion;
+        CmUpdateTransform(motion,this.transform.rotation);
     }
 
-    //‰¡‰ñ“]
+    [Command]
+    private void CmUpdateTransform(Vector3 motion,Quaternion quaternion)
+    {
+        this.transform.position = motion;
+        this.transform.rotation = quaternion;
+    }
+
+    //æ¨ªå›è»¢
     private void OnMove(InputValue value)
     {
         if (!isCanMove) return;
 
-        //Debug.Log("“®‚­");
-        // MoveAction‚Ì“ü—Í’l‚ğæ“¾
+        //Debug.Log("å‹•ã");
+        // MoveActionã®å…¥åŠ›å€¤ã‚’å–å¾—
         var axis = value.Get<Vector2>();
 
         Side_Move = axis.x * Side_Acceleration;
-        //“ü—Íî•ñ‚ğ•Û
-        // ˆÚ“®‘¬“x‚ğ•Û
+        //å…¥åŠ›æƒ…å ±ã‚’ä¿æŒ
+        // ç§»å‹•é€Ÿåº¦ã‚’ä¿æŒ
         //      Velocity = new Vector3(axis.x, 0, axis.y);
         //       Velocity *= 0.01f * Acceleration;
         //var axis = value.Get<Vector2>();
@@ -271,7 +312,7 @@ public partial class CPlayer : NetworkBehaviour
 
         if (!Jump_Switch)
         {
-            //‘¬“x’â~
+            //é€Ÿåº¦åœæ­¢
             Emergency_Stop();
 
             if (Jump_Type == eJump_Type.UP)
@@ -285,10 +326,10 @@ public partial class CPlayer : NetworkBehaviour
                 Jump_Switch = true;
                 SJump_NowTime = 0.0f;
 
-                //‚±‚±‚ÅŒ»İ‚ÌƒvƒŒƒCƒ„[‚Ì‘¬“x‚ğ‘ã“ü
+                //ã“ã“ã§ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é€Ÿåº¦ã‚’ä»£å…¥
                 SJump_Speed = 0.0f;
             }
-            CmdCreateWhrloop();  //…—¬‚ğo‚·
+            CmdCreateWhrloop();  //æ°´æµã‚’å‡ºã™
         }
     }
 
@@ -309,7 +350,7 @@ public partial class CPlayer : NetworkBehaviour
         }
     }
 
-    //ƒAƒNƒZƒ‹‘€ì
+    //ã‚¢ã‚¯ã‚»ãƒ«æ“ä½œ
     private void OnAccelerator(InputValue value)
     {
         if (!isCanMove) return;
@@ -317,13 +358,13 @@ public partial class CPlayer : NetworkBehaviour
         var axis = value.Get<float>();
 
 
-        // ˆÚ“®‘¬“x‚ğ•Û
+        // ç§»å‹•é€Ÿåº¦ã‚’ä¿æŒ
         Velocity = axis;
 
         Velocity *= Acceleration;
     }
 
-    //‹Ù‹}’â~
+    //ç·Šæ€¥åœæ­¢
     private void Emergency_Stop()
     {
         NowVelocity = 0.0f;
@@ -331,15 +372,11 @@ public partial class CPlayer : NetworkBehaviour
         Side_MoveNow = 0.0f;
     }
 
-    public bool Moving_lLeft_Right()
+    public bool Moving_Left_Right()
     {
-        Debug.Log(Side_Move);
-        Debug.Log(Side_MoveNow);
-        if (Side_MoveNow != 0.0f || Side_Move != 0.0f)
-        {
-            Debug.Log("“–‚½‚è");
+        if (Side_MoveNow != 0.0f)
             return false;
-        }
+
         return true;
     }
 }
