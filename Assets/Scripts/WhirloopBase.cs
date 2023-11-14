@@ -72,6 +72,7 @@ public class WhirloopBase : NetworkBehaviour
 			for(int i = 0; i < checkPoint.Count; i++){
 				wayPoint.Add(checkPoint[i]);
 			}
+			endPoint.z += 1;
 			wayPoint.Add(endPoint);
 
 			var qtA = qt * this.transform.rotation;
