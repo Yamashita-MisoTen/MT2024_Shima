@@ -320,7 +320,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: ca5f7f4c07afa7b4dbf711ce9f5deda4, type: 2}
+      objectReference: {fileID: -876546973899608171, guid: f71cc53fc7f94db4496df7aaccff00a3,
+        type: 3}
     - target: {fileID: 1040398202714994148, guid: f61e8ee5db156234480fec1957786e2d,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -344,7 +345,7 @@ PrefabInstance:
     - target: {fileID: 5853822925754071484, guid: f61e8ee5db156234480fec1957786e2d,
         type: 3}
       propertyPath: _waveSpeed.x
-      value: -6.27
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6924945352814468866, guid: f61e8ee5db156234480fec1957786e2d,
         type: 3}

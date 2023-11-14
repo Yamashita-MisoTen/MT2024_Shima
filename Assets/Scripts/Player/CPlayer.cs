@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
@@ -15,7 +16,7 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] bool _isNowOrga = false;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
-	[SerializeField] float _whirloopLength = 2.0f;
+	[SerializeField] float _whirloopLength = 5.0f;
 	public bool isCanMove = false;
 	public bool isOnWhirloop = false;
 	float _rotAngle;
@@ -24,14 +25,16 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField]VisualEffect orgaFX = null;
 
 	GameRuleManager mgr;
+	PlayerCamera cameraObj;
 	// アイテム所持するように
-	// CItem _HaveItemData;
+	Item _HaveItemData;
 
 	/// </summary>
 	/// // Start is called before the first frame update
 	void Start()
 	{
 		CPlayerMoveStart();
+		cameraObj = this.GetComponent<PlayerCamera>();
 	}
 
 	// Update is called once per frame
@@ -58,7 +61,7 @@ public partial class CPlayer : NetworkBehaviour
 		isOnWhirloop = false;
 		orgaFX.gameObject.SetActive(false);
 		ui.SetActiveUICanvas(false);
-		this.GetComponent<PlayerCamera>().SetCamera(false);
+		cameraObj.SetCamera(false);
 	}
 
 	public void DataSetUPforMainScene(GameRuleManager manager){
@@ -66,7 +69,8 @@ public partial class CPlayer : NetworkBehaviour
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
 		this.GetComponent<PlayerUI>().ChangeJumpType(Jump_Type);
-		this.GetComponent<PlayerCamera>().MainSceneCamera();
+		if(cameraObj == null) cameraObj = this.GetComponent<PlayerCamera>();
+		cameraObj.MainSceneCamera();
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -130,19 +134,29 @@ public partial class CPlayer : NetworkBehaviour
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
-		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength,1.0f,qtAngle);
+		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
 		// 向きの更新
-		obj.transform.rotation = qtAngle * obj.transform.rotation;
+		// obj.transform.rotation = qtAngle * obj.transform.rotation;
 		NetworkServer.Spawn(obj);
 	}
 
 	public void InWhirloopSetUp(){
 		Emergency_Stop();
 		isOnWhirloop = true;
+		cameraObj.SetCameraInWhirloop();
 	}
 
 	public void OutWhirloop(){
 		isOnWhirloop = false;
+		cameraObj.SetCameraOutWhirloop();
+	}
+
+	public void SetItem(Item item){
+		_HaveItemData = item;
+	}
+
+	void UseItem(){
+		_HaveItemData.UseEffect(this.transform);
 	}
 
 }
