@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 447140045}
   m_Layer: 0
   m_Name: MapBoundary
-  m_TagString: Untagged
+  m_TagString: MapEdge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -870,7 +870,7 @@ GameObject:
   - component: {fileID: 785419949}
   m_Layer: 0
   m_Name: MapBoundary
-  m_TagString: Untagged
+  m_TagString: MapEdge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1158,7 +1158,7 @@ GameObject:
   - component: {fileID: 988096857}
   m_Layer: 0
   m_Name: MapBoundary
-  m_TagString: Untagged
+  m_TagString: MapEdge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1879,7 +1879,7 @@ GameObject:
   - component: {fileID: 1466198790}
   m_Layer: 0
   m_Name: MapBoundary
-  m_TagString: Untagged
+  m_TagString: MapEdge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
