@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
 using Unity.VisualScripting;
 
 public class NetWorkDataManager : NetworkBehaviour {
@@ -18,13 +19,13 @@ public class NetWorkDataManager : NetworkBehaviour {
 		GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>().SetDataMgr(this);
 	}
 	public void PlayerDataInit(){
+		Debug.Log("プレイヤーの位置初期化するで");
 		if(playerInfo.ObjDatas == null) return;
 		int Count = 0;
 		foreach(CPlayer obj in playerInfo.CompDatas){
 			obj.InitData();
 			// ロビーでの座標を調整する
-			int detail = Count - 1;
-			Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
+			Vector3 pos = new Vector3( -1.5f + Count, 0, 0);
 			obj.transform.position = pos;
 			Count++;
 		}

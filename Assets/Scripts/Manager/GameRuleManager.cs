@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameRuleManager : NetworkBehaviour
+public partial class GameRuleManager : NetworkBehaviour
 {
 	//// **** 変数定義 **** ////
 
@@ -29,6 +29,7 @@ public class GameRuleManager : NetworkBehaviour
 	public struct SendCompleyeChangeSceme : NetworkMessage{
 		public bool isChangeSceneComplete;
 	}
+	[SerializeField, Header("デバッグモード")] bool isDebugMode = false;
 	// ** 時間関係
 	// ゲームの制限時間
 	[SerializeField] [Header("ゲームの制限時間(秒)")]int _LimitTime = 300;
@@ -39,6 +40,10 @@ public class GameRuleManager : NetworkBehaviour
 	[Header("UI関連")][SerializeField] private TextMeshProUGUI timerText;
 	[SerializeField] private TextMeshProUGUI gameStateText;
 	[SerializeField]float _progressCoolTime = 0.0f;	// 経過時間
+	[SerializeField, Header("イベントマネージャー")] GameObject eventMgrPrefabs;
+	[SerializeField, Header("イベントの発生時間(s)")] List<int> eventTimer;
+	EventMgr eventMgr;
+	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
 	int completeChangeSceneClient = 0;
 
@@ -53,6 +58,9 @@ public class GameRuleManager : NetworkBehaviour
 	CustomNetworkManager netMgr = null;
 
 	bool _isFinishGame = false;
+	// **　リザルト関連
+	bool isResultAnnounce = false;	// 結果発表が終われば
+
 	void Awake() {
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
@@ -66,8 +74,14 @@ public class GameRuleManager : NetworkBehaviour
 				UICanvas = obj.gameObject;
 				UICanvas.SetActive(true);
 			}
+			if(obj.name == "ReadyCanvas"){
+				readyCanvasObj = obj.gameObject;
+				readyCanvasObj.SetActive(true);
+			}
 		}
 		if(netMgr == null)GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		var mgr = Instantiate(eventMgrPrefabs);
+		eventMgr = mgr.GetComponent<EventMgr>();
 		ReadyGame();
 	}
 
@@ -102,6 +116,18 @@ public class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene(this);
 		}
 		RandomSetOrgaPlayer();
+
+		for(int i = 0; i < _playerData.Count; i++){
+			Debug.Log("あああ" + _playerData[i].isLocalPlayer);
+			if(_playerData[i].isLocalPlayer){
+				eventMgr.SetUpUI(_playerData[i].gameObject);
+			}
+		}
+
+		// デバッグの時は演出いれない
+		if(!isDebugMode){
+			StartReadyPerformance();
+		}
 	}
 
 	[ClientRpc]
@@ -124,23 +150,38 @@ public class GameRuleManager : NetworkBehaviour
 		timerText.text = "";
 
 		// 敗者一応置いといたほうがよき？
+		StartResultPerforamce();
 
 		// 接続しているプレイヤーすべてに終了命令を送る
-
-		netMgr.ServerChangeScene("Title");
 	}
 
 	void UpdateReady(){
-		gameStateText.text = "Ready Push 'L'Key ";
-		// 開始前にカウントダウン入れたりする
-		if(Input.GetKeyDown(KeyCode.L)){
-			RpcStartGame();
+		if(isDebugMode){
+			gameStateText.text = "Ready Push 'L'Key ";
+			// 開始前にカウントダウン入れたりする
+			if(Input.GetKeyDown(KeyCode.L)){
+				RpcStartGame();
+			}
+		}else{
+			UpdateReadyPerformance();
+			if(isCompleteCountdown){
+				RpcStartGame();
+			}
 		}
 	}
 	void UpdateGame(){
 		if(_LimitTime < _progressLimitTime) RpcFinishGame();	// 制限時間を過ぎたらゲーム終了する
 		_progressLimitTime += Time.deltaTime;				// 経過時間を更新する
 		var timer = (int)(_LimitTime - _progressLimitTime);
+
+		// イベント発生のお知らせ
+		if(eventTimer[nextEventNum] >= timer){
+			eventMgr.RandomEventLottery();
+			if(eventTimer.Count > nextEventNum){
+				nextEventNum++;
+			}
+		}
+
 		// UI用に時間を計算しなおす
 		string min = ((int)(timer / 60)).ToString();	// 分計算
 		int secNum = timer % 60;		// 秒計算
@@ -160,7 +201,14 @@ public class GameRuleManager : NetworkBehaviour
 	}
 
 	void UpdateFinsh(){
-
+		if(!isResultAnnounce){
+			UpdateResultPerformance();
+		}else{
+			if(!isServer) return;
+			if(Input.GetKeyDown(KeyCode.L)){
+				netMgr.ServerChangeScene("Title");
+			}
+		}
 	}
 
 	// ** 単発系の関数

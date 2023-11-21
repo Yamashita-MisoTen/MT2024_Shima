@@ -55,7 +55,7 @@ public class WhirloopBase : NetworkBehaviour
 		isWaitFinish.Add(false);
 
 		// 必要情報を格納する
-		whirloopLength = length + 50;	// 長さ
+		whirloopLength = length;	// 長さ
 		whirloopSize = size;		// 大きさ　
 
 		// 大きさと長さに当たり判定を大きくする
@@ -72,6 +72,7 @@ public class WhirloopBase : NetworkBehaviour
 			for(int i = 0; i < checkPoint.Count; i++){
 				wayPoint.Add(checkPoint[i]);
 			}
+			endPoint.z += 1;
 			wayPoint.Add(endPoint);
 
 			var qtA = qt * this.transform.rotation;
