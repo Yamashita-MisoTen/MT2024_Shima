@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
+using System;
+using DG.Tweening;
 
 public class PlayerCamera : NetworkBehaviour
 {
@@ -68,7 +70,6 @@ public class PlayerCamera : NetworkBehaviour
             return;
         }
 
-
         if (C_Player.Moving_Left_Right())
         {
             Horizontal_Rotation();
@@ -80,12 +81,11 @@ public class PlayerCamera : NetworkBehaviour
         }
 
         /*		Debug.Log("カメラ更新");
-				if(CameraMove > Camera_Maximum)
-				{
-					CameraMove = Camera_Maximum;
-				}
-				this.gameObject.transform.rotation = Quaternion.Euler(0.0f, CameraMove,0.0f);*/
-
+                if(CameraMove > Camera_Maximum)
+                {
+                    CameraMove = Camera_Maximum;
+                }
+                this.gameObject.transform.rotation = Quaternion.Euler(0.0f, CameraMove,0.0f);*/
     }
 
     public void MainSceneCamera()
@@ -183,6 +183,14 @@ public class PlayerCamera : NetworkBehaviour
         }
     }
 
+    public bool Looking_lLeft_Right()
+    {
+        if (CameraMove != 0.0f || CameraMoveNow != 0.0f)
+        {
+            return false;
+        }
+        return true;
+    }
     //カメラが横回転しているかどうか
     public bool Looking_Left_Right()
     {
@@ -243,3 +251,6 @@ public class PlayerCamera : NetworkBehaviour
         }
     }
 }
+
+
+

@@ -6,20 +6,34 @@ using UnityEngine;
 public class EventMgr : NetworkBehaviour
 {
 	[SerializeField] List<GameEvent> eventKind;
-	// Start is called before the first frame update
-	void Start()
-	{
+	[SerializeField] GameObject eventUIObj;
+	[SerializeField] EventUI eventUI;
+	void Start(){
+		eventUI = Instantiate(eventUIObj).GetComponent<EventUI>();
+	}
+	public void SetUpUI(GameObject playerObj){
+		for(int i = 0 ; i < playerObj.transform.childCount; i++){
+			var obj = playerObj.transform.GetChild(i);
+			Debug.Log("１");
+			if(obj.name == "PlayerCamera"){
+				Debug.Log("success");
+				if(eventUI == null) eventUI = eventUIObj.GetComponent<EventUI>();
+				eventUI.SetCameraData(obj.GetComponent<Camera>());
+			}
+		}
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-	}
 	public void RandomEventLottery(){
 		if(eventKind == null) return;
+
+		StartPerformance();
 
 		var eventnum = Random.Range(0, eventKind.Count);
 		Debug.Log(eventKind[eventnum].GetEventName() + "発生");
 		eventKind[eventnum].StartEvent();
+	}
+
+	void StartPerformance(){
+		eventUI.StartUpEventUI();
 	}
 }

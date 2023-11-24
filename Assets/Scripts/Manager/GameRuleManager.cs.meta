@@ -3,7 +3,13 @@ guid: 3e124b8fa32c0a447a61d4a66d34b169
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - countdownText: {instanceID: 0}
+  - timerText: {instanceID: 0}
+  - gameStateText: {instanceID: 0}
+  - eventMgrPrefabs: {fileID: 8843581091669261959, guid: d4b83329f7e821147a0cbf03a9937b9a,
+      type: 3}
+  - _orgaPlayer: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
