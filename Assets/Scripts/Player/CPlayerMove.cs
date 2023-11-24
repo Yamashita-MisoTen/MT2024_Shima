@@ -21,8 +21,12 @@ public partial class CPlayer : NetworkBehaviour
     [SerializeField, Header("移動の速度制限")]
     private float Velocity_Limit;
 
+   
     [SerializeField, Header("移動の加速度")]
     private float Acceleration;
+
+    //イベントなど加速の値が変化するとき
+    private float Velocity_Addition;
 
     //?????x
     private float Deceleration = 0.5f;
@@ -58,13 +62,14 @@ public partial class CPlayer : NetworkBehaviour
     //落下加速度
     private float Fall_Acceleration = 1.0f;
 
-    //横回転のパラメーター
+    //横回転移動のパラメーター
     private float Side_Move = 0.0f;
-    //横回転のパラメーター
+    //横回転移動のパラメーター
     private float Side_MoveNow = 0.0f;
-    //横回転の速度制限
-    private float Side_Move_Limit = 1.0f;
-    private float Side_Acceleration = 0.4f;
+    //横回転移動の速度制限
+    private float Side_Move_Limit = 2.0f;
+    //横回転移動の速度調整用
+    private float Side_Acceleration = 3.0f;
 
    //カメラオブジェクト
     private GameObject CameraObject;
@@ -83,7 +88,6 @@ public partial class CPlayer : NetworkBehaviour
     private float AttenRate = 0.01f;    // Start is called before the first frame update
     void CPlayerMoveStart()
     {
-        Debug.Log("fsadgdgsdsagsdsbffagrdsb");
         // 子供を検索してカメラを確認する
         for (int i = 0; i < this.transform.childCount; i++)
         {
@@ -140,7 +144,7 @@ public partial class CPlayer : NetworkBehaviour
         {
             Swimming.SetBool("MoveFastest", false);
         }
-
+        Debug.Log(NowVelocity);
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
@@ -214,10 +218,10 @@ public partial class CPlayer : NetworkBehaviour
             NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
             // オブジェクト移動
-            this.transform.Translate(Vector3.forward * NowVelocity * Time.deltaTime);
+            this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
             // this.gameObject.transform.forward *= NowVelocity;
 
- //カメラを横回転していないときだけ横移動ができる
+            //カメラを横回転していないときだけ横移動ができる
             if (C_Camera.Looking_Left_Right())            {
                 //横移動制限
                 if (Side_Move != 0)
@@ -225,7 +229,7 @@ public partial class CPlayer : NetworkBehaviour
                     Side_MoveNow += Side_Move * Time.deltaTime;
                 }
 
-                //横移動減速
+                //横移動減速するときの挙動
                 if (Side_Move == 0.0f)
                 {
                     if (Side_MoveNow > 0.1f)
@@ -263,8 +267,8 @@ public partial class CPlayer : NetworkBehaviour
                     Vector3 eulerAngles = this.gameObject.transform.eulerAngles;
                     //オブジェクト横回転
                     this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-                    Debug.Log(eulerAngles);
-                    Debug.Log(this.gameObject.transform.eulerAngles);
+                 
+
                    // CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
                     CameraObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
                     CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
