@@ -6,7 +6,22 @@ using UnityEngine;
 public class EventMgr : NetworkBehaviour
 {
 	[SerializeField] List<GameEvent> eventKind;
-	// Start is called before the first frame update
+	[SerializeField] GameObject eventUIObj;
+	[SerializeField] EventUI eventUI;
+	void Start(){
+		eventUI = Instantiate(eventUIObj).GetComponent<EventUI>();
+	}
+	public void SetUpUI(GameObject playerObj){
+		for(int i = 0 ; i < playerObj.transform.childCount; i++){
+			var obj = playerObj.transform.GetChild(i);
+			Debug.Log("１");
+			if(obj.name == "PlayerCamera"){
+				Debug.Log("success");
+				if(eventUI == null) eventUI = eventUIObj.GetComponent<EventUI>();
+				eventUI.SetCameraData(obj.GetComponent<Camera>());
+			}
+		}
+	}
 
 	public void RandomEventLottery(){
 		if(eventKind == null) return;
@@ -19,6 +34,6 @@ public class EventMgr : NetworkBehaviour
 	}
 
 	void StartPerformance(){
-
+		eventUI.StartUpEventUI();
 	}
 }

@@ -58,6 +58,9 @@ MonoBehaviour:
   timerText: {fileID: 4045357071421669982}
   gameStateText: {fileID: 4112230514525495790}
   _progressCoolTime: 0
+  eventMgrPrefabs: {fileID: 8843581091669261959, guid: d4b83329f7e821147a0cbf03a9937b9a,
+    type: 3}
+  eventTimer: 5a0000003c0000001e000000
   _playerData: []
   _orgaPlayer: {fileID: 0}
 --- !u!114 &10298624091981889
