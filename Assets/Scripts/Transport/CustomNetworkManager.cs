@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using Mirror;
+using Mirror.Examples.Basic;
+using Telepathy;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,8 +12,11 @@ public class CustomNetworkManager : NetworkManager
 	[Header("プレイヤーが使用するプレハブ")]
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
-	[SerializeField] GameRuleManager mgr;
+	[SerializeField] GameObject dataMgrPrefab;
+	[SerializeField] GameObject dataManagerObj;
+	[SerializeField,Header("ああああ")]NetWorkDataManager dataManager;
 	private int connectPlayerCount = 0;	// 現在の接続人数
+
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
 		// if(SceneManager.GetActiveScene().name != "Title"){
 		// 	Debug.Log("タイトルシーン以外で増えようとしてる");
@@ -36,16 +41,20 @@ public class CustomNetworkManager : NetworkManager
 		player.name = $"{prefab.name} [connId={conn.connectionId}]";
 		DontDestroyOnLoad(player);	// シーン遷移用にプレイヤーデータを残したままにしておく
 		NetworkServer.AddPlayerForConnection(conn, player);
-		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
-		// マネージャーにデータを保管する
-		mgr.AddPlayerData(player);
-	}
 
-	public override void OnClientConnect()
-	{
-		base.OnClientConnect();
+		if(dataManager == null){
+			dataManagerObj = Instantiate(dataMgrPrefab);
+			dataManager = dataManagerObj.GetComponent<NetWorkDataManager>();
+			NetworkServer.Spawn(dataManagerObj.gameObject);
+		}
 
-		print("クライアントで接続?");
+		var pComp = player.GetComponent<CPlayer>();
+		var connid = pComp.connectionToClient.connectionId;
+		dataManager.SetPlayerData(player,pComp,connid);
+
+		// mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
+		// // マネージャーにデータを保管する
+		// mgr.AddPlayerData(player);
 	}
 
 	override public void OnServerDisconnect(NetworkConnectionToClient conn){
@@ -53,58 +62,23 @@ public class CustomNetworkManager : NetworkManager
 		Debug.Log(conn);
 
 		// プレイヤーのデータを確認する
-		var allPlayer = mgr.GetAllPlayerData();
-		GameObject deleteObj = null;
-		foreach(CPlayer p in allPlayer){
-			if(p.connectionToClient.connectionId == conn.connectionId){
-				deleteObj = p.gameObject;
-				connectPlayerCount--;
-				break;
-			}
-		}
-		if(deleteObj != null){
-			mgr.RemovePlayerData(deleteObj);
-		}
-		if(mgr != null){
-			//NetworkServer.Destroy(mgr.gameObject);
+		if(dataManager.CheckIdentity(conn.connectionId)){
+			dataManager.DeleteObj(conn.connectionId);
+			connectPlayerCount--;
 		}
 		base.OnServerDisconnect(conn);
-	}
-
-	public override void OnClientDisconnect()
-	{
-		Debug.LogError("接続切れました");
-
-		if(mgr != null){
-			mgr.RemoveAllPlayerData();
-			//NetworkServer.Destroy(mgr.gameObject);
-		}
-
-		base.OnClientDisconnect();
 	}
 
 	public override void OnStopHost()
 	{
 		base.OnStopHost();
-		if(mgr != null){
-			mgr.RemoveAllPlayerData();
-		}
+		dataManager.DeleteAllObj();
 		connectPlayerCount = 0;
 	}
 	public override void OnStopServer()
 	{
 		base.OnStopServer();
-		if(mgr != null){
-			mgr.RemoveAllPlayerData();
-		}
-		connectPlayerCount = 0;
-	}
-
-	public override void OnStopClient(){
-		base.OnStopClient();
-		if(mgr != null){
-			mgr.RemoveAllPlayerData();
-		}
+		dataManager.DeleteAllObj();
 		connectPlayerCount = 0;
 	}
 
@@ -113,18 +87,37 @@ public class CustomNetworkManager : NetworkManager
 		print("OnClientError : "+reason);
 	}
 
-	public Transform GetStartPosition(int num){
-		Transform result = GetStartPosition();
-		if(StartPos.Count < num){
-			result.position = StartPos[0];
-		}else{
-			result.position = StartPos[num];
+	public List<GameObject> GetPlayerDatas(List<GameObject> obj){
+		if(dataManager == null){
+			dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
+			dataManager.CmdSetPlayerData();
+			Debug.Log(dataManager.GetPlayerData(obj));
 		}
-		return result;
+		return dataManager.GetPlayerData(obj);
+	}
+	public List<CPlayer> GetPlayerDatas(List<CPlayer> obj){
+		if(dataManager == null){
+			//dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
+			//dataManager.CmdSetPlayerData();
+			Debug.Log(dataManager.GetPlayerData(obj));
+		}
+		return dataManager.GetPlayerData(obj);
+	}
+	public List<int> GetPlayerDatas(List<int> obj){
+		if(dataManager == null){
+			dataManager = Instantiate(dataMgrPrefab).GetComponent<NetWorkDataManager>();
+			dataManager.CmdSetPlayerData();
+			Debug.Log(dataManager.GetPlayerData(obj));
+		}
+		return dataManager.GetPlayerData(obj);
 	}
 
-	private void AddPlayerCharacter(){
-		
+	public void SetDataMgr(NetWorkDataManager mgr){
+		dataManager = mgr;
 	}
 
+	public void PlayerDataInit(){
+		if(dataManagerObj == null) return;
+		dataManager.PlayerDataInit();
+	}
 }

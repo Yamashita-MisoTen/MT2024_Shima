@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
@@ -15,7 +16,7 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] bool _isNowOrga = false;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
-	[SerializeField] float _whirloopLength = 2.0f;
+	[SerializeField] float _whirloopLength = 5.0f;
 	public bool isCanMove = false;
 	public bool isOnWhirloop = false;
 	float _rotAngle;
@@ -24,17 +25,16 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField]VisualEffect orgaFX = null;
 
 	GameRuleManager mgr;
-	PlayerCamera cameraComp;
+	PlayerCamera cameraObj;
 	// アイテム所持するように
-	// CItem _HaveItemData;
+	Item _HaveItemData;
 
 	/// </summary>
 	/// // Start is called before the first frame update
 	void Start()
 	{
 		CPlayerMoveStart();
-		CPlayerWhirloopPerfomanceStart();
-		mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
+		cameraObj = this.GetComponent<PlayerCamera>();
 	}
 
 	// Update is called once per frame
@@ -44,18 +44,33 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
 		}
-
-		if(isOnWhirloop){
-			CPlayerWhirloopPerfomanceUpdate();
-		}
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
-	public void DataSetUPforMainScene(){
+	public void InitData(){
+		transform.position = new Vector3(0,0,0);
+		isCanMove = false;
+		isOnWhirloop = false;
+		_isNowOrga = false;
+		_rotAngle = 0f;
+		orgaFX.gameObject.SetActive(false);
+	}
+
+	public void ResultData(){
+		isCanMove = false;
+		isOnWhirloop = false;
+		orgaFX.gameObject.SetActive(false);
+		ui.SetActiveUICanvas(false);
+		cameraObj.SetCamera(false);
+	}
+
+	public void DataSetUPforMainScene(GameRuleManager manager){
+		mgr = manager;
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
-		cameraComp = this.GetComponent<PlayerCamera>();
-		cameraComp.MainSceneCamera();
+		this.GetComponent<PlayerUI>().ChangeJumpType(Jump_Type);
+		if(cameraObj == null) cameraObj = this.GetComponent<PlayerCamera>();
+		cameraObj.MainSceneCamera();
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -81,10 +96,7 @@ public partial class CPlayer : NetworkBehaviour
 
 		// ローカルプレイヤーのときのみ
 		if(!isLocalPlayer) return;
-		// マネージャを獲得してなければもう一度所得をこころみる
-		if(mgr == null) mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
 		// 自分が鬼のときのみ通知をする
-		Debug.Log("クールタイム中華確認 : " + mgr.CheckOverCoolTime());
 		if(_isNowOrga && mgr.CheckOverCoolTime()){
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
@@ -123,18 +135,28 @@ public partial class CPlayer : NetworkBehaviour
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
 		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
+		// 向きの更新
+		// obj.transform.rotation = qtAngle * obj.transform.rotation;
 		NetworkServer.Spawn(obj);
 	}
 
 	public void InWhirloopSetUp(){
 		Emergency_Stop();
 		isOnWhirloop = true;
-		cameraComp.SetCameraInWhirloop();
+		cameraObj.SetCameraInWhirloop();
 	}
 
 	public void OutWhirloop(){
 		isOnWhirloop = false;
-		cameraComp.SetCameraOutWhirloop();
+		cameraObj.SetCameraOutWhirloop();
+	}
+
+	public void SetItem(Item item){
+		_HaveItemData = item;
+	}
+
+	void UseItem(){
+		_HaveItemData.UseEffect(this.transform);
 	}
 
 }
