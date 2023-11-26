@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.19198713, g: 0.59466827, b: 0.77732426, a: 1}
+  m_IndirectSpecularColor: {r: 0.191991, g: 0.5946723, b: 0.7773275, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -899,7 +899,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 1790004077252208956, guid: 6ca9cad79ae1457498e55bbf50da7afb,
+  playerPrefab: {fileID: 1790004077252208956, guid: 5ab8a9925101832478749cafb53210a2,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
@@ -908,7 +908,6 @@ MonoBehaviour:
   - {fileID: 8884316973802009957, guid: 41bf8f1ec17465149b7216bc28425389, type: 3}
   - {fileID: 6670030743019571615, guid: 82b6f44e25b7a6a45a1ccc4570445547, type: 3}
   - {fileID: 6394009101650006632, guid: c9de6c3b6dca5c34488bdc3cb1ca82bc, type: 3}
-  - {fileID: 0}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -923,7 +922,7 @@ MonoBehaviour:
   connectionQualityInterval: 3
   timeInterpolationGui: 0
   pPlayer:
-  - {fileID: 1790004077252208956, guid: 6ca9cad79ae1457498e55bbf50da7afb, type: 3}
+  - {fileID: 1790004077252208956, guid: 5ab8a9925101832478749cafb53210a2, type: 3}
   StartPos: []
   dataMgrPrefab: {fileID: 8884316973802009957, guid: 41bf8f1ec17465149b7216bc28425389,
     type: 3}
