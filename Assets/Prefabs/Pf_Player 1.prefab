@@ -388,7 +388,7 @@ MonoBehaviour:
   posCorrection: 1.2
   Velocity_Limit: 10
   Acceleration: 1
-  Camera_Deferred_Power: 20
+  Camera_Deferred_Power: 10
 --- !u!114 &-3769720418302859395
 MonoBehaviour:
   m_ObjectHideFlags: 0
