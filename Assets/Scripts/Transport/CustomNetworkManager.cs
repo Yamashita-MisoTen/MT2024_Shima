@@ -38,7 +38,7 @@ public class CustomNetworkManager : NetworkManager
 			? Instantiate(prefab, startPos.position, startPos.rotation)
 			: Instantiate(prefab);
 
-		player.name = $"{prefab.name} [connId={conn.connectionId}]";
+		player.name = $"Player_0" + connectPlayerCount.ToString();
 		DontDestroyOnLoad(player);	// シーン遷移用にプレイヤーデータを残したままにしておく
 		NetworkServer.AddPlayerForConnection(conn, player);
 

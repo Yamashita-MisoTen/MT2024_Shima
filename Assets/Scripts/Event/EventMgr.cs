@@ -14,9 +14,7 @@ public class EventMgr : NetworkBehaviour
 	public void SetUpUI(GameObject playerObj){
 		for(int i = 0 ; i < playerObj.transform.childCount; i++){
 			var obj = playerObj.transform.GetChild(i);
-			Debug.Log("１");
 			if(obj.name == "PlayerCamera"){
-				Debug.Log("success");
 				if(eventUI == null) eventUI = eventUIObj.GetComponent<EventUI>();
 				eventUI.SetCameraData(obj.GetComponent<Camera>());
 			}
