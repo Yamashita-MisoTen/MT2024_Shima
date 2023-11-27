@@ -21,8 +21,6 @@ public partial class CPlayer : NetworkBehaviour
 	public bool isOnWhirloop = false;
 	float _rotAngle;
 	[SerializeField] PlayerUI ui;
-	[Header("鬼のオーラエフェクト")]
-	[SerializeField]VisualEffect orgaFX = null;
 
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
@@ -34,6 +32,7 @@ public partial class CPlayer : NetworkBehaviour
 	void Start()
 	{
 		CPlayerMoveStart();
+		ParticleStart();
 		cameraObj = this.GetComponent<PlayerCamera>();
 	}
 
@@ -44,6 +43,7 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove){
 			CplayerMoveUpdate();	// 移動系の更新
 		}
+		ParticleUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 	}
 
@@ -53,13 +53,13 @@ public partial class CPlayer : NetworkBehaviour
 		isOnWhirloop = false;
 		_isNowOrga = false;
 		_rotAngle = 0f;
-		orgaFX.gameObject.SetActive(false);
+		ParticleStartUpSwitch(orgaFX, false);
 	}
 
 	public void ResultData(){
 		isCanMove = false;
 		isOnWhirloop = false;
-		orgaFX.gameObject.SetActive(false);
+		ParticleStartUpSwitch(orgaFX, false);
 		ui.SetActiveUICanvas(false);
 		cameraObj.SetCamera(false);
 	}
@@ -110,7 +110,7 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void ChangeOrgaPlayer(bool orgaflg){
 		_isNowOrga = orgaflg;
-		orgaFX.gameObject.SetActive(orgaflg);
+		ParticleStartUpSwitch(orgaFX, orgaflg);
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
 

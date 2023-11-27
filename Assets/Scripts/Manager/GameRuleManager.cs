@@ -42,6 +42,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField]float _progressCoolTime = 0.0f;	// 経過時間
 	[SerializeField, Header("イベントマネージャー")] GameObject eventMgrPrefabs;
 	[SerializeField, Header("イベントの発生時間(s)")] List<int> eventTimer;
+	[SerializeField] List<Vector3> playerStartPosition;
 	EventMgr eventMgr;
 	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
@@ -50,8 +51,8 @@ public partial class GameRuleManager : NetworkBehaviour
 	// ** ゲーム開始前の準備時間関連
 
 	// ** プレイヤー関係
-	[SerializeField][SyncVar]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	[SerializeField][SyncVar]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
+	[SerializeField]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
+	[SerializeField]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
 
 	// ** 共通のUI
 	GameObject UICanvas = null;
@@ -85,6 +86,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		ReadyGame();
 	}
 
+	[SerializeField] GameObject TestPre;
 	// Update is called once per frame
 	void Update()
 	{
@@ -108,7 +110,7 @@ public partial class GameRuleManager : NetworkBehaviour
 			Debug.Log(netMgr);
 		}
 		_playerData = netMgr.GetPlayerDatas(_playerData);
-		Debug.LogError("準備" + _playerData.Count);
+		Debug.Log("準備" + _playerData.Count);
 		// プレイヤーの準備
 		foreach(CPlayer p in _playerData){
 			Debug.Log(p);
@@ -118,10 +120,11 @@ public partial class GameRuleManager : NetworkBehaviour
 		RandomSetOrgaPlayer();
 
 		for(int i = 0; i < _playerData.Count; i++){
-			Debug.Log("あああ" + _playerData[i].isLocalPlayer);
 			if(_playerData[i].isLocalPlayer){
 				eventMgr.SetUpUI(_playerData[i].gameObject);
 			}
+			// 座標をスタート位置に格納する
+			_playerData[i].transform.position = playerStartPosition[i];
 		}
 
 		// デバッグの時は演出いれない
@@ -135,7 +138,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		Debug.Log("ゲーム開始するで");
 		gameStateText.text = "now play";
 		gameState = GameState.NowPlay;
-		ChangeOrgaPlayer(_orgaPlayer);
+		//ChangeOrgaPlayer(_orgaPlayer);
 		foreach(CPlayer p in _playerData){
 			p.isCanMove = true;
 		}
@@ -175,10 +178,12 @@ public partial class GameRuleManager : NetworkBehaviour
 		var timer = (int)(_LimitTime - _progressLimitTime);
 
 		// イベント発生のお知らせ
-		if(eventTimer[nextEventNum] >= timer){
-			eventMgr.RandomEventLottery();
-			if(eventTimer.Count > nextEventNum){
-				nextEventNum++;
+		if(eventTimer.Count != nextEventNum){
+			if(eventTimer[nextEventNum] >= timer){
+				eventMgr.RandomEventLottery();
+				if(eventTimer.Count > nextEventNum){
+					nextEventNum++;
+				}
 			}
 		}
 
@@ -232,6 +237,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	public void ServerGetChangeOrga(CPlayer nextOrgaPlayer){
 		if(!CheckOverCoolTime()) return;
 		SetCoolTime();
+		Debug.Log("aaa");
 		SendChangeOrga(nextOrgaPlayer);
 	}
 	void SendChangeOrga(CPlayer nextOrgaPlayer){
@@ -239,7 +245,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		// クライアント側に次の鬼を通知する為にメッセージを送る
 		var sendData = new SendOrgaPlayerData() {nextOrgaPlayerData = nextOrgaPlayer};
 		ChangeOrgaPlayer(nextOrgaPlayer);
-		//NetworkServer.SendToAll(sendData);
+		NetworkServer.SendToAll(sendData);
 	}
 
 	private void ChangeOrgaPlayer(CPlayer nextOrgaPlayer){

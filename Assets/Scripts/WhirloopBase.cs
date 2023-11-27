@@ -19,10 +19,14 @@ public class WhirloopBase : NetworkBehaviour
 	[Space]
 
 	[Header("---- 必要コンポーネント類 -----")]
-	[SerializeField]BoxCollider colliderObj = null;
-	[SerializeField]VisualEffect whirloopFX = null;
+	[SerializeField] BoxCollider colliderObj = null;
+	[SerializeField] VisualEffect whirloopFX = null;
+	[SerializeField] VisualEffect whirloopShell = null;
+	VisualEffect[] whirloopShellComp = null;
+
+
 	List<GameObject> otherObj = null;	// 複数対応用に配列にしておく
-	List<GameObject> fxData = null;		// エフェクト用にデータを格納しておく
+	[SerializeField]List<GameObject> fxData = null;		// エフェクト用にデータを格納しておく
 	List<Vector3> wayPoint;
 	float whirloopLength = 1.0f;	// 渦潮の長さ
 	float whirloopSize = 1.0f;		// 渦潮の大きさ(馬鹿でか渦潮作るならつかう)
@@ -33,8 +37,6 @@ public class WhirloopBase : NetworkBehaviour
 	void Start()
 	{
 		otherObj = new List<GameObject>();	// オブジェクトのデータを格納する
-		// fxData = new List<GameObject>();	// エフェクトのデータを格納する
-		// isWaitFinish = new List<bool>();	// オブジェクトごとの待ちが終了したかどうかを確認
 		remainUseNum = maxUseNum;
 	}
 
@@ -72,17 +74,15 @@ public class WhirloopBase : NetworkBehaviour
 			for(int i = 0; i < checkPoint.Count; i++){
 				wayPoint.Add(checkPoint[i]);
 			}
+			// 脱出地点を少し奥側へ
 			endPoint.z += 1;
 			wayPoint.Add(endPoint);
 
 			var qtA = qt * this.transform.rotation;
 			// 回転に合わせて修正をかける
 			for(int i = 0; i < wayPoint.Count; i++){
-				Debug.Log("回転設定");
-				Debug.Log("前 :" + wayPoint[i]);
 				wayPoint[i] = qtA * wayPoint[i];
 				wayPoint[i] += this.transform.position;
-				Debug.Log("後 :" + wayPoint[i]);
 			}
 		}
 
@@ -109,8 +109,62 @@ public class WhirloopBase : NetworkBehaviour
 			fxData.Add(obj.gameObject);
 		}
 
+		// 外殻エフェクト生成
+		whirloopShellComp = new VisualEffect[4];
+		for(int i = 0; i < 4; i++){
+			var shell = Instantiate(whirloopShell,this.transform.position,Quaternion.identity);
+			whirloopShellComp[i] = shell.GetComponent<VisualEffect>();
+			whirloopShellComp[i].SetFloat("ForwardSpeed",4);
+			whirloopShellComp[i].SetFloat("R",2);
+			whirloopShellComp[i].SetFloat("EndPosZ",whirloopLength);
+			Quaternion qtAngle = Quaternion.AngleAxis(90 * i, new Vector3(0,0,1));
+			whirloopShellComp[i].gameObject.transform.rotation *= qtAngle;
+			// 生成したオブジェクトを自分の子供に変更する
+			shell.gameObject.transform.parent = this.gameObject.transform;
+		}
+
 		// 向きの更新
 		this.transform.rotation = qt * this.transform.rotation;
+	}
+
+	public void EventSetUpWhirloop(){
+		Debug.Log("あああ");
+		if(isWaitFinish == null) isWaitFinish = new List<bool>();
+		isWaitFinish.Add(false);
+
+		Quaternion qtX = Quaternion.AngleAxis(this.transform.localEulerAngles.x, new Vector3(1,0,0));
+		Quaternion qtY = Quaternion.AngleAxis(this.transform.localEulerAngles.y, new Vector3(0,1,0));
+		Quaternion qtZ = Quaternion.AngleAxis(this.transform.localEulerAngles.z, new Vector3(0,0,1));
+		Quaternion qt = qtX * qtY * qtZ;
+		if(wayPoint == null) {
+			// 通過地点をそれぞれ設定する
+			wayPoint = new List<Vector3>();
+			// 始まりの地点
+			wayPoint.Add(new Vector3(0,0,0));
+			for(int i = 0; i < checkPoint.Count; i++){
+				wayPoint.Add(checkPoint[i]);
+			}
+			// 脱出地点を少し奥側へ
+			endPoint.z += 3;
+			wayPoint.Add(endPoint);
+
+			// 回転に合わせて修正をかける
+			for(int i = 0; i < wayPoint.Count; i++){
+				Debug.Log("回転設定 :" + i);
+				Debug.Log("前 :" + wayPoint[i]);
+				wayPoint[i] = qt * wayPoint[i];
+				wayPoint[i] += this.transform.position;
+				Debug.Log("後 :" + wayPoint[i]);
+			}
+		}
+
+		// エフェクトのデータを配列に格納
+		if(fxData == null) fxData = new List<GameObject>();
+		// 必要なエフェクト格納する
+
+
+		// 向きの更新
+		//this.transform.rotation = qt * this.transform.rotation;
 	}
 
 	int CheckNextPos(Vector3 objpos){
@@ -126,6 +180,7 @@ public class WhirloopBase : NetworkBehaviour
 			float posBz = wayPoint[i].z * this.transform.forward.z;
 
 			// if(wayPoint > objpos){
+			// 	result = i;
 			// }
 		}
 
@@ -135,8 +190,7 @@ public class WhirloopBase : NetworkBehaviour
 	void ForcingToMove(GameObject obj, float time, int waypoint){
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
-		Debug.Log("time" + time + "wayPoint" + waypoint);
-		Debug.Log(wayPoint.Count);
+		Debug.Log("time : " + time + "  wayPoint : " + waypoint);
 		if(waypoint == wayPoint.Count - 1){
 			trans.DOMove(wayPoint[waypoint], time);
 		}else{

@@ -381,6 +381,11 @@ MonoBehaviour:
   isOnWhirloop: 0
   ui: {fileID: 7762816088404949649}
   orgaFX: {fileID: 5482269560650414336}
+  swimSplashFX: {fileID: 0}
+  swimRippleFX: {fileID: 0}
+  HappenSplashFXTime: 0.1
+  HappenRippleFXTime: 0.1
+  posCorrection: 1.2
   Velocity_Limit: 10
   Acceleration: 1
   Camera_Deferred_Power: 20
