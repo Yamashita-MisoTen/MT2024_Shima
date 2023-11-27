@@ -50,7 +50,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  accelerationSpeed: 0.1
   moveTime: 1
   waitTime: 0.1
   maxUseNum: 3
@@ -58,6 +57,8 @@ MonoBehaviour:
   checkPoint: []
   colliderObj: {fileID: 7769661871840437489}
   whirloopFX: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
+    type: 3}
+  whirloopShell: {fileID: 7501779369524823165, guid: c0854ea6d410b1f42b75ea62cfafe376,
     type: 3}
 --- !u!114 &8406045585016823491
 MonoBehaviour:

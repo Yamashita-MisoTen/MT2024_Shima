@@ -11,7 +11,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		public List<CPlayer> CompDatas;
 		public List<int> ConnId;
 	}
-	PlyaerDataInfo playerInfo;
+	[SerializeField] PlyaerDataInfo playerInfo;
 	// Start is called before the first frame update
 	void Start()
 	{
