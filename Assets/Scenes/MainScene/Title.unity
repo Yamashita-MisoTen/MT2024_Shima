@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.191991, g: 0.5946723, b: 0.7773275, a: 1}
+  m_IndirectSpecularColor: {r: 0.19198713, g: 0.59466827, b: 0.77732426, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -904,10 +904,11 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 3483711175090110456, guid: 1eb795ff541f54649b81b78e9bd33893, type: 3}
-  - {fileID: 8884316973802009957, guid: 41bf8f1ec17465149b7216bc28425389, type: 3}
+  - {fileID: 8884316973802009957, guid: 485619a4955f7a64890127c1744cecab, type: 3}
+  - {fileID: 8843581091669261959, guid: d4b83329f7e821147a0cbf03a9937b9a, type: 3}
   - {fileID: 6670030743019571615, guid: 82b6f44e25b7a6a45a1ccc4570445547, type: 3}
   - {fileID: 6394009101650006632, guid: c9de6c3b6dca5c34488bdc3cb1ca82bc, type: 3}
+  - {fileID: 4325249798380902013, guid: e264a9d8a62bde64790216c2472c9ff7, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -924,7 +925,7 @@ MonoBehaviour:
   pPlayer:
   - {fileID: 1790004077252208956, guid: 5ab8a9925101832478749cafb53210a2, type: 3}
   StartPos: []
-  dataMgrPrefab: {fileID: 8884316973802009957, guid: 41bf8f1ec17465149b7216bc28425389,
+  dataMgrPrefab: {fileID: 8884316973802009957, guid: 485619a4955f7a64890127c1744cecab,
     type: 3}
   dataManagerObj: {fileID: 0}
   dataManager: {fileID: 0}
