@@ -144,6 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1062285894496003265}
   - component: {fileID: 6241311371408313978}
+  - component: {fileID: 5952102285867069637}
   - component: {fileID: 8640760381981941475}
   m_Layer: 0
   m_Name: PlayerCamera
@@ -218,6 +219,18 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &5952102285867069637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386070441905520449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22193c4ae6308264b84f515060ebf0da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8640760381981941475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -388,7 +401,7 @@ MonoBehaviour:
   posCorrection: 1.2
   Velocity_Limit: 10
   Acceleration: 1
-  Camera_Deferred_Power: 20
+  Camera_Deferred_Power: 10
 --- !u!114 &-3769720418302859395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,7 +444,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790004077252208956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 

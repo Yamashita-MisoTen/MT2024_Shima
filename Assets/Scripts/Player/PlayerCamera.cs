@@ -38,6 +38,8 @@ public class PlayerCamera : NetworkBehaviour
                                                             // Start is called before the first frame update
     GameObject CameraObj;
     Camera cameraComp;
+
+    bool Reverse = false;
     void Start()
     {
         // 子供を検索してカメラを確認する
@@ -58,6 +60,9 @@ public class PlayerCamera : NetworkBehaviour
         InWhirloop = false;
         Position_initialization = CameraObj.transform.localPosition;
         Rotation_initialization = CameraObj.transform.rotation;
+
+    //    Camera_Reverse(true);
+      //  Reverse = true;   
     }
 
     // Update is called once per frame
@@ -249,6 +254,49 @@ public class PlayerCamera : NetworkBehaviour
             //     CameraObj.gameObject.transform.rotation *= Quaternion.AngleAxis(CameraMove, this.gameObject.transform.up);
             CameraObj.gameObject.transform.RotateAround(this.gameObject.transform.position, this.gameObject.transform.up, CameraMoveReal);
         }
+    }
+
+    private void OnPreCull()
+    {
+        if (Reverse)
+        {
+            cameraComp.ResetProjectionMatrix();
+            cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1, -1, 1));
+        }
+        else if (!Reverse)
+        {
+            cameraComp.ResetProjectionMatrix();
+            cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1, 1, 1));
+        }
+    }
+
+    private void OnPreRender()
+    {
+        if (Reverse)
+        {
+            GL.invertCulling = true;
+        }
+    }
+
+    private void OnPostRender()
+    {
+        GL.invertCulling = false;
+    }
+    //カメラ上下反転(イベント用)
+    public void Camera_Reverse(bool Key)
+    {
+    /*    if (Key)
+        {
+            cameraComp.ResetProjectionMatrix();
+            cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1, -1, 1));
+            GL.invertCulling = true;
+        }
+        else if (!Key)
+        {
+            cameraComp.ResetProjectionMatrix();
+            cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1, 1, 1));
+            GL.invertCulling = false;
+        }*/
     }
 }
 
