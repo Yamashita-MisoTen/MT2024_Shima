@@ -52,7 +52,7 @@ public partial class GameRuleManager : NetworkBehaviour
 
 	// ** プレイヤー関係
 	[SerializeField]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	[SerializeField]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
+	[SerializeField][SyncVar]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
 
 	// ** 共通のUI
 	GameObject UICanvas = null;
@@ -138,7 +138,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		Debug.Log("ゲーム開始するで");
 		gameStateText.text = "now play";
 		gameState = GameState.NowPlay;
-		//ChangeOrgaPlayer(_orgaPlayer);
+		ChangeOrgaPlayer(_orgaPlayer);
 		foreach(CPlayer p in _playerData){
 			p.isCanMove = true;
 		}
@@ -222,6 +222,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		int num = UnityEngine.Random.Range(0,_playerData.Count());
 		Debug.Log("始めの鬼の番号 : " + num);
 		_orgaPlayer = _playerData[num];
+		//SendChangeOrga(_orgaPlayer);
 		// クライアント側にもデータを送る必要があるのでここで設定
 		Debug.Log("初期の鬼が設定されました : " + _playerData[num].name);
 	}
@@ -271,8 +272,8 @@ public partial class GameRuleManager : NetworkBehaviour
 	{
 		//ローカルのフラグに反映
 		_orgaPlayer = receivedData.nextOrgaPlayerData;
-		Debug.Log(_orgaPlayer);
-		// ChangeOrgaPlayer(receivedData.nextOrgaPlayerData);
+		Debug.Log("次の鬼はこれレシーブした" + _orgaPlayer);
+		ChangeOrgaPlayer(receivedData.nextOrgaPlayerData);
 	}
 
 	private void ReciveChangeSceneClient(SendCompleyeChangeSceme receivedData){
