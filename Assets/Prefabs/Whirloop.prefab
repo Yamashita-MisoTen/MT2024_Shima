@@ -59,6 +59,7 @@ MonoBehaviour:
   maxUseNum: 3
   endPoint: {x: 0, y: 0, z: 4}
   checkPoint: []
+  checkPointMove: 
   colliderObj: {fileID: 7973827897520496056}
   whirloopFX: {fileID: 0}
   whirloopShell: {fileID: 0}
@@ -66,6 +67,10 @@ MonoBehaviour:
   - {fileID: 6783427358109963257}
   - {fileID: 5004172668588044794}
   - {fileID: 4027529474861358390}
+  fxShellData:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!65 &7973827897520496056
 BoxCollider:
   m_ObjectHideFlags: 0
