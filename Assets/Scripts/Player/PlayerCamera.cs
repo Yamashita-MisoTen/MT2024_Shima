@@ -260,8 +260,9 @@ public class PlayerCamera : NetworkBehaviour
     {
         if (Reverse)
         {
-            cameraComp.ResetProjectionMatrix();
-            cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1, -1, 1));
+           // cameraComp.ResetProjectionMatrix();
+         //   cameraComp.projectionMatrix = cameraComp.projectionMatrix * Matrix4x4.Scale(new Vector3(1,-1,1));
+      //        CameraObj.transform.localRotation = 
         }
         else if (!Reverse)
         {

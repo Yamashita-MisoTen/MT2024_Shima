@@ -1842,7 +1842,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1463270555
 Transform:
   m_ObjectHideFlags: 0
@@ -2616,7 +2616,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  mgr: {fileID: 3037683293593439326, guid: 1eb795ff541f54649b81b78e9bd33893, type: 3}
+  mgr: {fileID: 3037683293593439326, guid: 2e22d83e50f2e1443b108df9f59fd339, type: 3}
 --- !u!4 &1886855223
 Transform:
   m_ObjectHideFlags: 0

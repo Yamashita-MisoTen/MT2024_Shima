@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Mirror;
 using UnityEngine;
 
@@ -33,5 +34,6 @@ public class EventMgr : NetworkBehaviour
 
 	void StartPerformance(){
 		eventUI.StartUpEventUI();
+		DOVirtual.DelayedCall(3f,() => eventUI.StopEventUI());
 	}
 }

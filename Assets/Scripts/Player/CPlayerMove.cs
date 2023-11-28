@@ -143,7 +143,7 @@ public partial class CPlayer : NetworkBehaviour
         {
             Swimming.SetBool("MoveFastest", false);
         }
-
+        Debug.Log(NowVelocity);
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
@@ -293,11 +293,11 @@ public partial class CPlayer : NetworkBehaviour
             }
         }
         this.gameObject.transform.position = this.transform.position;
-        CmUpdateTransform(this.transform.position, this.transform.rotation);
+        CmdUpdateTransform(this.transform.position, this.transform.rotation);
     }
 
     [Command]
-    private void CmUpdateTransform(Vector3 motion, Quaternion quaternion)
+    private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
     {
         this.transform.position = motion;
         this.transform.rotation = quaternion;
@@ -346,6 +346,8 @@ public partial class CPlayer : NetworkBehaviour
                 //??????????v???C???[????x????
                 SJump_Speed = 0.0f;
             }
+
+            ui.SetCharge();
 
             if (_isNowOrga)
             {
