@@ -21,7 +21,7 @@ public partial class CPlayer : NetworkBehaviour
     [SerializeField, Header("移動の速度制限")]
     private float Velocity_Limit;
 
-   
+
     [SerializeField, Header("移動の加速度")]
     private float Acceleration;
 
@@ -71,7 +71,7 @@ public partial class CPlayer : NetworkBehaviour
     //横回転移動の速度調整用
     private float Side_Acceleration = 3.0f;
 
-   //カメラオブジェクト
+    //カメラオブジェクト
     private GameObject CameraObject;
 
     //カメラスクリプト
@@ -104,7 +104,6 @@ public partial class CPlayer : NetworkBehaviour
             if (childObj.name == "PenguinFBX")
             {
                 Swimming = childObj.GetComponent<Animator>();
-                Debug.Log("fsda");
             }
         }
 
@@ -144,6 +143,7 @@ public partial class CPlayer : NetworkBehaviour
         {
             Swimming.SetBool("MoveFastest", false);
         }
+        Debug.Log(NowVelocity);
         if (Jump_Switch)
         {
             if (Jump_Type == eJump_Type.UP)
@@ -221,7 +221,8 @@ public partial class CPlayer : NetworkBehaviour
             // this.gameObject.transform.forward *= NowVelocity;
 
             //カメラを横回転していないときだけ横移動ができる
-            if (C_Camera.Looking_Left_Right())            {
+            if (C_Camera.Looking_Left_Right())
+            {
                 //横移動制限
                 if (Side_Move != 0)
                 {
@@ -239,7 +240,7 @@ public partial class CPlayer : NetworkBehaviour
                     {
                         Side_MoveNow -= Side_MoveNow;
 
-                       if (Side_MoveNow < 0.00f)
+                        if (Side_MoveNow < 0.00f)
                         {
                             Side_MoveNow = Vector2.zero.x;
                         }
@@ -266,18 +267,19 @@ public partial class CPlayer : NetworkBehaviour
                     Vector3 eulerAngles = this.gameObject.transform.eulerAngles;
                     //オブジェクト横回転
                     this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-                 
 
-                   // CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
+
+                    // CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
                     CameraObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
                     CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
                     //    if (!C_Camera.Looking_Left_Right())
 
                     {
-                   //     C_Camera.Horizontal_Rotation();
+                        //     C_Camera.Horizontal_Rotation();
                     }
                 }
-            }        }
+            }
+        }
         //落下速度計算
         if (this.transform.position.y > 0)
         {
@@ -398,4 +400,5 @@ public partial class CPlayer : NetworkBehaviour
             return false;
 
         return true;
-    }}
+    }
+}
