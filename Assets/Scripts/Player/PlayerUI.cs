@@ -33,17 +33,11 @@ public class PlayerUI : NetworkBehaviour
 				SlideJumpImage = childObj.GetComponent<Image>();
 				SlideJumpImageMaterial = SlideJumpImage.material;
 				SlideJumpImageAnchoredPosition = childObj.GetComponent<RectTransform>();
-				Debug.Log(SlideJumpImage);
-				Debug.Log(SlideJumpImageMaterial);
-				Debug.Log(SlideJumpImageAnchoredPosition);
 			}
 			if(childObj.name == "HighJumpImage"){
 				HighJumpImage = childObj.GetComponent<Image>();
 				HighJumpImageMaterial = HighJumpImage.material;
 				HighJumpImageAnchoredPosition = childObj.GetComponent<RectTransform>();
-				Debug.Log(HighJumpImage);
-				Debug.Log(HighJumpImageMaterial);
-				Debug.Log(HighJumpImageAnchoredPosition);
 			}
 		}
 		UICanvasObj.SetActive(false);

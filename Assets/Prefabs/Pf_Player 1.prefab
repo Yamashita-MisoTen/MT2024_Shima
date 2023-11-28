@@ -536,7 +536,16 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 0, z: 0}
+        m_Name: Transform_position
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 0, z: 0}
+        m_Name: Transform_angles
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1}
+        m_Name: Transform_scale
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -550,7 +559,10 @@ VisualEffect:
     m_Gradient:
       m_Array: []
     m_NamedObject:
-      m_Array: []
+      m_Array:
+      - m_Value: {fileID: 604547002507337008}
+        m_Name: SkinnedMeshRenderer
+        m_Overridden: 1
     m_Bool:
       m_Array: []
 --- !u!73398921 &5004983619624486605
@@ -1144,6 +1156,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7004825298292963244}
   m_SourcePrefab: {fileID: 100100000, guid: 856663fa0b00baa498684d23e33fc40e, type: 3}
+--- !u!137 &604547002507337008 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8531922981982924401, guid: 856663fa0b00baa498684d23e33fc40e,
+    type: 3}
+  m_PrefabInstance: {fileID: 9080579510640800577}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8270257246225714704 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 856663fa0b00baa498684d23e33fc40e,
