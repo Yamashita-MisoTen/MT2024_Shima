@@ -54,12 +54,12 @@ public partial class CPlayer : NetworkBehaviour
 
 			// 波紋
 			if(happenRippleFX){
-				// var pos = this.transform.position + (this.transform.forward * posCorrection);
-				// var obj = Instantiate(swimRippleFX.gameObject, pos, Quaternion.identity);
-				// var comp = obj.GetComponent<VisualEffect>();
-				// comp.SetFloat("Random",Random.Range(0,100));
-				// // 計測時間後にオブジェクトを削除予定
-				// DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
+				var pos = this.transform.position + (this.transform.forward * posCorrection);
+				var obj = Instantiate(swimRippleFX.gameObject, pos, Quaternion.identity);
+				var comp = obj.GetComponent<VisualEffect>();
+				comp.SetFloat("Random",Random.Range(0,100));
+				// 計測時間後にオブジェクトを削除予定
+				DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
 			}
 		}
 	}

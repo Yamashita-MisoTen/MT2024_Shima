@@ -292,7 +292,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   UICanvasObj: {fileID: 6433378810516615447}
-  chargeTime: 0
+  chargeTime: 3
 --- !u!114 &8857170424990527049
 MonoBehaviour:
   m_ObjectHideFlags: 0

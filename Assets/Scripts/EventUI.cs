@@ -29,4 +29,10 @@ public class EventUI : NetworkBehaviour
 			this.gameObject.transform.GetChild(i).gameObject.SetActive(true);
 		}
 	}
+
+	public void StopEventUI(){
+		for(int i = 0; i < this.gameObject.transform.childCount; i++){
+			this.gameObject.transform.GetChild(i).gameObject.SetActive(false);
+		}
+	}
 }
