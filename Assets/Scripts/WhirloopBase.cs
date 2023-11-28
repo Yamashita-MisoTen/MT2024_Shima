@@ -9,12 +9,18 @@ using UnityEngine.UIElements.Experimental;
 
 public class WhirloopBase : NetworkBehaviour
 {
+	enum WhirloopMove{
+		Straight,
+		Curve,			// deg　90度方向に進むとき
+		InverseCurve	// deg-90度方向に進むとき
+	}
 	[Header("---- 調整項目 -----")]
 	[SerializeField] [Tooltip("抜けるまでに必要な時間(s)")] private float moveTime = 1.0f;
 	[SerializeField] [Tooltip("触れてからの停止時間(s)")] private float waitTime = 0.1f;
 	[SerializeField] [Tooltip("使用回数")] private int maxUseNum = 1;	// 使用回数
 	[SerializeField] [Tooltip("終了地点")] private Vector3 endPoint;
 	[SerializeField] [Tooltip("通過地点")] private List<Vector3> checkPoint;
+	[SerializeField] [Tooltip("各ポイントごとの動き方")] private List<WhirloopMove> checkPointMove;
 
 	[Space]
 
