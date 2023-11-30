@@ -6,6 +6,7 @@ using UnityEngine.VFX;
 using Unity.VisualScripting;
 using DG.Tweening;
 using UnityEngine.UIElements.Experimental;
+using Unity.Burst.CompilerServices;
 
 public class WhirloopBase : NetworkBehaviour
 {
@@ -20,7 +21,6 @@ public class WhirloopBase : NetworkBehaviour
 	[SerializeField] [Tooltip("使用回数")] private int maxUseNum = 1;	// 使用回数
 	[SerializeField] [Tooltip("終了地点")] private Vector3 endPoint;
 	[SerializeField] [Tooltip("通過地点")] private List<Vector3> checkPoint;
-	[SerializeField] [Tooltip("各ポイントごとの動き方")] private List<WhirloopMove> checkPointMove;
 
 	[Space]
 
@@ -153,7 +153,6 @@ public class WhirloopBase : NetworkBehaviour
 			// 脱出地点を少し奥側へ
 			endPoint.z += 3;
 			wayPoint.Add(endPoint);
-
 			// 回転に合わせて修正をかける
 			for(int i = 0; i < wayPoint.Count; i++){
 				Debug.Log("回転設定 :" + i);
@@ -168,62 +167,65 @@ public class WhirloopBase : NetworkBehaviour
 		if(fxData == null) fxData = new List<GameObject>();
 		// 必要なエフェクト格納する
 
-
-		// 向きの更新
-		//this.transform.rotation = qt * this.transform.rotation;
 	}
 
-	int CheckNextPos(Vector3 objpos){
-		int result = 0;
+	List<Vector3> CheckNextPos(Vector3 objpos){
+		List<Vector3> result = new List<Vector3>();
+		int startNum = 0;
+		float nearDis = 0;
 
-		// 絶対値化した座標　現在の座標 と ウェイポイントごとを比較していく
 		for(int i = 0; i < wayPoint.Count; i++){
-			float posAx = objpos.x * this.transform.forward.x;
-			float posAy = objpos.y * this.transform.forward.y;
-			float posAz = objpos.z * this.transform.forward.z;
-			float posBx = wayPoint[i].x * this.transform.forward.x;
-			float posBy = wayPoint[i].y * this.transform.forward.y;
-			float posBz = wayPoint[i].z * this.transform.forward.z;
+			float distance = (objpos - wayPoint[i]).sqrMagnitude;
+			Debug.Log(distance);
+			if(i == 0){
+				nearDis = distance;
+			}else{
+				if(nearDis > distance){
+					Debug.Log("近かったよ" + i);
+					nearDis = distance;
+					startNum = i;
+				}
+			}
+		}
 
-			// if(wayPoint > objpos){
-			// 	result = i;
-			// }
+		// 最終的な座標の更新
+		for(int i = startNum; i < wayPoint.Count; i++){
+			result.Add(wayPoint[i]);
 		}
 
 		return result;
 	}
 
-	void ForcingToMove(GameObject obj, float time, int waypoint){
+	void ForcingToMove(GameObject obj, float time, List<Vector3> waypoint){
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
-		Debug.Log("time : " + time + "  wayPoint : " + waypoint);
-		if(waypoint == wayPoint.Count - 1){
-			trans.DOMove(wayPoint[waypoint], time);
-		}else{
-			trans.DOMove(wayPoint[waypoint], time)
-				.OnComplete(() => ForcingToMove(obj,time,waypoint + 1));
-		}
+		Debug.Log("time : " + time + "  wayPoint : " + waypoint.Count);
+		obj.transform.DOLocalPath(waypoint.ToArray(), 10, PathType.CatmullRom, PathMode.Full3D, gizmoColor:Color.red)
+			.OnComplete(() => CompleteMoveWhirloop(obj));
 	}
 
 	// 当たったときにオブジェクトを指定する
 	private void OnTriggerEnter(Collider other){
 		if(remainUseNum == otherObj.Count) return;
+		Debug.Log("使用回数オーバーしてない");
+		if(otherObj.Contains(other.gameObject)) return;
+		Debug.Log("同一オブジェクトが入ってない");
 		otherObj.Add(other.gameObject);
 		// プレイヤーの時は変更する
 		if(other.gameObject.CompareTag("Player")){
 			other.gameObject.GetComponent<CPlayer>().InWhirloopSetUp();
 			// 遅延後に処理
-			DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1], moveTime, 0));
+			DOVirtual.DelayedCall(waitTime, () => ForcingToMove(otherObj[otherObj.Count - 1], moveTime, CheckNextPos(other.gameObject.transform.position)));
 		}
 		_isOnObject = true;	//　触れたオブジェクトがある場合にフラグをtrueに
 	}
 
-	private void OnTriggerExit(Collider other){
+	private void CompleteMoveWhirloop(GameObject obj){
 		// 出た時にオブジェクトを削除する
 		for(int i = 0; i < otherObj.Count; i++){
-			if(otherObj[i] == other.gameObject){
-				if(other.gameObject.CompareTag("Player")){
-					other.gameObject.GetComponent<CPlayer>().OutWhirloop();
+			if(otherObj[i] == obj){
+				if(obj.CompareTag("Player")){
+					obj.GetComponent<CPlayer>().OutWhirloop();
 				}
 				Debug.Log("削除" + i);
 				Debug.Log(fxData.Count);
