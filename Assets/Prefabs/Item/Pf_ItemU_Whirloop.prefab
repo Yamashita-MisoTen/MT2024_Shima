@@ -143,7 +143,7 @@ GameObject:
   - component: {fileID: 1271074844984118436}
   - component: {fileID: 4631758433496392428}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: BoxCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 470521279306883425}
   - component: {fileID: 960231680784861292}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: BoxCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 7020895810748838174}
   - component: {fileID: 6621660482938694083}
   - component: {fileID: 7466804431653607559}
+  - component: {fileID: 4756815431724944160}
   m_Layer: 0
   m_Name: Pf_ItemU_Whirloop
   m_TagString: Untagged
@@ -622,10 +623,13 @@ MonoBehaviour:
   moveTime: 1
   waitTime: 0.1
   maxUseNum: 3
-  endPoint: {x: 0, y: 0, z: 4}
+  endPoint: {x: 14, y: 0, z: 20}
   checkPoint:
-  - {x: 0, y: 0, z: 0}
-  checkPointMove: 00000000
+  - {x: 7, y: 0, z: 0}
+  - {x: 14, y: 0, z: 5}
+  - {x: 7, y: 0, z: 10}
+  - {x: 0, y: 0, z: 15}
+  - {x: 7, y: 0, z: 20}
   colliderObj: {fileID: 0}
   whirloopFX: {fileID: 0}
   whirloopShell: {fileID: 0}
@@ -684,6 +688,33 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!54 &4756815431724944160
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4984063755677553267}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5020965762306321793
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,7 +858,7 @@ GameObject:
   - component: {fileID: 6806484896396426140}
   - component: {fileID: 1877152296950790782}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: BoxCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -880,7 +911,7 @@ PrefabInstance:
     - target: {fileID: 952485119577797085, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -890,7 +921,7 @@ PrefabInstance:
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -980,7 +1011,7 @@ PrefabInstance:
     - target: {fileID: 952485119577797085, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -990,7 +1021,7 @@ PrefabInstance:
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -1080,7 +1111,7 @@ PrefabInstance:
     - target: {fileID: 952485119577797085, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -1090,7 +1121,7 @@ PrefabInstance:
     - target: {fileID: 5521074342757197903, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}

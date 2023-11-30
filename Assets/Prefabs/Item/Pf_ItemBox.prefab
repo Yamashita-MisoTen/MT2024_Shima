@@ -158,7 +158,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   list_item:
-  - {fileID: 6394009101650006632, guid: c9de6c3b6dca5c34488bdc3cb1ca82bc, type: 3}
+  - {fileID: 5640826294783059276, guid: 3bbe773b28a3238499b31e1569e61c0e, type: 3}
 --- !u!65 &1069076862985646567
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -174,7 +174,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

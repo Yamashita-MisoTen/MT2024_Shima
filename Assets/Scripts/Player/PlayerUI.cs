@@ -12,6 +12,7 @@ public class PlayerUI : NetworkBehaviour
 	// Start is called before the first frame update
 	[SerializeField, Header("UI")] GameObject UICanvasObj;
 	[SerializeField] float chargeTime;
+	[SerializeField] public Texture2D defaultItemTex;
 	float requireChargeTime;
 	bool isCharge = false;
 	TextMeshProUGUI playerStateText;		// プレイヤーの状態を表示しておく
@@ -28,6 +29,10 @@ public class PlayerUI : NetworkBehaviour
 			var childObj = UICanvasObj.transform.GetChild(i);
 			if(childObj.name == "PlayerState"){
 				playerStateText = childObj.GetComponent<TextMeshProUGUI>();
+			}
+			if(childObj.name == "Item"){
+				playerHaveItemImage = childObj.GetComponent<Image>();
+				SetItemTexture(defaultItemTex);
 			}
 			if(childObj.name == "SlideJumpImage"){
 				SlideJumpImage = childObj.GetComponent<Image>();
@@ -96,5 +101,9 @@ public class PlayerUI : NetworkBehaviour
 
 	public void SetActiveUICanvas(bool flg){
 		UICanvasObj.SetActive(flg);
+	}
+
+	public void SetItemTexture(Texture2D tex){
+		playerHaveItemImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height),Vector2.zero);
 	}
 }
