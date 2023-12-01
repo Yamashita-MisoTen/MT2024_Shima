@@ -126,11 +126,6 @@ public partial class GameRuleManager : NetworkBehaviour
 			// 座標をスタート位置に格納する
 			_playerData[i].transform.position = playerStartPosition[i];
 		}
-
-		// デバッグの時は演出いれない
-		if(!isDebugMode){
-			StartReadyPerformance();
-		}
 	}
 
 	[ClientRpc]
@@ -166,9 +161,17 @@ public partial class GameRuleManager : NetworkBehaviour
 				RpcStartGame();
 			}
 		}else{
-			UpdateReadyPerformance();
-			if(isCompleteCountdown){
-				RpcStartGame();
+			if(isStartCountdown){
+				UpdateReadyPerformance();
+				if(isCompleteCountdown){
+					RpcStartGame();
+				}
+			}else{
+				Debug.Log("P:" + _playerData.Count + "C:" + completeChangeSceneClient);
+				// 全員準備完了したらカウントダウン開始にしたいな
+				if(true){
+					StartReadyPerformance();
+				}
 			}
 		}
 	}

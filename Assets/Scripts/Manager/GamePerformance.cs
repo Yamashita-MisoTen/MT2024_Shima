@@ -18,8 +18,8 @@ public partial class GameRuleManager
 	bool isStartCountdown = false;
 
 	void StartReadyPerformance(){
-		// 3s後にカウントダウン開始
-		DOVirtual.DelayedCall (1f, ()=> isStartCountdown = true, false);
+		// 1s後にカウントダウン開始
+		DOVirtual.DelayedCall(1f, ()=> isStartCountdown = true, false);
 	}
 
 	void UpdateReadyPerformance(){

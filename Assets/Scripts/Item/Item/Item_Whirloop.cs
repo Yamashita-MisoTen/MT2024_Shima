@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-public class U_Whirloop : Item
+public class Item_Whirloop : Item
 {
 	[SerializeField] private GameObject prefab;
 	public override void UseEffect(Vector3 pos, Quaternion qt)
