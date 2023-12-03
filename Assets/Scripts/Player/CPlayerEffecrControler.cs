@@ -12,7 +12,7 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField][Header("水しぶきエフェクト")]VisualEffect swimSplashFX = null;
 	[SerializeField][Header("波紋エフェクト")]VisualEffect swimRippleFX = null;
 	[Space]
-	bool isSwim = true;
+	bool isSwim = false;
 	float requireSplashFXTime = 0;
 	float requireRippleFXTime = 0;
 	[Header("調整項目")]
@@ -43,14 +43,14 @@ public partial class CPlayer : NetworkBehaviour
 		// エフェクト生成
 		if(isSwim){
 			// 水しぶき
-			if(happenSplashFX){
-				var pos = this.transform.position;
-				var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
-				obj.gameObject.transform.parent = this.gameObject.transform;
-				var comp = obj.GetComponent<VisualEffect>();
-				// 計測時間後にオブジェクトを削除予定
-				DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
-			}
+			// if(happenSplashFX){
+			// 	var pos = this.transform.position;
+			// 	var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
+			// 	obj.gameObject.transform.parent = this.gameObject.transform;
+			// 	var comp = obj.GetComponent<VisualEffect>();
+			// 	// 計測時間後にオブジェクトを削除予定
+			// 	DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
+			// }
 
 			// 波紋
 			if(happenRippleFX){

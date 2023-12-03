@@ -18,8 +18,8 @@ public partial class GameRuleManager
 	bool isStartCountdown = false;
 
 	void StartReadyPerformance(){
-		// 3s後にカウントダウン開始
-		DOVirtual.DelayedCall (1f, ()=> isStartCountdown = true, false);
+		isStartCountdown = true;
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
 	}
 
 	void UpdateReadyPerformance(){
@@ -29,10 +29,7 @@ public partial class GameRuleManager
 			if(Mathf.Ceil(time) > 0){
 				countdownText.text = (Mathf.Ceil(time)).ToString();
 			}else{
-				countdownText.text = "Start!!";
 				isCompleteCountdown = true;
-				// 1s後に非表示に
-				DOVirtual.DelayedCall (1f, ()=> readyCanvasObj.SetActive(false), false);
 			}
 		}
 	}
@@ -45,7 +42,14 @@ public partial class GameRuleManager
 		foreach (var go in obj){
 			if(go.name == "ResultStage"){
 				resultStageObj = go;
-				resultStageObj.SetActive(true);
+				for(int i = 0; i < resultStageObj.transform.childCount; i++){
+					var child = resultStageObj.transform.GetChild(i).gameObject;
+					if(child.name == "ResultCamera"){
+						fadeResult.SetCamera(child.GetComponent<Camera>());
+						resultStageObj.SetActive(true);
+						break;
+					}
+				}
 				break;
 			}
 		}
@@ -58,12 +62,10 @@ public partial class GameRuleManager
 	}
 
 	void SetReaultPos(){
-		Vector3 respos = new Vector3(0,-499.5f,0);
 		for(int i = 0; i < _playerData.Count; i++){
-			_playerData[i].transform.position = respos;
+			_playerData[i].transform.position = resultPos[i];
 			_playerData[i].ResultData();
 			// ここで立ちアニメーションに替える
-			respos.x += 2;
 
 			if(_playerData[i] != _orgaPlayer){
 				Debug.Log("勝者の名前" + _playerData[i].name);
@@ -73,7 +75,8 @@ public partial class GameRuleManager
 		}
 
 		// 最後にフェードアウトの命令入れる
-		ActiveText();
+		DOVirtual.DelayedCall(1f, () => fadeResult.StartFadeIn());
+		DOVirtual.DelayedCall(1f + fadeResult.fadeInTime, () => ActiveText());
 	}
 
 	void ActiveText(){

@@ -37,7 +37,7 @@ public class PlayerCamera : NetworkBehaviour
     [SerializeField] private float inWhirloopCameraFov;     // 渦潮内でのカメラの視野角
                                                             // Start is called before the first frame update
     GameObject CameraObj;
-    Camera cameraComp;
+    public Camera cameraComp{get;private set;}
 
     bool Reverse = false;
     void Start()

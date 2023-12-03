@@ -66,6 +66,11 @@ MonoBehaviour:
   - {x: 0, y: -0.25, z: -5}
   - {x: 0, y: -0.25, z: 5}
   - {x: 0, y: -0.25, z: 10}
+  resultPos:
+  - {x: 0.6, y: -499.5, z: -1.1}
+  - {x: 2, y: -499.5, z: 0}
+  - {x: 4, y: -499.5, z: 0}
+  - {x: 5.4, y: -499.5, z: -1.1}
   _playerData: []
   _orgaPlayer: {fileID: 0}
   TestPre: {fileID: 4984063755677553267, guid: 9691ac6dba6673c44b1e928b99a14582, type: 3}
@@ -268,7 +273,7 @@ Canvas:
   m_GameObject: {fileID: 7539255685308690105}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -339,6 +344,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4837894744193389888, guid: 4492f425c82eaca47af0c0ef5d50b000,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7616196479883402883, guid: 4492f425c82eaca47af0c0ef5d50b000,
         type: 3}

@@ -5,6 +5,7 @@ using Mirror;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System;
 
 
 public partial class CPlayer : NetworkBehaviour
@@ -133,6 +134,20 @@ public partial class CPlayer : NetworkBehaviour
 	// Update is called once per frame
 	void CplayerMoveUpdate()
 	{
+
+		if(!isCanMove) return;
+		// 動いてるときの音
+		if(NowVelocity > 0){
+			isSwim = true;
+			var ratio = NowVelocity / Velocity_Limit;
+			SoundManager.instance.ChangeVolume(ratio / 50, audioComp.GetAudioSource());
+			cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60,75,ratio);
+		}else{
+			SoundManager.instance.ChangeVolume(0f, audioComp.GetAudioSource());
+			isSwim = false;
+			cameraObj.cameraComp.fieldOfView = 60;
+		}
+
 		//アニメーションに数値代入
 		Swimming.SetFloat("MoveSpeed", NowVelocity);
 		if (Mathf.Abs(NowVelocity) >= Velocity_Limit)
@@ -143,7 +158,7 @@ public partial class CPlayer : NetworkBehaviour
 		{
 			Swimming.SetBool("MoveFastest", false);
 		}
-		
+
 		if (Jump_Switch)
 		{
 			if (Jump_Type == eJump_Type.UP)
@@ -292,6 +307,8 @@ public partial class CPlayer : NetworkBehaviour
 				Fall_Speed = 0.0f;
 			}
 		}
+
+
 		this.gameObject.transform.position = this.transform.position;
 		CmdUpdateTransform(this.transform.position, this.transform.rotation);
 	}
