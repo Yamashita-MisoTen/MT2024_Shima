@@ -13,8 +13,8 @@ public class CustomNetworkManager : NetworkManager
 	[SerializeField] List<GameObject> pPlayer;
 	[SerializeField] List<Vector3> StartPos;
 	[SerializeField] GameObject dataMgrPrefab;
-	[SerializeField] GameObject dataManagerObj;
-	[SerializeField,Header("‚ ‚ ‚ ‚ ")]NetWorkDataManager dataManager;
+	GameObject dataManagerObj;
+	NetWorkDataManager dataManager;
 	private int connectPlayerCount = 0;	// Œ»İ‚ÌÚ‘±l”
 
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){

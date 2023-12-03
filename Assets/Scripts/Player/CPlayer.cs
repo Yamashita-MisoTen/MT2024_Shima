@@ -45,6 +45,10 @@ public partial class CPlayer : NetworkBehaviour
 		}
 		ParticleUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
+
+		if(Input.GetKeyDown(KeyCode.H)){
+			UseItem();
+		}
 	}
 
 	public void InitData(){
@@ -152,11 +156,19 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void SetItem(Item item){
+		Debug.Log(item);
 		_HaveItemData = item;
+		ui.SetItemTexture(item.itemTex);
+	}
+
+	public bool isHaveItem(){
+		return _HaveItemData == null;
 	}
 
 	void UseItem(){
-		_HaveItemData.UseEffect(this.transform);
+		_HaveItemData.UseEffect(this.transform.position ,this.transform.rotation);
+		_HaveItemData = null;
+		ui.SetItemTexture(ui.defaultItemTex);
 	}
 
 }

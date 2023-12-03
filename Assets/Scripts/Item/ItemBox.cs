@@ -8,24 +8,24 @@ public class ItemBox : NetworkBehaviour
 {
 	//Objectを持っておくList
 	[SerializeField] List<GameObject> list_item;
-
-
-	/// <summary>
-	/// </summary>
-	/// <param name="collision collision"></param>param>
-	void OnCollisionEnter(Collision collision)
+	Item giveItem = null;
+	void Start(){
+		giveItem = RandomSetItem();
+	}
+	void OnTriggerEnter(Collider collision)
 	{
 		//衝突した相手にPlayerタグが付いているとき
 		if(collision.gameObject.tag == "Player")
 		{
-			collision.transform.GetComponent<CPlayer>().SetItem(RandomSetItem());
-			Debug.Log("アイテム取得");
+			var pComp = collision.transform.GetComponent<CPlayer>();
+			if(pComp.isHaveItem())pComp.SetItem(giveItem);
 			Destroy(this.gameObject);
 		}
 	}
 
 	Item RandomSetItem(){
 		int num = Random.Range(0, list_item.Count - 1);
+		Debug.Log("アイテム取得" + list_item[num].name);
 		return list_item[num].GetComponent<Item>();
 	}
 }
