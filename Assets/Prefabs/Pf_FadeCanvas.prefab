@@ -1030,6 +1030,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  canvasComp: {fileID: 8034747736615689105}
 --- !u!114 &8318768533717618233
 MonoBehaviour:
   m_ObjectHideFlags: 0

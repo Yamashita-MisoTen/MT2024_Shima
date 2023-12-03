@@ -18,10 +18,7 @@ public class CustomNetworkManager : NetworkManager
 	private int connectPlayerCount = 0;	// 現在の接続人数
 
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
-		// if(SceneManager.GetActiveScene().name != "Title"){
-		// 	Debug.Log("タイトルシーン以外で増えようとしてる");
-		// 	return;
-		// }
+
 		Debug.Log("プレイヤーを生成");
 		// 現在の接続人数を加算
 		connectPlayerCount++;

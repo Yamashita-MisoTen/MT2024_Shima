@@ -8,6 +8,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public partial class GameRuleManager : NetworkBehaviour
 {
@@ -43,6 +44,8 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField, Header("イベントマネージャー")] GameObject eventMgrPrefabs;
 	[SerializeField, Header("イベントの発生時間(s)")] List<int> eventTimer;
 	[SerializeField] List<Vector3> playerStartPosition;
+	[SerializeField] List<Vector3> resultPos;
+
 	EventMgr eventMgr;
 	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
@@ -55,8 +58,12 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField][SyncVar]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
 
 	// ** 共通のUI
+	FadeMgr fadeMgr;
+	ResultFade fadeResult;
 	GameObject UICanvas = null;
+	List<Canvas> canvas;
 	CustomNetworkManager netMgr = null;
+	SoundManager soundManager = null;
 
 	bool _isFinishGame = false;
 	// **　リザルト関連
@@ -66,17 +73,22 @@ public partial class GameRuleManager : NetworkBehaviour
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
 		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
+		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
 	}
 	void Start()
 	{
 		for(int i = 0; i < this.transform.childCount; i++){
 			var obj = this.transform.GetChild(i);
+			canvas = new List<Canvas>();
 			if(obj.name == "GameUICanvas"){
 				UICanvas = obj.gameObject;
+				canvas.Add(UICanvas.GetComponent<Canvas>());
 				UICanvas.SetActive(true);
 			}
 			if(obj.name == "ReadyCanvas"){
 				readyCanvasObj = obj.gameObject;
+				canvas.Add(readyCanvasObj.GetComponent<Canvas>());
 				readyCanvasObj.SetActive(true);
 			}
 		}
@@ -101,6 +113,7 @@ public partial class GameRuleManager : NetworkBehaviour
 				UpdateFinsh();	// ゲーム終了の更新
 				break;
 		}
+
 	}
 
 	private void ReadyGame(){
@@ -111,11 +124,19 @@ public partial class GameRuleManager : NetworkBehaviour
 		}
 		_playerData = netMgr.GetPlayerDatas(_playerData);
 		Debug.Log("準備" + _playerData.Count);
+		int num = 1;
 		// プレイヤーの準備
 		foreach(CPlayer p in _playerData){
-			Debug.Log(p);
-			Debug.Log(p.isLocalPlayer);
+			p.name = "Player" + num;
 			p.DataSetUPforMainScene(this);
+			if(p.isLocalPlayer){
+				fadeMgr.SetRenderCamera(p.GetRenderCamera());
+				fadeResult.SetCamera(p.GetRenderCamera());
+				foreach(Canvas c in canvas){
+					c.worldCamera = p.GetRenderCamera();
+				}
+			}
+			num++;
 		}
 		RandomSetOrgaPlayer();
 
@@ -127,16 +148,24 @@ public partial class GameRuleManager : NetworkBehaviour
 			_playerData[i].transform.position = playerStartPosition[i];
 		}
 
+		fadeMgr.StartFadeIn();
+
 		// デバッグの時は演出いれない
 		if(!isDebugMode){
-			StartReadyPerformance();
+			DOVirtual.DelayedCall(fadeMgr.fadeInTime, () => StartReadyPerformance(), false);
 		}
 	}
 
 	[ClientRpc]
 	void RpcStartGame(){	// ゲーム開始時に呼び出される関数
-		Debug.Log("ゲーム開始するで");
-		gameStateText.text = "now play";
+
+		// ゲームのBGM流す
+		BGMSoundManager.instance.PlayAudio(BGMSoundManager.AudioID.GameBGM);
+
+		countdownText.text = "Start!!";
+		// 1s後に非表示に
+		DOVirtual.DelayedCall (1f, ()=> readyCanvasObj.SetActive(false), false);
+
 		gameState = GameState.NowPlay;
 		ChangeOrgaPlayer(_orgaPlayer);
 		foreach(CPlayer p in _playerData){
@@ -148,12 +177,22 @@ public partial class GameRuleManager : NetworkBehaviour
 		if(_isFinishGame) return;
 		Debug.Log("ゲームを終了します");
 		_isFinishGame = true;
-		gameStateText.text = "Finish";
 		gameState = GameState.Finish;
 		timerText.text = "";
 
+		countdownText.text = "Finish!!";
+
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.whistle);
+		SoundManager.instance.ChangeVolume(0.1f);
+
+		readyCanvasObj.SetActive(true);
+
+		float waitTime = 3f;
+
 		// 敗者一応置いといたほうがよき？
-		StartResultPerforamce();
+		DOVirtual.DelayedCall(waitTime,() => countdownText.text = "");
+		DOVirtual.DelayedCall(waitTime,() => fadeResult.StartFadeOut());
+		DOVirtual.DelayedCall(waitTime + fadeResult.fadeOutTime,() => StartResultPerforamce());
 
 		// 接続しているプレイヤーすべてに終了命令を送る
 	}

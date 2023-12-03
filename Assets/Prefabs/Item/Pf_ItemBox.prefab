@@ -159,6 +159,7 @@ MonoBehaviour:
   syncInterval: 0
   list_item:
   - {fileID: 5640826294783059276, guid: 3bbe773b28a3238499b31e1569e61c0e, type: 3}
+  - {fileID: 5640826294783059276, guid: 51117c576bc391746bdc919345a1c3c4, type: 3}
 --- !u!65 &1069076862985646567
 BoxCollider:
   m_ObjectHideFlags: 0

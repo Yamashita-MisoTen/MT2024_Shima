@@ -11,8 +11,9 @@ using UnityEngine.UI;
 
 public class FadeMgr : NetworkBehaviour
 {
-	[SerializeField, Tooltip("フェードインの時の時間(秒)")] public float fadeInTime { get; } = 3f ;
-	[SerializeField, Tooltip("フェードアウトの時の時間(秒)")] public float fadeOutTime { get; } = 3f;
+	[SerializeField, Tooltip("フェードインの時の時間(秒)")] public float fadeInTime { get; } = 1f ;
+	[SerializeField, Tooltip("フェードアウトの時の時間(秒)")] public float fadeOutTime { get; } = 1f;
+	[SerializeField] Canvas canvasComp;
 	private List<RectTransform> fadeObj;
 	private List<Material> fadeObjMt;
 	public bool isCompleteFadeOut { get; private set;}
@@ -22,6 +23,7 @@ public class FadeMgr : NetworkBehaviour
 		DontDestroyOnLoad(this);
 		fadeObj = new List<RectTransform>();
 		fadeObjMt = new List<Material>();
+		canvasComp = this.gameObject.GetComponent<Canvas>();
 		for(int i = 0; i < this.transform.childCount; i++){
 			var rect = this.transform.GetChild(i).gameObject.GetComponent<RectTransform>();
 			var mt = this.transform.GetChild(i).gameObject.GetComponent<Image>().material;
@@ -33,12 +35,7 @@ public class FadeMgr : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.P)){
-			StartFadeOut();
-		}
-		if(Input.GetKeyDown(KeyCode.O)){
-			StartFadeIn();
-		}
+
 	}
 
 	public void StartFadeIn(){
@@ -79,5 +76,9 @@ public class FadeMgr : NetworkBehaviour
 
 	void CompleteFadeIn(){
 		NetworkServer.Destroy(this.gameObject);
+	}
+
+	public void SetRenderCamera(Camera cam){
+		canvasComp.worldCamera = cam;
 	}
 }

@@ -12,6 +12,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		public List<int> ConnId;
 	}
 	[SerializeField] PlyaerDataInfo playerInfo;
+	[SerializeField] List<Vector3> lobyPlayerDataPos;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -47,9 +48,14 @@ public class NetWorkDataManager : NetworkBehaviour {
 		Debug.Log("現在のプレイヤー数id" + playerInfo.ConnId.Count);
 
 		// ロビーでの座標を調整する
-		int detail = playerInfo.ObjDatas.Count - 1;
-		Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
-		obj.transform.position = pos;
+		if(lobyPlayerDataPos.Count == 0){
+			int detail = playerInfo.ObjDatas.Count - 1;
+			Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
+			obj.transform.position = pos;
+		}else{
+			obj.transform.position = lobyPlayerDataPos[playerInfo.ObjDatas.Count];
+		}
+
 		// クライアントにデータを送る
 		RpcSendPlayerData(playerInfo);
 	}
