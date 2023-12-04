@@ -24,6 +24,8 @@ public partial class CPlayer : NetworkBehaviour
 
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
+	PlayerAudio audioComp;
+	Camera renderCamera;
 	// アイテム所持するように
 	Item _HaveItemData;
 
@@ -40,9 +42,8 @@ public partial class CPlayer : NetworkBehaviour
 	void Update()
 	{
 		// 今のシーンを確認してから入力機構切りたい
-		if(isCanMove){
-			CplayerMoveUpdate();	// 移動系の更新
-		}
+
+		CplayerMoveUpdate();	// 移動系の更新
 		ParticleUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 
@@ -75,6 +76,11 @@ public partial class CPlayer : NetworkBehaviour
 		this.GetComponent<PlayerUI>().ChangeJumpType(Jump_Type);
 		if(cameraObj == null) cameraObj = this.GetComponent<PlayerCamera>();
 		cameraObj.MainSceneCamera();
+
+		// オーディオ系をつける
+		audioComp = this.gameObject.GetComponent<PlayerAudio>();
+		audioComp.SetUpAudio();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerMove, audioComp.GetAudioSource(), 0f);
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -171,4 +177,8 @@ public partial class CPlayer : NetworkBehaviour
 		ui.SetItemTexture(ui.defaultItemTex);
 	}
 
+	public Camera GetRenderCamera(){
+		if(renderCamera == null) renderCamera = cameraObj.cameraComp;
+		return renderCamera;
+	}
 }

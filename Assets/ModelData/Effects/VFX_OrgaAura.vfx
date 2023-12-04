@@ -20,7 +20,7 @@ MonoBehaviour:
     x: 152
     y: 151
     width: 2175
-    height: 1898
+    height: 1897
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -240,7 +240,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 2000
+      m_SerializableObject: 4000
     m_Space: 2147483647
   m_Property:
     name: Rate
@@ -307,7 +307,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614583}
   - {fileID: 8926484042661614651}
   dataType: 0
-  capacity: 2000
+  capacity: 4000
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 1
@@ -590,7 +590,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661615021}
       inputSlot: {fileID: 8926484042661615104}
-    position: {x: 657, y: 591}
+    position: {x: 620, y: 627}
     expandedSlots:
     - {fileID: 8926484042661615021}
     expanded: 1
@@ -2993,7 +2993,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.Transform, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"position":{"x":0.0,"y":0.0,"z":0.0},"angles":{"x":0.0,"y":0.0,"z":0.0},"scale":{"x":0.009999999776482582,"y":0.009999999776482582,"z":0.009999999776482582}}'
+      m_SerializableObject: '{"position":{"x":0.0,"y":0.0,"z":0.0},"angles":{"x":0.0,"y":0.0,"z":0.0},"scale":{"x":0.020500000566244127,"y":0.020500000566244127,"z":0.020500000566244127}}'
     m_Space: 0
   m_Property:
     name: transform
@@ -3631,7 +3631,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: True
+      m_SerializableObject: False
     m_Space: 2147483647
   m_Property:
     name: _vfx_enabled

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -16,6 +17,9 @@ public class Title : NetworkBehaviour{
 	public struct TitleSendData : NetworkMessage{
 		public bool _isHostReady;
 	}
+
+	[SerializeField] GameObject fadeObj;
+	FadeMgr fadeMgr;
 	void Awake(){
 
 	}
@@ -23,6 +27,9 @@ public class Title : NetworkBehaviour{
 	void Start()
 	{
 		if(netMgr == null) netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		var obj = Instantiate(fadeObj);
+		fadeMgr = obj.GetComponent<FadeMgr>();
+		fadeMgr.SetRenderCamera(GameObject.Find("Main Camera").GetComponent<Camera>());
 		netMgr.PlayerDataInit();
 	}
 
@@ -32,12 +39,17 @@ public class Title : NetworkBehaviour{
 		if(Input.GetKeyDown(KeyCode.Space)){
 			StartGame();
 		}
+
+		if(Input.GetKeyDown(KeyCode.Y)){
+			BGMSoundManager.instance.SetNextBGM(BGMSoundManager.AudioID.GameBGMHighTemp, 1f);
+		}
 	}
 
 	[ClientRpc]
 	void RpcChangeSceneMainGame(string sceneName){
+		fadeMgr.StartFadeOut();
 		// フェードの命令いれる
-		netMgr.ServerChangeScene(sceneName);
+		DOVirtual.DelayedCall(fadeMgr.fadeOutTime,() =>netMgr.ServerChangeScene(sceneName));
 	}
 
 	[ServerCallback]
