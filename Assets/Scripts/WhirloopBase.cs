@@ -33,6 +33,7 @@ public class WhirloopBase : NetworkBehaviour
 
 	List<GameObject> otherObj = null;	// 複数対応用に配列にしておく
 	[SerializeField]List<GameObject> fxData = null;		// エフェクト用にデータを格納しておく
+	[SerializeField]List<GameObject> fxShellData = null;		// エフェクト用にデータを格納しておく
 	List<Vector3> wayPoint;
 	float whirloopLength = 1.0f;	// 渦潮の長さ
 	float whirloopSize = 1.0f;		// 渦潮の大きさ(馬鹿でか渦潮作るならつかう)
