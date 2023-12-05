@@ -136,16 +136,18 @@ public partial class CPlayer : NetworkBehaviour
 	{
 
 		if(!isCanMove) return;
-		// 動いてるときの音
-		if(NowVelocity > 0){
-			isSwim = true;
-			var ratio = NowVelocity / Velocity_Limit;
-			SoundManager.instance.ChangeVolume(ratio / 50, audioComp.GetAudioSource());
-			cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60,75,ratio);
-		}else{
-			SoundManager.instance.ChangeVolume(0f, audioComp.GetAudioSource());
-			isSwim = false;
-			cameraObj.cameraComp.fieldOfView = 60;
+		if(!isOnWhirloop){
+			// 動いてるときの音
+			if(NowVelocity > 0){
+				isSwim = true;
+				var ratio = NowVelocity / Velocity_Limit;
+				SoundManager.instance.ChangeVolume(ratio / 50, audioComp.GetAudioSource());
+				cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60,75,ratio);
+			}else{
+				SoundManager.instance.ChangeVolume(0f, audioComp.GetAudioSource());
+				isSwim = false;
+				cameraObj.cameraComp.fieldOfView = 60;
+			}
 		}
 
 		//アニメーションに数値代入
@@ -422,5 +424,7 @@ public partial class CPlayer : NetworkBehaviour
 	public void OnUseItem(){
 		if(_HaveItemData == null) return;
 		_HaveItemData.UseEffect(this.transform.position ,this.transform.rotation);
+		_HaveItemData = null;
+		ui.SetItemTexture(ui.defaultItemTex);
 	}
 }

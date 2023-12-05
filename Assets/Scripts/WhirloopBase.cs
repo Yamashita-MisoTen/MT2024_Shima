@@ -201,7 +201,8 @@ public class WhirloopBase : NetworkBehaviour
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
 		Debug.Log("time : " + time + "  wayPoint : " + waypoint.Count);
-		obj.transform.DOLocalPath(waypoint.ToArray(), 10, PathType.CatmullRom, PathMode.Full3D, gizmoColor:Color.red)
+		obj.transform.DOLocalPath(waypoint.ToArray(), time, PathType.CatmullRom, PathMode.Full3D, gizmoColor:Color.red)
+			.SetLookAt(0.001f, Vector3.forward)
 			.OnComplete(() => CompleteMoveWhirloop(obj));
 	}
 

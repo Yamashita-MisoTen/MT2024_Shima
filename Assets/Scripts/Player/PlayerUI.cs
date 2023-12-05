@@ -23,6 +23,7 @@ public class PlayerUI : NetworkBehaviour
 	Image		HighJumpImage;
 	Material	HighJumpImageMaterial;
 	RectTransform	HighJumpImageAnchoredPosition;
+	Image saturateUI;
 	void Start()
 	{
 		for(int i = 0; i < UICanvasObj.transform.childCount; i++){
@@ -43,6 +44,10 @@ public class PlayerUI : NetworkBehaviour
 				HighJumpImage = childObj.GetComponent<Image>();
 				HighJumpImageMaterial = HighJumpImage.material;
 				HighJumpImageAnchoredPosition = childObj.GetComponent<RectTransform>();
+			}
+			if(childObj.name == "SaturateImage"){
+				saturateUI = childObj.GetComponent<Image>();
+				saturateUI.gameObject.SetActive(false);
 			}
 		}
 		UICanvasObj.SetActive(false);
@@ -105,5 +110,9 @@ public class PlayerUI : NetworkBehaviour
 
 	public void SetItemTexture(Texture2D tex){
 		playerHaveItemImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height),Vector2.zero);
+	}
+
+	public void SetActiveSaturateCanvas(bool flg){
+		saturateUI.gameObject.SetActive(flg);
 	}
 }

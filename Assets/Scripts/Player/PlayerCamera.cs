@@ -71,7 +71,7 @@ public class PlayerCamera : NetworkBehaviour
         // 渦潮に入ってるときのみに処理をする
         if (isInWhirloopCameraSet)
         {
-            InWhirloopCameraUpdate();
+            //InWhirloopCameraUpdate();
             return;
         }
 

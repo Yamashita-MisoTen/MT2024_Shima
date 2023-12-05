@@ -21,7 +21,7 @@ public class CreateRandomPosition : NetworkBehaviour
 	private Vector3 rangeB;
 
 	//経過時間
-	private float time;
+	public bool isCreateItemBox = true;
 
 	// Start is called before the first frame update
 	void Start()
@@ -32,19 +32,16 @@ public class CreateRandomPosition : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if(isCreateItemBox) return;
 		//前フレームからの時間を加算していく
 		CreateTime = CreateTime+ Time.deltaTime; ;
 
 		//ランダムに生成されるようにする
-		// if(CreateTime>5.0f)
-		// {
-		// 	CreateItemBox();
-		// 	//経過時間をリセット
-		// 	CreateTime = 0f;
-		// }
-
-		if(Input.GetKeyDown(KeyCode.U)){
+		if(CreateTime>5.0f)
+		{
 			CreateItemBox();
+			//経過時間をリセット
+			CreateTime = 0f;
 		}
 	}
 

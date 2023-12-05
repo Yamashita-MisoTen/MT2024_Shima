@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.19198713, g: 0.59466827, b: 0.77732426, a: 1}
+  m_IndirectSpecularColor: {r: 0.191991, g: 0.5946723, b: 0.7773275, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -296,7 +296,7 @@ PrefabInstance:
     - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}
       propertyPath: audioDatas.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}
@@ -312,6 +312,11 @@ PrefabInstance:
         type: 3}
       propertyPath: audioDatas.Array.data[4].volume
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
+        type: 3}
+      propertyPath: audioDatas.Array.data[5].volume
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}
@@ -335,6 +340,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}
+      propertyPath: audioDatas.Array.data[5].audioID
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
+        type: 3}
       propertyPath: audioDatas.Array.data[1].audioClip
       value: 
       objectReference: {fileID: 8300000, guid: ce8da97eaddea984eb7d02168cb659b0, type: 3}
@@ -353,10 +363,20 @@ PrefabInstance:
       propertyPath: audioDatas.Array.data[4].audioClip
       value: 
       objectReference: {fileID: 8300000, guid: a56bc27bb7325a941be0f9792ace48f5, type: 3}
+    - target: {fileID: 4223865588308851560, guid: ac1632f1af6a10642a25e5d7edc145fa,
+        type: 3}
+      propertyPath: audioDatas.Array.data[5].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a050228f3d4d4104f9be17e595e78abd, type: 3}
     - target: {fileID: 5340113124141732373, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}
       propertyPath: m_Name
       value: Pf_SoundManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8968942427961871913, guid: ac1632f1af6a10642a25e5d7edc145fa,
+        type: 3}
+      propertyPath: Loop
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8968942427961871913, guid: ac1632f1af6a10642a25e5d7edc145fa,
         type: 3}

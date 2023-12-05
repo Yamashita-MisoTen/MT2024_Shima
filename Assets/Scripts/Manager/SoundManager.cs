@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class SoundManager : NetworkBehaviour
 {
@@ -13,6 +14,7 @@ public class SoundManager : NetworkBehaviour
 		playerMove,
 		whistle,
 		countdown,
+		whirloopIn,
 	}
 
 	[System.Serializable]
@@ -41,7 +43,10 @@ public class SoundManager : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-
+		if(Input.GetKeyDown(KeyCode.Y)){
+			PlayAudio(AudioID.whirloopIn);
+			LerpPich(1,3,_source,3f);
+		}
 	}
 
 	/// <summary>
@@ -88,5 +93,21 @@ public class SoundManager : NetworkBehaviour
 	/// <param name="source"> 指定するAudioSoruce </param>
 	public void ChangeVolume(float volume, AudioSource source){
 		source.volume = volume;
+	}
+
+	/// <summary>
+	/// AudioSourceごとのボリュームの変更を行う
+	/// </summary>
+	/// <param name="startPich"> 開始 ピッチ位置</param>
+	/// <param name="endPitch"> 終了 ピッチ位置</param>
+	/// <param name="source"> 指定するAudioSoruce </param>
+	/// <param name="time"> 補間時間 0.0 ~ 1.0 </param>
+	public void LerpPich(float startPich, float endPitch, AudioSource source, float time){
+		DOVirtual.Float(startPich, endPitch, time,
+		onVirtualUpdate:
+		 (tweenValue) => {
+			Debug.Log($"値が変化 : {tweenValue}");
+			source.pitch = tweenValue;
+		});
 	}
 }

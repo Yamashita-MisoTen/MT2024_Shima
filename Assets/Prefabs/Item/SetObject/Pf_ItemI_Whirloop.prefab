@@ -480,7 +480,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  moveTime: 1
+  moveTime: 5
   waitTime: 0.1
   maxUseNum: 3
   endPoint: {x: 0, y: 0, z: 10}
