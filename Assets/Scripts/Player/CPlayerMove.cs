@@ -210,7 +210,22 @@ public partial class CPlayer : NetworkBehaviour
 		}
 		else
 		{
-			/*    NowVelocity += Velocity;
+		}
+		Debug.Log(this.gameObject.transform.position);
+
+		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
+	}
+
+	// [Command]
+	// private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
+	// {
+	// 	this.transform.position = motion;
+	// 	this.transform.rotation = quaternion;
+	// }
+	[Command]
+	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
+	{
+/*    NowVelocity += Velocity;
 			 //???x????
 				NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
 				NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
@@ -232,7 +247,6 @@ public partial class CPlayer : NetworkBehaviour
 			}
 			//???x????
 			NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
-			Debug.Log(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
 
 			// オブジェクト移動
 			this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
@@ -297,30 +311,6 @@ public partial class CPlayer : NetworkBehaviour
 					}
 				}
 			}
-		}
-		//落下速度計算
-		if (this.transform.position.y > 0)
-		{
-			this.transform.position += -this.transform.up * Fall_Speed * Time.deltaTime;
-			Fall_Speed += Fall_Acceleration * Time.deltaTime;
-
-			if (this.transform.position.y <= 0)
-			{
-				this.transform.position = new Vector3(this.transform.position.x, 0.0f, this.transform.position.z);
-				Fall_Speed = 0.0f;
-			}
-		}
-
-
-		// this.gameObject.transform.position = this.transform.position;
-		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
-	}
-
-	[Command]
-	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
-	{
-		this.transform.position = motion;
-		this.transform.rotation = quaternion;
 	}
 
 	//????]
