@@ -177,6 +177,7 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void OutWhirloop(){
+		Velocity = 5f;
 		isOnWhirloop = false;
 		cameraObj.SetCameraOutWhirloop();
 		// 被写界深度

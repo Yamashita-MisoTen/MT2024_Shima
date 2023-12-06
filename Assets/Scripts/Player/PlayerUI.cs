@@ -20,8 +20,6 @@ public class PlayerUI : NetworkBehaviour
 	Image		SlideJumpImage;
 	Material	SlideJumpImageMaterial;
 	RectTransform	SlideJumpImageAnchoredPosition;
-	Image		HighJumpImage;
-	Material	HighJumpImageMaterial;
 	RectTransform	HighJumpImageAnchoredPosition;
 	Image saturateUI;
 	void Start()
@@ -40,11 +38,6 @@ public class PlayerUI : NetworkBehaviour
 				SlideJumpImageMaterial = SlideJumpImage.material;
 				SlideJumpImageAnchoredPosition = childObj.GetComponent<RectTransform>();
 			}
-			if(childObj.name == "HighJumpImage"){
-				HighJumpImage = childObj.GetComponent<Image>();
-				HighJumpImageMaterial = HighJumpImage.material;
-				HighJumpImageAnchoredPosition = childObj.GetComponent<RectTransform>();
-			}
 			if(childObj.name == "SaturateImage"){
 				saturateUI = childObj.GetComponent<Image>();
 				saturateUI.gameObject.SetActive(false);
@@ -59,13 +52,13 @@ public class PlayerUI : NetworkBehaviour
 	{
 		if(isCharge){
 			float ratio = requireChargeTime / chargeTime;
-			HighJumpImageMaterial.SetFloat("_Ratio",Mathf.Lerp(1f,0f,ratio));
+			SlideJumpImageMaterial.SetFloat("_Ratio",Mathf.Lerp(1f,0f,ratio));
 
 			requireChargeTime += Time.deltaTime;
 			if(chargeTime < requireChargeTime){
 				requireChargeTime = 0f;
-				HighJumpImageMaterial.SetFloat("_Ratio",1.1f);
-				HighJumpImageMaterial.SetInt("_isCharge",0);
+				SlideJumpImageMaterial.SetFloat("_Ratio",1.1f);
+				SlideJumpImageMaterial.SetInt("_isCharge",0);
 				isCharge = false;
 			}
 		}
@@ -80,10 +73,7 @@ public class PlayerUI : NetworkBehaviour
 	}
 
 	public void ChangeJumpType(CPlayer.eJump_Type jumptype){
-		if(jumptype == CPlayer.eJump_Type.UP){
-		}else if(jumptype == CPlayer.eJump_Type.SIDE){
 
-		}
 	}
 
 	public void MainSceneUICanvas(){
@@ -100,8 +90,8 @@ public class PlayerUI : NetworkBehaviour
 
 	public void SetCharge(){
 		isCharge = true;
-		HighJumpImageMaterial.SetFloat("_Ratio",0f);
-		HighJumpImageMaterial.SetInt("_isCharge",1);
+		SlideJumpImageMaterial.SetFloat("_Ratio",0f);
+		SlideJumpImageMaterial.SetInt("_isCharge",1);
 	}
 
 	public void SetActiveUICanvas(bool flg){

@@ -311,8 +311,8 @@ public partial class CPlayer : NetworkBehaviour
 		}
 
 
-		this.gameObject.transform.position = this.transform.position;
-		CmdUpdateTransform(this.transform.position, this.transform.rotation);
+		// this.gameObject.transform.position = this.transform.position;
+		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
 	}
 
 	[Command]
@@ -426,5 +426,9 @@ public partial class CPlayer : NetworkBehaviour
 		_HaveItemData.UseEffect(this.transform.position ,this.transform.rotation);
 		_HaveItemData = null;
 		ui.SetItemTexture(ui.defaultItemTex);
+	}
+
+	public void SetVelocity(float velo){
+		NowVelocity = velo;
 	}
 }
