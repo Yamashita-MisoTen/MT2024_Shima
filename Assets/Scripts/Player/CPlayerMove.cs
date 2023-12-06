@@ -6,6 +6,7 @@ using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System;
+using Mirror.Examples.Common;
 
 
 public partial class CPlayer : NetworkBehaviour
@@ -210,22 +211,7 @@ public partial class CPlayer : NetworkBehaviour
 		}
 		else
 		{
-		}
-		Debug.Log(this.gameObject.transform.position);
-
-		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
-	}
-
-	// [Command]
-	// private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
-	// {
-	// 	this.transform.position = motion;
-	// 	this.transform.rotation = quaternion;
-	// }
-	[Command]
-	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
-	{
-/*    NowVelocity += Velocity;
+			/*    NowVelocity += Velocity;
 			 //???x????
 				NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
 				NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
@@ -239,7 +225,6 @@ public partial class CPlayer : NetworkBehaviour
 				NowVelocity -= Deceleration * Time.deltaTime;
 				if (NowVelocity < 0)
 					NowVelocity = 0;
-
 			}
 			else
 			{
@@ -311,6 +296,19 @@ public partial class CPlayer : NetworkBehaviour
 					}
 				}
 			}
+		}
+
+		Debug.Log(this.gameObject.transform.position);
+
+		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
+		///Debug.Log();
+	}
+
+	[Command]
+	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
+	{
+		this.transform.position = motion;
+		this.transform.rotation = quaternion;
 	}
 
 	//????]
