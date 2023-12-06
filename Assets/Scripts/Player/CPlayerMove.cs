@@ -135,7 +135,6 @@ public partial class CPlayer : NetworkBehaviour
 	// Update is called once per frame
 	void CplayerMoveUpdate()
 	{
-
 		if(!isCanMove) return;
 		if(!isOnWhirloop){
 			// 動いてるときの音
@@ -233,8 +232,10 @@ public partial class CPlayer : NetworkBehaviour
 			//???x????
 			NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
 
+			
+
 			// オブジェクト移動
-			this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
+			// this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
 			// this.gameObject.transform.forward *= NowVelocity;
 
 			//カメラを横回転していないときだけ横移動ができる
@@ -284,8 +285,6 @@ public partial class CPlayer : NetworkBehaviour
 					Vector3 eulerAngles = this.gameObject.transform.eulerAngles;
 					//オブジェクト横回転
 					this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-
-
 					// CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
 					CameraObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
 					CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
@@ -297,16 +296,19 @@ public partial class CPlayer : NetworkBehaviour
 				}
 			}
 		}
-
-		Debug.Log(this.gameObject.transform.position);
-
-		if(isLocalPlayer)CmdUpdateTransform(this.transform.position, this.transform.rotation);
+		var move = Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime;
+		Debug.Log("移動:" + move + " 速度:" + (NowVelocity + Velocity_Addition));
+		Debug.Log(this.transform.position + move);
+		float pol = 1f;
+		if(!isServer) pol = 5f;
+		if(isLocalPlayer)CmdUpdateTransform(this.transform.position + (new Vector3(0,0,1) * pol) * Time.deltaTime, this.transform.rotation, NowVelocity);
 		///Debug.Log();
 	}
 
 	[Command]
-	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
+	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion, float velo)
 	{
+		NowVelocity = velo;
 		this.transform.position = motion;
 		this.transform.rotation = quaternion;
 	}

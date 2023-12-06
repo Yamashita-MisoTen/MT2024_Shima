@@ -44,7 +44,7 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	// Update is called once per frame
-	void Update()
+	void FixedUpdate()
 	{
 		// 今のシーンを確認してから入力機構切りたい
 

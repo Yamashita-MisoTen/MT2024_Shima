@@ -12,6 +12,8 @@ using UnityEngine.UIElements;
 public class Title : NetworkBehaviour{
 	// Start is called before the first frame update
 	[SerializeField]CustomNetworkManager netMgr;
+	[SerializeField] GameObject Soundprefab;
+	[SerializeField] GameObject BGMSoungprefab;
 
 	[Serializable]
 	public struct TitleSendData : NetworkMessage{
@@ -31,6 +33,9 @@ public class Title : NetworkBehaviour{
 		fadeMgr = obj.GetComponent<FadeMgr>();
 		fadeMgr.SetRenderCamera(GameObject.Find("Main Camera").GetComponent<Camera>());
 		netMgr.PlayerDataInit();
+
+		obj = Instantiate(Soundprefab);
+		obj = Instantiate(BGMSoungprefab);
 	}
 
 	// Update is called once per frame
