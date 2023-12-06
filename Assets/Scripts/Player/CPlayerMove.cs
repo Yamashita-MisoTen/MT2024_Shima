@@ -232,6 +232,7 @@ public partial class CPlayer : NetworkBehaviour
 			}
 			//???x????
 			NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
+			Debug.Log(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
 
 			// オブジェクト移動
 			this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);

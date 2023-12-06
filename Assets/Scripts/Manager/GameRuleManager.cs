@@ -206,7 +206,7 @@ public partial class GameRuleManager : NetworkBehaviour
 			}
 		}else{
 			UpdateReadyPerformance();
-			if(isCompleteCountdown){
+			if(isCompleteCountdown && isServer){
 				RpcStartGame();
 			}
 		}
