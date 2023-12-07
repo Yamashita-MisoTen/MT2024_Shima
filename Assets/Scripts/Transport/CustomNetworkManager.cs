@@ -69,6 +69,8 @@ public class CustomNetworkManager : NetworkManager
 	public override void OnStopHost()
 	{
 		base.OnStopHost();
+		StopClient();
+		StopServer();
 		dataManager.DeleteAllObj();
 		connectPlayerCount = 0;
 	}
