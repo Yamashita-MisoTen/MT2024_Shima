@@ -26,9 +26,9 @@ public partial class CPlayer : NetworkBehaviour
 	GameRuleManager mgr;
 	GameRuleManager saturateLineUI;
 	PlayerCamera cameraObj;
-	PlayerAudio audioComp;
+	PlayerAudio moveAudioComp;
 	Camera renderCamera;
-	
+
 	Volume volume;
 	DepthOfField dof;
 	// アイテム所持するように
@@ -44,7 +44,7 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	// Update is called once per frame
-	void FixedUpdate()
+	void Update()
 	{
 		// 今のシーンを確認してから入力機構切りたい
 
@@ -88,10 +88,9 @@ public partial class CPlayer : NetworkBehaviour
 		volume.profile.TryGet< DepthOfField >(out dof);
 
 		// オーディオ系をつける
-		audioComp = this.gameObject.GetComponent<PlayerAudio>();
-		audioComp.SetUpAudio();
-		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerMove, audioComp.GetAudioSource(), 0f);
-
+		moveAudioComp = this.gameObject.GetComponent<PlayerAudio>();
+		moveAudioComp.SetUpAudio();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerMove, moveAudioComp.GetAudioSource(), 0f);
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -162,7 +161,7 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InWhirloopSetUp(){
-		Emergency_Stop();
+		CmdEmergencyStop();
 		isOnWhirloop = true;
 		// カメラの設定
 		cameraObj.SetCameraInWhirloop();
