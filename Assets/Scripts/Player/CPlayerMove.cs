@@ -6,6 +6,8 @@ using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System;
+using Mirror.Examples.Common;
+using Unity.VisualScripting;
 
 
 public partial class CPlayer : NetworkBehaviour
@@ -26,6 +28,8 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField, Header("移動の加速度")]
 	private float Acceleration;
 
+	[SerializeField, Tooltip("ジャンプのクールタイム")] private float jumpCollTime = 3f;
+
 	//イベントなど加速の値が変化するとき
 	private float Velocity_Addition;
 
@@ -35,6 +39,8 @@ public partial class CPlayer : NetworkBehaviour
 	private float NowJump_speed;
 	private float Jump_Speed = 10;
 	private bool Jump_Switch;
+	private bool isCanJump = true;
+
 	private Vector3 Start_Position;
 	private eJump_Type Jump_Type;
 
@@ -50,18 +56,6 @@ public partial class CPlayer : NetworkBehaviour
 
 	//ダッシュ落下速度
 	private float Jump_Fall = 1.0f;
-
-	// ** 縦ダッシュのパラメーター
-	//全体の時間
-	private float HJump_AllTime = 1.0f;
-	//ジャンプ経過時間
-	private float HJump_NowTime;
-
-	// ** 落下のパラメーター
-	//落下速度
-	private float Fall_Speed;
-	//落下加速度
-	private float Fall_Acceleration = 1.0f;
 
 	//横回転移動のパラメーター
 	private float Side_Move = 0.0f;
@@ -92,19 +86,20 @@ public partial class CPlayer : NetworkBehaviour
 		// 子供を検索してカメラを確認する
 		for (int i = 0; i < this.transform.childCount; i++)
 		{
-
 			GameObject childObj = this.transform.GetChild(i).gameObject;
 			// 接続時にプレイヤーごとにカメラを分ける
 			if (childObj.name == "PlayerCamera")
 			{
 				CameraObject = childObj;
 				CameraObject.SetActive(false);
+				continue;
 			}
 
 			//アニメーションを代入
 			if (childObj.name == "PenguinFBX")
 			{
 				Swimming = childObj.GetComponent<Animator>();
+				continue;
 			}
 		}
 
@@ -114,38 +109,28 @@ public partial class CPlayer : NetworkBehaviour
 		Start_Position = this.transform.position;
 		Jump_Type = eJump_Type.SIDE;
 		NowVelocity = 0.0f;
-
-		// 子供を検索してカメラを確認する
-		for (int i = 0; i < this.transform.childCount; i++)
-		{
-			GameObject childObj = this.transform.GetChild(i).gameObject;
-			// 接続時にプレイヤーごとにカメラを分ける
-			if (childObj.name == "PlayerCamera")
-			{
-				CameraObject = childObj;
-				CameraObject.SetActive(false);
-				break;
-			}
-		}
-		CameraCopy = CameraObject.gameObject.transform.eulerAngles;
-		C_Camera = GetComponent<PlayerCamera>();
 	}
 
 	// Update is called once per frame
 	void CplayerMoveUpdate()
 	{
-
-		if(!isCanMove) return;
-		// 動いてるときの音
-		if(NowVelocity > 0){
-			isSwim = true;
-			var ratio = NowVelocity / Velocity_Limit;
-			SoundManager.instance.ChangeVolume(ratio / 50, audioComp.GetAudioSource());
-			cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60,75,ratio);
-		}else{
-			SoundManager.instance.ChangeVolume(0f, audioComp.GetAudioSource());
-			isSwim = false;
-			cameraObj.cameraComp.fieldOfView = 60;
+		if (!isCanMove) return;
+		if (!isOnWhirloop)
+		{
+			// 動いてるときの音
+			if (NowVelocity > 0)
+			{
+				isSwim = true;
+				var ratio = NowVelocity / Velocity_Limit;
+				SoundManager.instance.ChangeVolume(ratio / 50, moveAudioComp.GetAudioSource());
+				cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60, 75, ratio);
+			}
+			else
+			{
+				SoundManager.instance.ChangeVolume(0f, moveAudioComp.GetAudioSource());
+				isSwim = false;
+				cameraObj.cameraComp.fieldOfView = 60;
+			}
 		}
 
 		//アニメーションに数値代入
@@ -161,266 +146,192 @@ public partial class CPlayer : NetworkBehaviour
 
 		if (Jump_Switch)
 		{
-			if (Jump_Type == eJump_Type.UP)
+			// 横ジャンプの予備動作
+			if (SJump_NowTime <= SJump_AllTime * 0.2f)
 			{
-				//縦ジャンプの予備動作
-				if (HJump_NowTime <= HJump_AllTime * 0.2f)
-				{
-					//     this.transform.position += -this.gameObject.transform.transform.up * Jump_Fall * Time.deltaTime;
-					this.gameObject.transform.Translate(-Vector3.up * Jump_Fall * Time.deltaTime);
-					HJump_NowTime += Time.deltaTime;
-				}
-				else//縦ジャンプ
-				{
-					// this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y + NowJump_speed * Time.deltaTime, this.transform.position.z);
-					this.gameObject.transform.Translate(Vector3.up * NowJump_speed * Time.deltaTime);
-					NowJump_speed -= 0.1f;
-					if (this.transform.position.y < Start_Position.y && NowJump_speed <= 0.0f)
-					{
-						this.transform.position = new Vector3(this.transform.position.x, Start_Position.y, this.transform.position.z);
-						Jump_Switch = false;
-					}
-				}
+				this.transform.position += -this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
+				this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
+				SJump_NowTime += Time.deltaTime;
 			}
-			else if (Jump_Type == eJump_Type.SIDE)
+			else  // 横ジャンプ挙動
 			{
-				//横ジャンプの予備動作
-				if (SJump_NowTime <= SJump_AllTime * 0.2f)
-				{
-					this.transform.position += -this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
-					this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
-					SJump_NowTime += Time.deltaTime;
-				}
-				else  //???W?????v
-				{
-					this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
-					this.transform.position += this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
+				this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
+				this.transform.position += this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
 
-					SJump_NowTime += Time.deltaTime;
-					SJump_Speed += SJump_Acceleration * Time.deltaTime;
-					// Debug.Log(SJump_Acceleration);
-					if (SJump_NowTime > SJump_AllTime)
-					{
-						Jump_Switch = false;
-					}
+				SJump_NowTime += Time.deltaTime;
+				SJump_Speed += SJump_Acceleration * Time.deltaTime;
+				// Debug.Log(SJump_Acceleration);
+				if (SJump_NowTime > SJump_AllTime)
+				{
+					Jump_Switch = false;
 				}
 			}
 		}
 		else
 		{
-			/*    NowVelocity += Velocity;
-			 //???x????
-				NowVelocity.x = Mathf.Clamp(NowVelocity.x, -Velocity_Limit, Velocity_Limit);
-				NowVelocity.y = Mathf.Clamp(NowVelocity.y, -Velocity_Limit, Velocity_Limit);
-				NowVelocity.z = Mathf.Clamp(NowVelocity.z, -Velocity_Limit, Velocity_Limit);
+			// サーバー側での各プレイヤーの入力値に応じた加速度を計算する
+			// サーバー側での処理をしないとクライアントで生じる更新回数の差でズレが生じるため
+			if (isServer) PlayerMoveServerProcess();
+			// クライアントでサーバー側から得た情報で更新を行う
+			PlayerMoveClientProcess();
+		}
+	}
 
-				// オブジェクト移動
-				this.transform.position += NowVelocity * Time.deltaTime;*/
+	void PlayerMoveServerProcess()
+	{
+		// ** サーバー側でプレイヤーの挙動を制御する ** //
+		// ** 基本移動
+		var velocity = ForwardMove();
 
-			if (Velocity == 0 && NowVelocity > 0)
-			{
-				NowVelocity -= Deceleration * Time.deltaTime;
-				if (NowVelocity < 0)
-					NowVelocity = 0;
+		// ** 左右への移動の挙動
+		var sidevelocity = SideMove();
 
-			}
-			else
-			{
-				NowVelocity += Velocity;
-			}
-			//???x????
-			NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
+		// 更新を各クライアントに同期する
+		RpcSendPlayerTransform(velocity, sidevelocity);
+	}
 
-			// オブジェクト移動
-			this.transform.Translate(Vector3.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime);
-			// this.gameObject.transform.forward *= NowVelocity;
+	void PlayerMoveClientProcess()
+	{
+		// クライアント側で最終の更新を行う
+		// 移動
+		this.transform.position += this.gameObject.transform.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime;
+		// 回転
+		var qt = this.transform.rotation;
+		if(Side_MoveNow != 0.0f){
+			qt *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
+			// 回転のときのプレイヤーのカメラの更新処理
+			var euler = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
+			var camqt = Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
+			cameraObj.CameraMoveforPlayerMove(euler, camqt);
+		}
+		this.transform.rotation = qt;
+	}
 
-			//カメラを横回転していないときだけ横移動ができる
-			if (C_Camera.Looking_Left_Right())
-			{
-				//横移動制限
-				if (Side_Move != 0)
-				{
-					Side_MoveNow += Side_Move * Time.deltaTime;
+	float ForwardMove(){
+		// ** 基本移動
+		// 加速度
+		if (Velocity == 0f && NowVelocity > 0f) {
+			// 減速処理
+			NowVelocity -= Deceleration * Time.deltaTime;
+			// 最終補正
+			if (NowVelocity < 0f) NowVelocity = 0f;
+		}
+		else {
+			NowVelocity += Velocity;
+		}
+		// 加速度に制限をかける
+		NowVelocity = Mathf.Clamp(NowVelocity, -Velocity_Limit, Velocity_Limit);
+		// 実際に動かす
+		return NowVelocity;
+	}
+
+	float SideMove(){
+		// ** 左右への移動の挙動
+		Quaternion qt = this.gameObject.transform.rotation;
+
+		// カメラの操作をしてるときは横操作できない
+		if (!C_Camera.Looking_Left_Right()) return 0f;
+		//横移動
+		if (Side_Move != 0) Side_MoveNow += Side_Move * Time.deltaTime;
+
+		// 減速処理
+		if(Side_Move == 0.0f){
+			// 加速度の絶対値が0.1f以下になった場合の処理
+			if(Mathf.Abs(Side_MoveNow) <= 0.1f){
+				Side_MoveNow = Vector2.zero.x;
+			}else{
+				int pol = 1;	// 補正値
+				if(Side_MoveNow > 0f){
+					pol = -1;
 				}
-
-				//横移動減速するときの挙動
-				if (Side_Move == 0.0f)
-				{
-					if (Side_MoveNow > 0.1f)
-					{
-						Side_MoveNow -= 0.01f;
-					}
-					else if (Side_MoveNow <= 0.1f && Side_MoveNow > 0.0f)
-					{
-						Side_MoveNow -= Side_MoveNow;
-
-						if (Side_MoveNow < 0.00f)
-						{
-							Side_MoveNow = Vector2.zero.x;
-						}
-					}
-					else if (Side_MoveNow < -0.1f)
-					{
-						Side_MoveNow += 0.01f;
-					}
-					else if (Side_MoveNow >= -0.1f && Side_MoveNow < 0.0f)
-					{
-						Side_MoveNow -= Side_MoveNow;
-
-						if (Side_MoveNow > 0.00f)
-						{
-							Side_MoveNow = Vector2.zero.x;
-						}
-					}
-				}
-
-				if (Side_MoveNow != 0.0f)
-				{
-					Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
-
-					Vector3 eulerAngles = this.gameObject.transform.eulerAngles;
-					//オブジェクト横回転
-					this.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow, this.gameObject.transform.up);
-
-
-					// CameraObject.gameObject.transform.eulerAngles = Vector3.Lerp(eulerAngles, this.gameObject.transform.eulerAngles, Time.deltaTime * AttenRate);
-					CameraObject.transform.eulerAngles = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
-					CameraObject.gameObject.transform.rotation *= Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
-					//    if (!C_Camera.Looking_Left_Right())
-
-					{
-						//     C_Camera.Horizontal_Rotation();
-					}
-				}
+				// 減速
+				Side_MoveNow += pol * 0.01f;
 			}
 		}
-		//落下速度計算
-		if (this.transform.position.y > 0)
-		{
-			this.transform.position += -this.transform.up * Fall_Speed * Time.deltaTime;
-			Fall_Speed += Fall_Acceleration * Time.deltaTime;
-
-			if (this.transform.position.y <= 0)
-			{
-				this.transform.position = new Vector3(this.transform.position.x, 0.0f, this.transform.position.z);
-				Fall_Speed = 0.0f;
-			}
-		}
-
-
-		this.gameObject.transform.position = this.transform.position;
-		CmdUpdateTransform(this.transform.position, this.transform.rotation);
+		// 左右の移動値に制限をかける
+		Side_MoveNow = Mathf.Clamp(Side_MoveNow, -Side_Move_Limit, Side_Move_Limit);
+		return Side_MoveNow;
 	}
 
-	[Command]
-	private void CmdUpdateTransform(Vector3 motion, Quaternion quaternion)
-	{
-		this.transform.position = motion;
-		this.transform.rotation = quaternion;
-	}
-
-	//????]
-	private void OnMove(InputValue value)
-	{
-		if (!isCanMove) return;
-
-		//Debug.Log("????");
-		// MoveAction?????l???擾
-		var axis = value.Get<Vector2>();
-
-		Side_Move = axis.x * Side_Acceleration;
-		//?????????
-		// ??????x????
-		//      Velocity = new Vector3(axis.x, 0, axis.y);
-		//       Velocity *= 0.01f * Acceleration;
-		//var axis = value.Get<Vector2>();
-		//	Vector3 pos = this.transform.position;
-		//	pos.x += value.;
-		//	this.gameObject.transform.position = pos
-	}
-
-	private void OnJump()
-	{
-		if (!isCanMove) return;
-
-		if (!Jump_Switch)
-		{
-			//???x??~
-			Emergency_Stop();
-
-			if (Jump_Type == eJump_Type.UP)
-			{
-				Jump_Switch = true;
-				NowJump_speed = Jump_Speed;
-				HJump_NowTime = 0.0f;
-			}
-			else if (Jump_Type == eJump_Type.SIDE)
-			{
-				Jump_Switch = true;
-				SJump_NowTime = 0.0f;
-
-				//??????????v???C???[????x????
-				SJump_Speed = 0.0f;
-			}
-
-			ui.SetCharge();
-
-			if (_isNowOrga)
-			{
-				CmdCreateWhrloop();  //???????o??
-			}
-		}
-	}
-
-	private void OnJumpChange()
-	{
-		if (!isCanMove) return;
-
-		if (!Jump_Switch)
-		{
-			if (Jump_Type == eJump_Type.UP)
-			{
-				Jump_Type = eJump_Type.SIDE;
-			}
-			else if (Jump_Type == eJump_Type.SIDE)
-			{
-				Jump_Type = eJump_Type.UP;
-			}
-		}
-	}
-
-	//?A?N?Z??????
-	private void OnAccelerator(InputValue value)
+	private void OnAccelerator(InputValue value) // アクセル
 	{
 		if (!isCanMove) return;
 
 		var axis = value.Get<float>();
+		// 加速度の更新
+		CmdUpdateVelocity(axis * Acceleration);
+	}
+	private void OnMove(InputValue value) // 左右の入力
+	{
+		if (!isCanMove) return;
 
-
-		// ??????x????
-		Velocity = axis;
-
-		Velocity *= Acceleration;
+		var axis = value.Get<Vector2>();
+		CmdUpdateSideMove(axis.x * Side_Acceleration);
 	}
 
-	//??}??~
-	private void Emergency_Stop()
+
+	private void OnJump() // ジャンプ
+	{
+		if (!isCanMove) return;
+		if (Jump_Switch) return;
+		// ジャンプの制限を確認する
+		if(!isCanJump) return;
+		// 緊急停止
+		CmdEmergencyStop();
+
+		// ジャンプの変数更新
+		Jump_Switch = true;
+		isCanJump = false;
+		SJump_NowTime = 0.0f;
+		SJump_Speed = 0.0f;
+
+		// UIを更新する
+		ui.SetCharge();
+
+		// 鬼のときのみそのまま渦潮を生成する
+		if (_isNowOrga) CmdCreateWhrloop();
+	}
+
+	public void OnUseItem()	// アイテム使用
+	{
+		if (_HaveItemData == null) return;
+		_HaveItemData.UseEffect(this.transform.position, this.transform.rotation);
+		_HaveItemData = null;
+		ui.SetItemTexture(ui.defaultItemTex);
+	}
+
+	// 通信で用いる同期関数群
+
+	[ClientRpc] private void RpcSendPlayerTransform(float velocity, float sidevelocity)
+	{
+		NowVelocity = velocity;
+		Side_MoveNow = sidevelocity;
+	}
+
+	[Command] private void CmdUpdateSideMove(float side)
+	{
+		Side_Move = side;
+	}
+
+	[Command] private void CmdUpdateVelocity(float velo)
+	{
+		Velocity = velo;
+	}
+
+	// 緊急停止用
+	[Command]
+	private void CmdEmergencyStop()
 	{
 		NowVelocity = 0.0f;
 		Velocity = 0.0f;
 		Side_MoveNow = 0.0f;
 	}
+
 	public bool Moving_Left_Right()
 	{
 		if (Side_MoveNow != 0.0f)
 			return false;
 
 		return true;
-	}
-
-	public void OnUseItem(){
-		if(_HaveItemData == null) return;
-		_HaveItemData.UseEffect(this.transform.position ,this.transform.rotation);
 	}
 }

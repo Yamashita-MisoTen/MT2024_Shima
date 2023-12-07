@@ -945,7 +945,7 @@ GameObject:
   - component: {fileID: 7466804431653607559}
   - component: {fileID: 4756815431724944160}
   m_Layer: 0
-  m_Name: Pf_ItemU_Whirloop
+  m_Name: Pf_ItemS_Whirloop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -995,7 +995,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  moveTime: 1
+  moveTime: 5
   waitTime: 0.1
   maxUseNum: 3
   endPoint: {x: 14, y: 0, z: 20}
@@ -1004,7 +1004,7 @@ MonoBehaviour:
   - {x: 14, y: 0, z: 5}
   - {x: 7, y: 0, z: 10}
   - {x: 0, y: 0, z: 15}
-  - {x: 7, y: 0, z: 20}
+  - {x: 7, y: 0, z: 19}
   colliderObj: {fileID: 0}
   whirloopFX: {fileID: 0}
   whirloopShell: {fileID: 0}
@@ -1012,6 +1012,7 @@ MonoBehaviour:
   - {fileID: 6783427358109963257}
   - {fileID: 5004172668588044794}
   - {fileID: 4027529474861358390}
+  fxShellData: []
 --- !u!114 &6621660482938694083
 MonoBehaviour:
   m_ObjectHideFlags: 0

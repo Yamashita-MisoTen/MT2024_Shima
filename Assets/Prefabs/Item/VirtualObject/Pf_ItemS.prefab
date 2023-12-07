@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4862753790219781396}
-  - component: {fileID: 7464294783052401013}
+  - component: {fileID: 2560127678446648685}
   - component: {fileID: -3840899535491198063}
   m_Layer: 0
-  m_Name: Pf_ItemU
+  m_Name: Pf_ItemS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7464294783052401013
+--- !u!114 &2560127678446648685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,14 +42,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5640826294783059276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eec43f5a306de44aaa13c76591a1032, type: 3}
+  m_Script: {fileID: 11500000, guid: ac01bdfc4e8351544a085f386c4dc1ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  itemTex: {fileID: 2800000, guid: b777fb926a741144194c3453618987c0, type: 3}
-  prefab: {fileID: 4984063755677553267, guid: b13a37b8910db1744bf10f83b36d8677, type: 3}
+  itemTex: {fileID: 2800000, guid: d99f3b558cb5c0e41bff7b68ab85f525, type: 3}
+  prefab: {fileID: 4984063755677553267, guid: 650dde1389b0040489dd3af08ef2b263, type: 3}
 --- !u!114 &-3840899535491198063
 MonoBehaviour:
   m_ObjectHideFlags: 0

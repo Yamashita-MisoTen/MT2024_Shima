@@ -24,7 +24,9 @@ public class ItemBox : NetworkBehaviour
 	}
 
 	Item RandomSetItem(){
-		int num = Random.Range(0, list_item.Count - 1);
+		int num = Random.Range(0, list_item.Count);
+		Debug.Log(num);
+		Debug.Log(list_item.Count - 1);
 		Debug.Log("アイテム取得" + list_item[num].name);
 		return list_item[num].GetComponent<Item>();
 	}

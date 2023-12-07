@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
@@ -23,9 +24,13 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] PlayerUI ui;
 
 	GameRuleManager mgr;
+	GameRuleManager saturateLineUI;
 	PlayerCamera cameraObj;
-	PlayerAudio audioComp;
+	PlayerAudio moveAudioComp;
 	Camera renderCamera;
+
+	Volume volume;
+	DepthOfField dof;
 	// アイテム所持するように
 	Item _HaveItemData;
 
@@ -73,14 +78,19 @@ public partial class CPlayer : NetworkBehaviour
 		mgr = manager;
 		// メインシーンでのセットアップで使用する
 		this.GetComponent<PlayerUI>().MainSceneUICanvas();
+
 		this.GetComponent<PlayerUI>().ChangeJumpType(Jump_Type);
 		if(cameraObj == null) cameraObj = this.GetComponent<PlayerCamera>();
 		cameraObj.MainSceneCamera();
 
+		volume = GameObject.Find("Volume").GetComponent<Volume>();
+		Debug.Log(volume);
+		volume.profile.TryGet< DepthOfField >(out dof);
+
 		// オーディオ系をつける
-		audioComp = this.gameObject.GetComponent<PlayerAudio>();
-		audioComp.SetUpAudio();
-		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerMove, audioComp.GetAudioSource(), 0f);
+		moveAudioComp = this.gameObject.GetComponent<PlayerAudio>();
+		moveAudioComp.SetUpAudio();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerMove, moveAudioComp.GetAudioSource(), 0f);
 
 		// 入力系をつける
 		if(isLocalPlayer){
@@ -151,14 +161,28 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InWhirloopSetUp(){
-		Emergency_Stop();
+		CmdEmergencyStop();
 		isOnWhirloop = true;
+		// カメラの設定
 		cameraObj.SetCameraInWhirloop();
+
+		// プレイヤーの体の角度を渦潮の方向に向ける
+
+		// 画面演出
+		// 被写界深度
+		//dof.focalLength.Override(120f);
+		// 集中線
+		ui.SetActiveSaturateCanvas(true);
 	}
 
 	public void OutWhirloop(){
+		Velocity = 5f;
 		isOnWhirloop = false;
 		cameraObj.SetCameraOutWhirloop();
+		// 被写界深度
+		//dof.focalLength.Override(0f);
+		// 集中線
+		ui.SetActiveSaturateCanvas(false);
 	}
 
 	public void SetItem(Item item){

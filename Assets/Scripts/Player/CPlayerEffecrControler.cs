@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.VFX;
 using DG.Tweening;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public partial class CPlayer : NetworkBehaviour
 {
