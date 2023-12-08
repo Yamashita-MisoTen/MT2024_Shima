@@ -105,4 +105,8 @@ public class PlayerUI : NetworkBehaviour
 	public void SetActiveSaturateCanvas(bool flg){
 		saturateUI.gameObject.SetActive(flg);
 	}
+
+	public void SetPlaneDistance(float value){
+		UICanvasObj.GetComponent<Canvas>().planeDistance = value;
+	}
 }

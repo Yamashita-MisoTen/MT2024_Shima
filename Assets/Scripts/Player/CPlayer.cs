@@ -24,7 +24,6 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] PlayerUI ui;
 
 	GameRuleManager mgr;
-	GameRuleManager saturateLineUI;
 	PlayerCamera cameraObj;
 	PlayerAudio moveAudioComp;
 	Camera renderCamera;
@@ -40,6 +39,7 @@ public partial class CPlayer : NetworkBehaviour
 	{
 		CPlayerMoveStart();
 		ParticleStart();
+		HitStopStart();
 		cameraObj = this.GetComponent<PlayerCamera>();
 	}
 
@@ -50,6 +50,7 @@ public partial class CPlayer : NetworkBehaviour
 
 		CplayerMoveUpdate();	// 移動系の更新
 		ParticleUpdate();
+		HitStopUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 
 		if(Input.GetKeyDown(KeyCode.H)){
@@ -121,6 +122,7 @@ public partial class CPlayer : NetworkBehaviour
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
 		}
+		HitStopPerformance();
 	}
 
 	[Command]

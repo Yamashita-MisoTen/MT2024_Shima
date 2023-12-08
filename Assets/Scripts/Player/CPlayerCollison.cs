@@ -10,104 +10,87 @@ using UnityEngine.UI;
 
 public partial class CPlayer
 {
-    [SerializeField] private Volume volume;
-    [SerializeField] private string path = "Assets/ScreenShots/";
-    [SerializeField] private string fileName = "ScreenShot.png";
+	[SerializeField, Header("ヒットストップ")] private float hitStopWaitTime = 1.0f;
+	[SerializeField, Header("ヒットストップ")] private float shakeTime = 0.3f;
+	[SerializeField, Header("ヒットストップ")] private float shakePower = 50.0f;
+	[SerializeField, Header("ヒットストップ")] private int shakeNum = 30;
 
-    private GameObject targetImage;
-    private Bloom bloom;
-    private Camera m_camera;
-    private bool getHited = false;
+	private GameObject targetImage;
+	private RectTransform targetImageTrans;
+	private Bloom bloom;
+	private Camera m_camera;
+	private Texture2D hitTex = null;
 
-    void ScreenShotStart()
-    {
-        volume = GetComponent<Volume>();
-        targetImage = GameObject.Find("RawImage");
-        targetImage.SetActive(false);
-        BloomOnOff(false);
-        m_camera = renderCamera;
-    }
+	void HitStopStart()
+	{
+		targetImage = GameObject.Find("HitStopImage");
+		targetImageTrans = targetImage.GetComponent<RectTransform>();
+		targetImage.SetActive(false);
+	}
 
-    void ScreenShotUpdate()
-    {
-        if(getHited)
-        {
-            BloomOnOff(false);
-            DOVirtual.DelayedCall(3.0f, () =>
-            {;
-                targetImage.SetActive(false);
-                DeleteFile(path + fileName);
-                getHited = false;
-            });
-        }
-    }
+	void HitStopUpdate()
+	{
+		if(Input.GetKeyDown(KeyCode.T)){
+			HitStopPerformance();
+		}
+	}
 
-    //同じ関数使ってから、ここを修正待ち
-    //private void OnCollisionEnter(Collision other)
-    //{
-    //    if (getHited == true || !other.gameObject.CompareTag("Player") || !_isNowOrga) 
-    //    {
-    //        return;
-    //    }
-    //    getHited = true;
-    //    BloomOnOff(true);
-    //    DOVirtual.DelayedCall(0.1f, () =>
-    //    {
-    //        CaptureScreenShot(path + fileName);
-    //    });
-    //    ShowImage();
-    //}
+	private void HitStopPerformance(){
+		BloomSetting(true);
+		CaptureScreenShot();
+		ShowImage();
+		ui.SetPlaneDistance(1);
+		// テクスチャ動かす
+		targetImageTrans.DOShakeAnchorPos(shakeTime, shakePower, shakeNum, 1, false, true);
+		// 時間, 強さ, 振動数, 手振れ値, スナップフラグ, フェードアウト
+		DOVirtual.DelayedCall(hitStopWaitTime, () =>
+		{;
+			BloomSetting(false);
+			targetImage.SetActive(false);
+			ui.SetPlaneDistance(2);
+			hitTex = null;
+		});
+	}
 
-    private void CaptureScreenShot(string filePath)
-    {
-        var rt = new RenderTexture(m_camera.pixelWidth, m_camera.pixelHeight, 24);
-        var prev = m_camera.targetTexture;
-        m_camera.targetTexture = rt;
-        m_camera.Render();
-        m_camera.targetTexture = prev;
-        RenderTexture.active = rt;
+	private void CaptureScreenShot()
+	{
+		var cam = GetRenderCamera();
+		var rt = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 24);
+		var prev = cam.targetTexture;
+		cam.targetTexture = rt;
+		cam.Render();
+		cam.targetTexture = prev;
+		RenderTexture.active = rt;
 
-        var screenShot = new Texture2D(
-            m_camera.pixelWidth,
-            m_camera.pixelHeight,
-            TextureFormat.RGB24,
-            false);
-        screenShot.ReadPixels(new Rect(0, 0, screenShot.width, screenShot.height), 0, 0);
-        screenShot.Apply();
+		hitTex = new Texture2D(
+			cam.pixelWidth,
+			cam.pixelHeight,
+			TextureFormat.RGB24,
+			false);
+		hitTex.ReadPixels(new Rect(0, 0, hitTex.width, hitTex.height), 0, 0);
+		hitTex.Apply();
+	}
 
-        var bytes = screenShot.EncodeToPNG();
-        Destroy(screenShot);
+	public void ShowImage()
+	{
+		// NGUI の UITexture に表示
+		RawImage target = targetImage.GetComponent<RawImage>();
+		target.texture = hitTex;
 
-        File.WriteAllBytes(filePath, bytes);
-    }
+		targetImage.SetActive(true);
+	}
 
-    public void ShowImage()
-    {
-        if (!String.IsNullOrEmpty(path + fileName))
-        {
-            byte[] image = File.ReadAllBytes(path + fileName);
+	private void BloomSetting(bool onoff)
+	{
+		if (volume.profile.TryGet<Bloom>(out bloom))
+		{
+			// ここでブルームの設定をいじる
+			// めっちゃ明るくしたりしたい
+			if(onoff){
 
-            Texture2D tex = new Texture2D(0, 0);
-            tex.LoadImage(image);
+			}else{
 
-            // NGUI の UITexture に表示
-            RawImage target = targetImage.GetComponent<RawImage>();
-            target.texture = tex;
-
-            targetImage.SetActive(true);
-        }
-    }
-
-    private void BloomOnOff(bool onoff)
-    {
-        if (volume.profile.TryGet<Bloom>(out bloom))
-        {
-            bloom.active = onoff;
-        }
-    }
-
-    private void DeleteFile(string filePath)
-    {
-        File.Delete(filePath);
-    }
+			}
+		}
+	}
 }
