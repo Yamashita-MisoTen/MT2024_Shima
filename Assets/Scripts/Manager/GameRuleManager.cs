@@ -183,6 +183,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		countdownText.text = "Finish!!";
 
 		SoundManager.instance.PlayAudio(SoundManager.AudioID.whistle);
+		SoundManager.instance.LoopSettings(false);
 		SoundManager.instance.ChangeVolume(0.1f);
 
 		readyCanvasObj.SetActive(true);

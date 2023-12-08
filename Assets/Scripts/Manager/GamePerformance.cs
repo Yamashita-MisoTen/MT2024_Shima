@@ -20,6 +20,7 @@ public partial class GameRuleManager
 	void StartReadyPerformance(){
 		isStartCountdown = true;
 		SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
+		SoundManager.instance.LoopSettings(false);
 	}
 
 	void UpdateReadyPerformance(){

@@ -110,4 +110,20 @@ public class SoundManager : NetworkBehaviour
 			source.pitch = tweenValue;
 		});
 	}
+
+	/// <summary>
+	/// AudioSourceのループ設定
+	/// </summary>
+	/// <param name="flg"> フラグ tureがループする</param>
+	public void LoopSettings(bool flg){
+		_source.loop = flg;
+	}
+	/// <summary>
+	/// AudioSourceのループ設定
+	/// </summary>
+	/// <param name="source"> 指定するAudioSoruce </param>
+	/// <param name="flg"> フラグ tureがループする</param>
+	public void LoopSettings(AudioSource source, bool flg){
+		source.loop = flg;
+	}
 }
