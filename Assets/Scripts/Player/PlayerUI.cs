@@ -20,8 +20,9 @@ public class PlayerUI : NetworkBehaviour
 	Image		SlideJumpImage;
 	Material	SlideJumpImageMaterial;
 	RectTransform	SlideJumpImageAnchoredPosition;
-	RectTransform	HighJumpImageAnchoredPosition;
 	Image saturateUI;
+	Image saturateCircleUI;
+	SaturatedAccele satirateCircleComp;
 	void Start()
 	{
 		for(int i = 0; i < UICanvasObj.transform.childCount; i++){
@@ -41,6 +42,11 @@ public class PlayerUI : NetworkBehaviour
 			if(childObj.name == "SaturateImage"){
 				saturateUI = childObj.GetComponent<Image>();
 				saturateUI.gameObject.SetActive(false);
+			}
+			if(childObj.name == "SaturatedLineCircle"){
+				saturateCircleUI = childObj.GetComponent<Image>();
+				satirateCircleComp = childObj.GetComponent<SaturatedAccele>();
+				saturateCircleUI.gameObject.SetActive(false);
 			}
 		}
 		UICanvasObj.SetActive(false);
@@ -104,5 +110,15 @@ public class PlayerUI : NetworkBehaviour
 
 	public void SetActiveSaturateCanvas(bool flg){
 		saturateUI.gameObject.SetActive(flg);
+		if(flg){
+			saturateCircleUI.gameObject.SetActive(flg);
+			satirateCircleComp.StartAccele();
+		}else{
+			satirateCircleComp.StopAccele();
+		}
+	}
+
+	public void SetPlaneDistance(float value){
+		UICanvasObj.GetComponent<Canvas>().planeDistance = value;
 	}
 }
