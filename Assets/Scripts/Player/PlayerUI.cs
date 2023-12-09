@@ -111,9 +111,11 @@ public class PlayerUI : NetworkBehaviour
 	public void SetActiveSaturateCanvas(bool flg){
 		saturateUI.gameObject.SetActive(flg);
 		if(flg){
+			SetPlaneDistance(1);
 			saturateCircleUI.gameObject.SetActive(flg);
 			satirateCircleComp.StartAccele();
 		}else{
+			SetPlaneDistance(2);
 			satirateCircleComp.StopAccele();
 		}
 	}

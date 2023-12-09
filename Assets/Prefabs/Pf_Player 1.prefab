@@ -242,16 +242,18 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _isNowOrga: 0
+  collisonVFXPrefab: {fileID: 2267154920145094677, guid: cd4f8aae6560aca41af42843c05b49c8,
+    type: 3}
   _WhirloopPrefab: {fileID: 8917630142182620420, guid: e1c964221159fc2429dff286cdc0fd0e,
     type: 3}
   _whirloopLength: 10
   isCanMove: 0
   isOnWhirloop: 0
   ui: {fileID: 7762816088404949649}
-  hitStopWaitTime: 1
+  hitStopWaitTime: 0.3
   shakeTime: 0.3
-  shakePower: 50
-  shakeNum: 30
+  shakePower: 150
+  shakeNum: 50
   orgaFX: {fileID: 5482269560650414336}
   swimSplashFX: {fileID: 1237556883331167681, guid: e0ced9c8bfa6b16408f33baea7f6ecc3,
     type: 3}
@@ -844,7 +846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5751311956040897290
 RectTransform:
   m_ObjectHideFlags: 0
