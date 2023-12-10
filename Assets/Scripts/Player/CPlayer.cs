@@ -15,7 +15,6 @@ using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
 {
-	[SerializeField] bool _isNowOrga = false;
 	[SerializeField,Header("当たった時のエフェクト")] private GameObject collisonVFXPrefab;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
@@ -24,6 +23,7 @@ public partial class CPlayer : NetworkBehaviour
 	public bool isOnWhirloop = false;
 	float _rotAngle;
 	[SerializeField] PlayerUI ui;
+	bool _isNowOrga = false;
 
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
@@ -57,6 +57,22 @@ public partial class CPlayer : NetworkBehaviour
 
 		if(Input.GetKeyDown(KeyCode.H)){
 			UseItem();
+		}
+	}
+	[ClientRpc]
+	public void RpcCreateSettings(string name, Color color){
+		this.name = name;
+		for(int i = 0; i < this.gameObject.transform.childCount; i++){
+			var child = this.gameObject.transform.GetChild(i).gameObject;
+			if(child.name != "PenguinFBX") continue;
+			for(int j = 0; j < child.transform.childCount; j++){
+				var grandChild = child.transform.GetChild(j);
+				if(grandChild.name != "penguin") continue;
+				Material mat = grandChild.GetComponent<SkinnedMeshRenderer>().material;
+				mat.SetColor("_BaseColor", color);
+				break;
+			}
+			break;
 		}
 	}
 
@@ -103,15 +119,35 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	private void OnCollisionEnter(Collision other) {
-		// Debug.Log("あたり");
-		// if(!other.gameObject.CompareTag("Player")) return;
+		if(!other.gameObject.CompareTag("Player")) return;
 
-		// // 自分が鬼のときのみ通知をする
-		// Debug.Log("いまは" + mgr.CheckOverCoolTime());
-		// if(_isNowOrga && mgr.CheckOverCoolTime()){
-		// 	Debug.Log("当たり判定発生");
-		// 	CmdChangeOrga(other.gameObject);
-		// }
+		// ローカルプレイヤーのときのみ
+		if(!isLocalPlayer) return;
+		// 自分が鬼のときのみ通知をする
+		if(_isNowOrga && mgr.CheckOverCoolTime()){
+			Debug.Log("あたり 私が鬼です" + this.name);
+			CmdChangeOrga(other.gameObject);
+		}
+		CmdEmergencyStop();
+		// Collisonのエフェクト作成
+		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
+		obj.gameObject.transform.parent = this.gameObject.transform;
+		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
+		ui.SetActiveSaturateCanvas(true);
+		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
+
+		DOVirtual.DelayedCall(0.05f, () =>
+		{
+			HitStopPerformance();
+		});
+
+		// 最終のエフェクトを削除する
+		DOVirtual.DelayedCall(0.5f, () =>
+			{
+				Destroy(obj);
+				ui.SetActiveSaturateCanvas(false);
+			}
+		);
 	}
 
 	private void OnTriggerEnter(Collider other){
@@ -124,10 +160,11 @@ public partial class CPlayer : NetworkBehaviour
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
 		}
+		CmdEmergencyStop();
 		// Collisonのエフェクト作成
 		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
 		obj.gameObject.transform.parent = this.gameObject.transform;
-		obj.gameObject.transform.localPosition = new Vector3(0,1,1);
+		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
 		ui.SetActiveSaturateCanvas(true);
 		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
 

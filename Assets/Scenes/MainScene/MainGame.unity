@@ -725,7 +725,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &447140046
 MeshRenderer:
@@ -1111,7 +1111,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &785419950
 MeshRenderer:
@@ -1399,7 +1399,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &988096858
 MeshRenderer:
@@ -1484,10 +1484,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pf_Ocean
       objectReference: {fileID: 0}
+    - target: {fileID: 3557321536416088072, guid: f61e8ee5db156234480fec1957786e2d,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3557321536416088072, guid: f61e8ee5db156234480fec1957786e2d,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3557321536416088072, guid: f61e8ee5db156234480fec1957786e2d,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3557321536416088072, guid: f61e8ee5db156234480fec1957786e2d,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4209831553732052082, guid: f61e8ee5db156234480fec1957786e2d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5
+      value: -0.502
       objectReference: {fileID: 0}
     - target: {fileID: 5601169572375873465, guid: f61e8ee5db156234480fec1957786e2d,
         type: 3}
@@ -2120,7 +2140,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1466198791
 MeshRenderer:

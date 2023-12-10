@@ -18,9 +18,10 @@ public partial class CPlayer
 	private GameObject targetImage;
 	private RawImage targetRawImageComp;
 	private RectTransform targetImageTrans;
-	private Bloom bloom;
 	private Camera m_camera;
 	private Texture2D hitTex = null;
+	private Bloom bloom;
+	private Vignette vignette;
 
 	void HitStopStart()
 	{
@@ -39,7 +40,7 @@ public partial class CPlayer
 
 	private void HitStopPerformance(){
 		Debug.Log("あ");
-		BloomSetting(true);
+		GlobalVolumeSetting(true);
 		CaptureScreenShot();
 		ShowImage();
 		// テクスチャ動かす
@@ -47,7 +48,7 @@ public partial class CPlayer
 		// 時間, 強さ, 振動数, 手振れ値, スナップフラグ, フェードアウト
 		DOVirtual.DelayedCall(hitStopWaitTime, () =>
 		{;
-			BloomSetting(false);
+			GlobalVolumeSetting(false);
 			targetImage.SetActive(false);
 			ui.SetPlaneDistance(2);
 			hitTex = null;
@@ -83,16 +84,24 @@ public partial class CPlayer
 		targetImage.SetActive(true);
 	}
 
-	private void BloomSetting(bool onoff)
+	private void GlobalVolumeSetting(bool onoff)
 	{
-		if (volume.profile.TryGet<Bloom>(out bloom))
-		{
-			// ここでブルームの設定をいじる
-			// めっちゃ明るくしたりしたい
+		// ここでポストプロセスの設定を変更する
+		// ** ブルーム
+		if (volume.profile.TryGet<Bloom>(out bloom)){
 			if(onoff){
-				// bloom.intensity = ;
+				bloom.intensity.value = 1.0f;
+				bloom.threshold.value = 0.0f;
 			}else{
-
+				bloom.intensity.value = 0.3f;
+			}
+		}
+		// ** ヴィネット
+		if (volume.profile.TryGet<Vignette>(out vignette)){
+			if(onoff){
+				vignette.intensity.value = 0.3f;
+			}else{
+				vignette.intensity.value = 0.0f;
 			}
 		}
 	}
