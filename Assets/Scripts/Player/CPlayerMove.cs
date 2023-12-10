@@ -53,6 +53,8 @@ public partial class CPlayer : NetworkBehaviour
 	private float SJump_NowTime;
 	//現在の速度
 	private float SJump_Speed;
+	// ジャンプのクールタイム用の経過時間
+	private float requireJumpTime = 0f;
 
 	//ダッシュ落下速度
 	private float Jump_Fall = 1.0f;
@@ -115,6 +117,15 @@ public partial class CPlayer : NetworkBehaviour
 	void CplayerMoveUpdate()
 	{
 		if (!isCanMove) return;
+
+		if(!isCanJump){
+			requireJumpTime += Time.deltaTime;
+			if(requireJumpTime >= jumpCollTime){
+				isCanJump = true;
+				requireJumpTime = 0f;
+			}
+		}
+
 		if (!isOnWhirloop)
 		{
 			// 動いてるときの音
@@ -193,6 +204,7 @@ public partial class CPlayer : NetworkBehaviour
 	void PlayerMoveClientProcess()
 	{
 		// クライアント側で最終の更新を行う
+		if(isOnWhirloop) return;
 		// 移動
 		this.transform.position += this.gameObject.transform.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime;
 		// 回転
@@ -256,6 +268,7 @@ public partial class CPlayer : NetworkBehaviour
 	private void OnAccelerator(InputValue value) // アクセル
 	{
 		if (!isCanMove) return;
+		if (isOnWhirloop) return;
 
 		var axis = value.Get<float>();
 		// 加速度の更新
@@ -264,6 +277,7 @@ public partial class CPlayer : NetworkBehaviour
 	private void OnMove(InputValue value) // 左右の入力
 	{
 		if (!isCanMove) return;
+		if (isOnWhirloop) return;
 
 		var axis = value.Get<Vector2>();
 		CmdUpdateSideMove(axis.x * Side_Acceleration);
@@ -276,6 +290,8 @@ public partial class CPlayer : NetworkBehaviour
 		if (Jump_Switch) return;
 		// ジャンプの制限を確認する
 		if(!isCanJump) return;
+		if (isOnWhirloop) return;
+
 		// 緊急停止
 		CmdEmergencyStop();
 
@@ -294,6 +310,8 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void OnUseItem()	// アイテム使用
 	{
+		if (!isCanMove) return;
+		if (isOnWhirloop) return;
 		if (_HaveItemData == null) return;
 		_HaveItemData.UseEffect(this.transform.position, this.transform.rotation);
 		_HaveItemData = null;
@@ -325,6 +343,7 @@ public partial class CPlayer : NetworkBehaviour
 		NowVelocity = 0.0f;
 		Velocity = 0.0f;
 		Side_MoveNow = 0.0f;
+		Side_Move = 0.0f;
 	}
 
 	public bool Moving_Left_Right()

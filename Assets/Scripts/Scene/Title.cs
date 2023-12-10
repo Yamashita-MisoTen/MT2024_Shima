@@ -41,10 +41,6 @@ public class Title : NetworkBehaviour{
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Space)){
-			StartGame();
-		}
-
 		if(Input.GetKeyDown(KeyCode.Y)){
 			BGMSoundManager.instance.SetNextBGM(BGMSoundManager.AudioID.GameBGMHighTemp, 1f);
 		}
@@ -58,7 +54,7 @@ public class Title : NetworkBehaviour{
 	}
 
 	[ServerCallback]
-	void StartGame(){
+	public void StartGame(){
 		RpcChangeSceneMainGame("MainGame");
 	}
 }

@@ -124,10 +124,8 @@ public partial class GameRuleManager : NetworkBehaviour
 		}
 		_playerData = netMgr.GetPlayerDatas(_playerData);
 		Debug.Log("準備" + _playerData.Count);
-		int num = 1;
 		// プレイヤーの準備
 		foreach(CPlayer p in _playerData){
-			p.name = "Player" + num;
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
@@ -136,7 +134,6 @@ public partial class GameRuleManager : NetworkBehaviour
 					c.worldCamera = p.GetRenderCamera();
 				}
 			}
-			num++;
 		}
 		RandomSetOrgaPlayer();
 
@@ -251,7 +248,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		}else{
 			if(!isServer) return;
 			if(Input.GetKeyDown(KeyCode.L)){
-				netMgr.ServerChangeScene("Title");
+				netMgr.ServerChangeScene("TM_Title");
 			}
 		}
 	}

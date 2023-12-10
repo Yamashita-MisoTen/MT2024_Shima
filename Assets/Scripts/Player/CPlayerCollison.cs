@@ -16,14 +16,17 @@ public partial class CPlayer
 	[SerializeField, Header("ヒットストップ")] private int shakeNum = 30;
 
 	private GameObject targetImage;
+	private RawImage targetRawImageComp;
 	private RectTransform targetImageTrans;
-	private Bloom bloom;
 	private Camera m_camera;
 	private Texture2D hitTex = null;
+	private Bloom bloom;
+	private Vignette vignette;
 
 	void HitStopStart()
 	{
 		targetImage = GameObject.Find("HitStopImage");
+		targetRawImageComp = targetImage.GetComponent<RawImage>();
 		targetImageTrans = targetImage.GetComponent<RectTransform>();
 		targetImage.SetActive(false);
 	}
@@ -36,16 +39,16 @@ public partial class CPlayer
 	}
 
 	private void HitStopPerformance(){
-		BloomSetting(true);
+		Debug.Log("あ");
+		GlobalVolumeSetting(true);
 		CaptureScreenShot();
 		ShowImage();
-		ui.SetPlaneDistance(1);
 		// テクスチャ動かす
 		targetImageTrans.DOShakeAnchorPos(shakeTime, shakePower, shakeNum, 1, false, true);
 		// 時間, 強さ, 振動数, 手振れ値, スナップフラグ, フェードアウト
 		DOVirtual.DelayedCall(hitStopWaitTime, () =>
 		{;
-			BloomSetting(false);
+			GlobalVolumeSetting(false);
 			targetImage.SetActive(false);
 			ui.SetPlaneDistance(2);
 			hitTex = null;
@@ -54,6 +57,7 @@ public partial class CPlayer
 
 	private void CaptureScreenShot()
 	{
+		targetRawImageComp.enabled = false;
 		var cam = GetRenderCamera();
 		var rt = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 24);
 		var prev = cam.targetTexture;
@@ -73,23 +77,31 @@ public partial class CPlayer
 
 	public void ShowImage()
 	{
+		targetRawImageComp.enabled = true;
 		// NGUI の UITexture に表示
-		RawImage target = targetImage.GetComponent<RawImage>();
-		target.texture = hitTex;
+		targetRawImageComp.texture = hitTex;
 
 		targetImage.SetActive(true);
 	}
 
-	private void BloomSetting(bool onoff)
+	private void GlobalVolumeSetting(bool onoff)
 	{
-		if (volume.profile.TryGet<Bloom>(out bloom))
-		{
-			// ここでブルームの設定をいじる
-			// めっちゃ明るくしたりしたい
+		// ここでポストプロセスの設定を変更する
+		// ** ブルーム
+		if (volume.profile.TryGet<Bloom>(out bloom)){
 			if(onoff){
-
+				bloom.intensity.value = 1.0f;
+				bloom.threshold.value = 0.0f;
 			}else{
-
+				bloom.intensity.value = 0.3f;
+			}
+		}
+		// ** ヴィネット
+		if (volume.profile.TryGet<Vignette>(out vignette)){
+			if(onoff){
+				vignette.intensity.value = 0.3f;
+			}else{
+				vignette.intensity.value = 0.0f;
 			}
 		}
 	}

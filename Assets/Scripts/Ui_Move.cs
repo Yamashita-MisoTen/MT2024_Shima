@@ -24,11 +24,14 @@ public class Ui_Move : MonoBehaviour
 	[SerializeField] private GameObject Address;
 	[SerializeField] private GameObject Cursor;
 	[SerializeField] private GameObject Connect;
+	[SerializeField] TextMeshProUGUI conectText;
 	private TitleAnimation CTitleAnimation;
 	int progressNum = 0;
 	bool isInputNow = false;
 	public bool isConnectServer = false;
 	bool isConnectingNow = false;
+	float requireTime = 0f;
+	int updateNum = 0;
 
 	private number Number;
 	private number2 Number2;
@@ -37,32 +40,39 @@ public class Ui_Move : MonoBehaviour
 	{
 		CNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
 		CTitleAnimation = GameObject.Find("TitleLogo").GetComponent<TitleAnimation>();
+		if(NetworkClient.active){
+			Debug.Log("あああああああああああああ");
+		}
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-			switch (progressNum)
-			{
-				case 0:
-					Progression0();
-					break;
-				case 1:
-					Progression1();
-					break;
-			}
+		switch (progressNum)
+		{
+			case 0:
+				Progression0();
+				break;
+			case 1:
+				Progression1();
+				break;
+		}
 	}
 
 	private void Progression0()
 	{
-		if (Number == number.HOST)
-		{
-			Cursor.transform.localPosition = new Vector3(-850, -300, 0);
-		}
-		else if (Number == number.GUEST)
-		{
+		if(!NetworkClient.active){
+			if (Number == number.HOST)
+			{
+				Cursor.transform.localPosition = new Vector3(-850, -300, 0);
+			}
+			else if (Number == number.GUEST)
+			{
 
-			Cursor.transform.localPosition = new Vector3(150, -300, 0);
+				Cursor.transform.localPosition = new Vector3(150, -300, 0);
+			}
+		}else{
+
 		}
 	}
 
@@ -74,6 +84,7 @@ public class Ui_Move : MonoBehaviour
 				Address.SetActive(true);
 				Connect.SetActive(true);
 				Cursor.SetActive(true);
+				conectText.gameObject.SetActive(false);
 			}
 			switch (Number2)
 			{
@@ -85,7 +96,7 @@ public class Ui_Move : MonoBehaviour
 					break;
 			}
 		}else{
-
+			ConnectingText();
 		}
 	}
 
@@ -134,25 +145,30 @@ public class Ui_Move : MonoBehaviour
 	}
 
 	private void DecisionProgression0(){
-		if (Number == number.HOST)
-		{
-			//ホスト
-			CNetworkManager.StartHost();
-			CTitleAnimation.ButtonPush();
-			Guest.SetActive(false);
-			Host.SetActive(false);
-			Cursor.SetActive(false);
-		}
-		else if (Number == number.GUEST)
-		{
-			//ゲスト
-			CTitleAnimation.ButtonPush();
-			Host.SetActive(false);
-			Guest.SetActive(false);
-			Address.SetActive(true);
-			Connect.SetActive(true);
-			Number2 = number2.INPUT;
-			progressNum = 1;
+		if(!NetworkClient.active){
+			if (Number == number.HOST)
+			{
+				Debug.Log("a");
+				//ホスト
+				CNetworkManager.StartHost();
+				CTitleAnimation.ButtonPush();
+				Guest.SetActive(false);
+				Host.SetActive(false);
+				Cursor.SetActive(false);
+			}
+			else if (Number == number.GUEST)
+			{
+				//ゲスト
+				CTitleAnimation.ButtonPush();
+				Host.SetActive(false);
+				Guest.SetActive(false);
+				Address.SetActive(true);
+				Connect.SetActive(true);
+				Number2 = number2.INPUT;
+				progressNum = 1;
+			}
+		}else{
+			GameObject.Find("TitleScene").GetComponent<Title>().StartGame();
 		}
 	}
 	private void DecisionProgression1(){
@@ -174,6 +190,7 @@ public class Ui_Move : MonoBehaviour
 				Address.SetActive(false);
 				Connect.SetActive(false);
 				Cursor.SetActive(false);
+				conectText.gameObject.SetActive(true);
 				break;
 		}
 	}
@@ -212,6 +229,20 @@ public class Ui_Move : MonoBehaviour
 		else if (y > 0.0f)
 		{
 			Number2 = number2.INPUT;
+		}
+	}
+
+	private void ConnectingText(){
+		requireTime += Time.deltaTime;
+		if(requireTime >= 1){
+			requireTime = 0;
+			updateNum++;
+			if(updateNum - 1 == 3){
+				conectText.text = "セツゾクチュウ";
+				updateNum = 0;
+			}else{
+				conectText.text = conectText.text + ".";
+			}
 		}
 	}
 }
