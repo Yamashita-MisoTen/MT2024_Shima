@@ -53,7 +53,7 @@ MonoBehaviour:
   countdownText: {fileID: 8960421911423569542}
   countdownTime: 3
   isDebugMode: 0
-  _LimitTime: 2
+  _LimitTime: 120
   _changeCoolTime: 5
   timerText: {fileID: 4045357071421669982}
   gameStateText: {fileID: 4112230514525495790}
@@ -73,7 +73,6 @@ MonoBehaviour:
   - {x: 5.4, y: -499.5, z: -1.1}
   _playerData: []
   _orgaPlayer: {fileID: 0}
-  _ResultObject: []
   Resultobj: {fileID: 1790004077252208956, guid: af6d13ab7623f6f49b9ac5c9c7689903,
     type: 3}
   TestPre: {fileID: 4984063755677553267, guid: 9691ac6dba6673c44b1e928b99a14582, type: 3}

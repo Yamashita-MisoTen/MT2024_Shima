@@ -17,11 +17,12 @@ public partial class GameRuleManager
     float progressCountdownTime = 0;
     bool isStartCountdown = false;
 
-	void StartReadyPerformance(){
-		isStartCountdown = true;
-		SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
-		SoundManager.instance.LoopSettings(false);
-	}
+    void StartReadyPerformance()
+    {
+        isStartCountdown = true;
+        SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
+        SoundManager.instance.LoopSettings(false);
+    }
 
     void UpdateReadyPerformance()
     {
@@ -77,7 +78,7 @@ public partial class GameRuleManager
     {
         for (int i = 0; i < _playerData.Count; i++)
         {
-            _playerData[i].transform.position = resultPos[i];
+          //  _playerData[i].transform.position = resultPos[i];
             _playerData[i].ResultData();
             // ここで立ちアニメーションに替える
 
@@ -91,20 +92,38 @@ public partial class GameRuleManager
 
 
         //リザルト用にアニメーションを割り振り
-        for (int i = 1; i <= 3; i++)
+        for (int i = 1; i <= _playerData.Count - 1; i++)
         {
             ResultList.Add(i);
         }
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < _playerData.Count; i++)
         {
-            var obj = Instantiate(Resultobj, Vector3.zero, Quaternion.identity);
+
+            GameObject obj = Instantiate(Resultobj, Vector3.zero, Quaternion.identity);
+            obj.transform.eulerAngles = new Vector3(0, 180, 0);
             _ResultObject.Add(obj);
-            //   _ResultObject[i].gameObject.SetActive(true);
             var script = _ResultObject[i].GetComponent<Result_Animation>();
-           
-            _ResultObject[i].transform.position = resultPos[i]; 
-            script.SetAnimation();          
+
+            
+            if (_playerData[i] == _orgaPlayer)
+            {
+                script.SetAnimation(0);
+            }
+            else
+            {
+                int index = Random.Range(0, ResultList.Count);
+
+                Debug.Log(index);
+                
+                int ransu = ResultList[index];
+                Debug.Log(ransu);
+
+                ResultList.RemoveAt(index);
+
+                script.SetAnimation(index);
+            }
+            _ResultObject[i].transform.position = resultPos[i];
         }
 
         // 最後にフェードアウトの命令入れる
