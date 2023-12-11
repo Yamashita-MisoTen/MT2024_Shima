@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using DG.Tweening;
 using Mirror;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -14,7 +15,7 @@ using UnityEngine.VFX;
 
 public partial class CPlayer : NetworkBehaviour
 {
-	[SerializeField] bool _isNowOrga = false;
+	[SerializeField,Header("当たった時のエフェクト")] private GameObject collisonVFXPrefab;
 	[Header("渦潮のプレハブ")]
 	[SerializeField] GameObject _WhirloopPrefab;
 	[SerializeField] float _whirloopLength = 5.0f;
@@ -22,9 +23,9 @@ public partial class CPlayer : NetworkBehaviour
 	public bool isOnWhirloop = false;
 	float _rotAngle;
 	[SerializeField] PlayerUI ui;
+	bool _isNowOrga = false;
 
 	GameRuleManager mgr;
-	GameRuleManager saturateLineUI;
 	PlayerCamera cameraObj;
 	PlayerAudio moveAudioComp;
 	Camera renderCamera;
@@ -40,6 +41,7 @@ public partial class CPlayer : NetworkBehaviour
 	{
 		CPlayerMoveStart();
 		ParticleStart();
+		HitStopStart();
 		cameraObj = this.GetComponent<PlayerCamera>();
 	}
 
@@ -50,10 +52,27 @@ public partial class CPlayer : NetworkBehaviour
 
 		CplayerMoveUpdate();	// 移動系の更新
 		ParticleUpdate();
+		HitStopUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
 
 		if(Input.GetKeyDown(KeyCode.H)){
 			UseItem();
+		}
+	}
+	[ClientRpc]
+	public void RpcCreateSettings(string name, Color color){
+		this.name = name;
+		for(int i = 0; i < this.gameObject.transform.childCount; i++){
+			var child = this.gameObject.transform.GetChild(i).gameObject;
+			if(child.name != "PenguinFBX") continue;
+			for(int j = 0; j < child.transform.childCount; j++){
+				var grandChild = child.transform.GetChild(j);
+				if(grandChild.name != "penguin") continue;
+				Material mat = grandChild.GetComponent<SkinnedMeshRenderer>().material;
+				mat.SetColor("_BaseColor", color);
+				break;
+			}
+			break;
 		}
 	}
 
@@ -100,15 +119,35 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	private void OnCollisionEnter(Collision other) {
-		// Debug.Log("あたり");
-		// if(!other.gameObject.CompareTag("Player")) return;
+		if(!other.gameObject.CompareTag("Player")) return;
 
-		// // 自分が鬼のときのみ通知をする
-		// Debug.Log("いまは" + mgr.CheckOverCoolTime());
-		// if(_isNowOrga && mgr.CheckOverCoolTime()){
-		// 	Debug.Log("当たり判定発生");
-		// 	CmdChangeOrga(other.gameObject);
-		// }
+		// ローカルプレイヤーのときのみ
+		if(!isLocalPlayer) return;
+		// 自分が鬼のときのみ通知をする
+		if(_isNowOrga && mgr.CheckOverCoolTime()){
+			Debug.Log("あたり 私が鬼です" + this.name);
+			CmdChangeOrga(other.gameObject);
+		}
+		CmdEmergencyStop();
+		// Collisonのエフェクト作成
+		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
+		obj.gameObject.transform.parent = this.gameObject.transform;
+		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
+		ui.SetActiveSaturateCanvas(true);
+		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
+
+		DOVirtual.DelayedCall(0.05f, () =>
+		{
+			HitStopPerformance();
+		});
+
+		// 最終のエフェクトを削除する
+		DOVirtual.DelayedCall(0.5f, () =>
+			{
+				Destroy(obj);
+				ui.SetActiveSaturateCanvas(false);
+			}
+		);
 	}
 
 	private void OnTriggerEnter(Collider other){
@@ -121,6 +160,26 @@ public partial class CPlayer : NetworkBehaviour
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
 		}
+		CmdEmergencyStop();
+		// Collisonのエフェクト作成
+		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
+		obj.gameObject.transform.parent = this.gameObject.transform;
+		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
+		ui.SetActiveSaturateCanvas(true);
+		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
+
+		DOVirtual.DelayedCall(0.05f, () =>
+		{
+			HitStopPerformance();
+		});
+
+		// 最終のエフェクトを削除する
+		DOVirtual.DelayedCall(0.5f, () =>
+			{
+				Destroy(obj);
+				ui.SetActiveSaturateCanvas(false);
+			}
+		);
 	}
 
 	[Command]
@@ -167,21 +226,35 @@ public partial class CPlayer : NetworkBehaviour
 		cameraObj.SetCameraInWhirloop();
 
 		// プレイヤーの体の角度を渦潮の方向に向ける
+		// 回転のときのプレイヤーのカメラの更新処理
+		var euler = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
+		var camqt = Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
+		cameraObj.CameraMoveforPlayerMove(euler, camqt);
 
 		// 画面演出
 		// 被写界深度
 		//dof.focalLength.Override(120f);
 		// 集中線
+		ui.SetPlaneDistance(2);
 		ui.SetActiveSaturateCanvas(true);
 	}
 
 	public void OutWhirloop(){
 		Velocity = 5f;
+		Debug.Log(Side_Move);
+		Debug.Log(Side_MoveNow);
 		isOnWhirloop = false;
 		cameraObj.SetCameraOutWhirloop();
+
+		// 角度補正
+		var newangle = new Vector3(0f,this.transform.eulerAngles.y,0f);
+		this.transform.eulerAngles = newangle;
+
 		// 被写界深度
 		//dof.focalLength.Override(0f);
+
 		// 集中線
+		ui.SetPlaneDistance(2);
 		ui.SetActiveSaturateCanvas(false);
 	}
 

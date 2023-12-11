@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 public class CustomNetworkManager : NetworkManager
 {
 	[Header("プレイヤーが使用するプレハブ")]
-	[SerializeField] List<GameObject> pPlayer;
-	[SerializeField] List<Vector3> StartPos;
+	[SerializeField] GameObject pPlayer;
+	[SerializeField] List<Color> playerColor;
 	[SerializeField] GameObject dataMgrPrefab;
 	GameObject dataManagerObj;
 	NetWorkDataManager dataManager;
@@ -25,17 +25,13 @@ public class CustomNetworkManager : NetworkManager
 		Debug.Log("プレイヤーの人数 : " + connectPlayerCount);
 
 		GameObject prefab;
-		if(pPlayer.Count < connectPlayerCount){
-			prefab = pPlayer[0];
-		}else{
-			prefab = pPlayer[connectPlayerCount - 1];
-		}
+		prefab = pPlayer;
+
 		Transform startPos = GetStartPosition();
 		GameObject player = startPos != null
 			? Instantiate(prefab, startPos.position, startPos.rotation)
 			: Instantiate(prefab);
 
-		player.name = $"Player_0" + connectPlayerCount.ToString();
 		DontDestroyOnLoad(player);	// シーン遷移用にプレイヤーデータを残したままにしておく
 		NetworkServer.AddPlayerForConnection(conn, player);
 
@@ -46,12 +42,10 @@ public class CustomNetworkManager : NetworkManager
 		}
 
 		var pComp = player.GetComponent<CPlayer>();
+		// 名前とプレイヤーの番号に応じた色に設定する
+		pComp.RpcCreateSettings("Player_" + connectPlayerCount.ToString(), playerColor[connectPlayerCount - 1]);
 		var connid = pComp.connectionToClient.connectionId;
 		dataManager.SetPlayerData(player,pComp,connid);
-
-		// mgr = GameObject.Find("Pf_GameRuleManager").GetComponent<GameRuleManager>();
-		// // マネージャーにデータを保管する
-		// mgr.AddPlayerData(player);
 	}
 
 	override public void OnServerDisconnect(NetworkConnectionToClient conn){

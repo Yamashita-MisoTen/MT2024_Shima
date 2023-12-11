@@ -45,21 +45,23 @@ public partial class CPlayer : NetworkBehaviour
 		// エフェクト生成
 		if(isSwim){
 			// 水しぶき
-			// if(happenSplashFX){
+			if(happenSplashFX){
 			// 	var pos = this.transform.position;
 			// 	var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
 			// 	obj.gameObject.transform.parent = this.gameObject.transform;
 			// 	var comp = obj.GetComponent<VisualEffect>();
 			// 	// 計測時間後にオブジェクトを削除予定
 			// 	DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
-			// }
+			}
 
 			// 波紋
 			if(happenRippleFX){
 				var pos = this.transform.position + (this.transform.forward * posCorrection);
+				pos.y = 0.01f;
 				var obj = Instantiate(swimRippleFX.gameObject, pos, Quaternion.identity);
 				var comp = obj.GetComponent<VisualEffect>();
 				comp.SetFloat("Random",Random.Range(0,100));
+				comp.SendEvent("OnStart");
 				// 計測時間後にオブジェクトを削除予定
 				DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
 			}

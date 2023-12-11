@@ -244,7 +244,6 @@ public class PlayerCamera : NetworkBehaviour
 	}
 
 	public void CameraMoveforPlayerMove(Vector3 euler, Quaternion qt){
-		Debug.Log(euler);
 		CameraObj.gameObject.transform.eulerAngles = euler;
 		CameraObj.gameObject.transform.rotation *= qt;
 	}

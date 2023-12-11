@@ -21,6 +21,7 @@ public class WhirloopBase : NetworkBehaviour
 	[SerializeField] [Tooltip("使用回数")] private int maxUseNum = 1;	// 使用回数
 	[SerializeField] [Tooltip("終了地点")] private Vector3 endPoint;
 	[SerializeField] [Tooltip("通過地点")] private List<Vector3> checkPoint;
+	[SerializeField] [Tooltip("出口方向軸")] private Vector3 exitForward;
 
 	[Space]
 
@@ -229,8 +230,6 @@ public class WhirloopBase : NetworkBehaviour
 				if(obj.CompareTag("Player")){
 					obj.GetComponent<CPlayer>().OutWhirloop();
 				}
-				Debug.Log("削除" + i);
-				Debug.Log(fxData.Count);
 				if(isLocalPlayer){
 					CmdDeleteFX(i);
 				}else if(isClient){
@@ -238,6 +237,7 @@ public class WhirloopBase : NetworkBehaviour
 				}
 				Debug.Log(fxData.Count);
 				otherObj.RemoveAt(i);
+				Debug.Log(obj.transform.forward);
 				// フラグを削除する
 				if(otherObj.Count == 0) _isOnObject = false;
 				continue;
@@ -246,6 +246,7 @@ public class WhirloopBase : NetworkBehaviour
 
 		// 使用回数を減らす
 		remainUseNum -= 1;
+		Debug.Log(remainUseNum);
 		// エフェクト削除
 
 		// 使用回数がなくなった場合の処理

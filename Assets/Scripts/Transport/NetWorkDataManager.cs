@@ -93,7 +93,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		}
 
 		// 各クライアントにデータを送信
-		RpcSendPlayerData(playerInfo);
+		if(NetworkClient.active) RpcSendPlayerData(playerInfo);
 	}
 	public void DeleteObj(CPlayer comp){
 		int count = 0;
@@ -110,7 +110,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		}
 
 		// 各クライアントにデータを送信
-		RpcSendPlayerData(playerInfo);
+		if(NetworkClient.active) RpcSendPlayerData(playerInfo);
 	}
 	public void DeleteObj(int id){
 		int count = 0;
@@ -127,7 +127,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		}
 
 		// 各クライアントにデータを送信
-		RpcSendPlayerData(playerInfo);
+		if(NetworkClient.active) RpcSendPlayerData(playerInfo);
 	}
 
 	public void DeleteAllObj(){
@@ -135,7 +135,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 		playerInfo.CompDatas.Clear();
 		playerInfo.ConnId.Clear();
 		// 各クライアントにデータを送信
-		RpcSendPlayerData(playerInfo);
+		if(NetworkClient.active) RpcSendPlayerData(playerInfo);
 	}
 
 	// ** データが同一かどうかを確認する関数群
