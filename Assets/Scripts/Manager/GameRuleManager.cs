@@ -55,7 +55,12 @@ public partial class GameRuleManager : NetworkBehaviour
 
 	// ** プレイヤー関係
 	[SerializeField]List<CPlayer> _playerData;	// プレイヤーのデータを格納しておく
-	[SerializeField][SyncVar]CPlayer _orgaPlayer;	// 現在鬼のプレイヤーを格納しておく
+	[SerializeField][SyncVar]CPlayer _orgaPlayer;   // 現在鬼のプレイヤーを格納しておく
+
+	//リザルト用
+	[SerializeField] List<GameObject>_ResultObject;//リザルト用のプレイヤーオブジェクト
+	[SerializeField] GameObject Resultobj;
+	private List<int> ResultList = new List<int>();
 
 	// ** 共通のUI
 	FadeMgr fadeMgr;

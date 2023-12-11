@@ -32,7 +32,7 @@ public class ResultFade : NetworkBehaviour
 
 		requireTime += Time.deltaTime;
 		var ratio = requireTime / targetTime;
-		Debug.Log(ratio);
+		//Debug.Log(ratio);
 		if(requireTime > targetTime){
 			requireTime = 0f;
 			targetTime = 0f;
@@ -41,7 +41,7 @@ public class ResultFade : NetworkBehaviour
 
 		if(isFadeOut){
 			ratio = 1 - ratio;
-			Debug.Log(ratio);
+	//		Debug.Log(ratio);
 		}
 
 		material.SetFloat("_Ratio",ratio);
