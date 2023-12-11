@@ -73,6 +73,8 @@ MonoBehaviour:
   - {x: 5.4, y: -499.5, z: -1.1}
   _playerData: []
   _orgaPlayer: {fileID: 0}
+  Resultobj: {fileID: 1790004077252208956, guid: af6d13ab7623f6f49b9ac5c9c7689903,
+    type: 3}
   TestPre: {fileID: 4984063755677553267, guid: 9691ac6dba6673c44b1e928b99a14582, type: 3}
 --- !u!114 &10298624091981889
 MonoBehaviour:
