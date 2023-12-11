@@ -56,11 +56,8 @@ public partial class CPlayer : NetworkBehaviour
 		ParticleUpdate();
 		HitStopUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
-
-		if(Input.GetKeyDown(KeyCode.H)){
-			UseItem();
-		}
 	}
+
 	[ClientRpc]
 	public void RpcCreateSettings(string name, Color color){
 		this.name = name;
@@ -167,41 +164,37 @@ public partial class CPlayer : NetworkBehaviour
 		);
 	}
 
-	private void OnTriggerEnter(Collider other){
-		if(!other.gameObject.CompareTag("Player")) return;
+	// private void OnTriggerEnter(Collider other){
+	// 	if(!other.gameObject.CompareTag("Player")) return;
 
-		// ローカルプレイヤーのときのみ
-		if(!isLocalPlayer) return;
-		// 自分が鬼のときのみ通知をする
-		if(_isNowOrga && mgr.CheckOverCoolTime()){
-			Debug.Log("あたり 私が鬼です" + this.name);
-			CmdChangeOrga(other.gameObject);
-		}
-		CmdEmergencyStop();
+	// 	// ローカルプレイヤーのときのみ
+	// 	if(!isLocalPlayer) return;
+	// 	// 自分が鬼のときのみ通知をする
+	// 	if(_isNowOrga && mgr.CheckOverCoolTime()){
+	// 		Debug.Log("あたり 私が鬼です" + this.name);
+	// 		CmdChangeOrga(other.gameObject);
+	// 	}
+	// 	CmdEmergencyStop();
+	// 	// Collisonのエフェクト作成
+	// 	var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
+	// 	obj.gameObject.transform.parent = this.gameObject.transform;
+	// 	obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
+	// 	ui.SetActiveSaturateCanvas(true);
+	// 	obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
 
+	// 	DOVirtual.DelayedCall(0.05f, () =>
+	// 	{
+	// 		HitStopPerformance();
+	// 	});
 
-
-
-		// Collisonのエフェクト作成
-		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
-		obj.gameObject.transform.parent = this.gameObject.transform;
-		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
-		ui.SetActiveSaturateCanvas(true);
-		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
-
-		DOVirtual.DelayedCall(0.05f, () =>
-		{
-			HitStopPerformance();
-		});
-
-		// 最終のエフェクトを削除する
-		DOVirtual.DelayedCall(0.5f, () =>
-			{
-				Destroy(obj);
-				ui.SetActiveSaturateCanvas(false);
-			}
-		);
-	}
+	// 	// 最終のエフェクトを削除する
+	// 	DOVirtual.DelayedCall(0.5f, () =>
+	// 		{
+	// 			Destroy(obj);
+	// 			ui.SetActiveSaturateCanvas(false);
+	// 		}
+	// 	);
+	// }
 
 	[Command]
 	void CmdChangeOrga(GameObject otherObj){
@@ -216,11 +209,6 @@ public partial class CPlayer : NetworkBehaviour
 
 	[Command]
 	private void CmdCreateWhrloop(){
-		RpcCreateWhirloop();
-	}
-
-	[ClientRpc]
-	private void RpcCreateWhirloop(){
 		Debug.Log("うずしおせいせい");
 		// 渦潮を生成する座標を自分の現在の座標を格納する
 		Vector3 whirloopPosition = this.transform.position;
@@ -234,10 +222,15 @@ public partial class CPlayer : NetworkBehaviour
 		// オブジェクトを生成する
 		var obj = Instantiate(_WhirloopPrefab, whirloopPosition, Quaternion.identity);
 		// 渦潮のセットアップ
-		obj.GetComponent<WhirloopBase>().SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
-		// 向きの更新
-		// obj.transform.rotation = qtAngle * obj.transform.rotation;
+		var whObj = obj.GetComponent<WhirloopBase>();
+
 		NetworkServer.Spawn(obj);
+		RpcCreateWhirloop(whObj, qtAngle);
+	}
+
+	[ClientRpc]
+	private void RpcCreateWhirloop(WhirloopBase obj, Quaternion qtAngle){
+		obj.SetUpWhrloop(_whirloopLength, 1.0f, qtAngle);
 	}
 
 	public void InWhirloopSetUp(){
@@ -280,19 +273,13 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void SetItem(Item item){
-		Debug.Log(item);
+		Debug.Log("アイテム入手" + item);
 		_HaveItemData = item;
 		ui.SetItemTexture(item.itemTex);
 	}
 
 	public bool isHaveItem(){
 		return _HaveItemData == null;
-	}
-
-	void UseItem(){
-		_HaveItemData.UseEffect(this.transform.position ,this.transform.rotation);
-		_HaveItemData = null;
-		ui.SetItemTexture(ui.defaultItemTex);
 	}
 
 	public Camera GetRenderCamera(){
@@ -326,7 +313,7 @@ public partial class CPlayer : NetworkBehaviour
 
 	[ClientRpc]
 	private void RpcSetKnockAway(Vector3 position){
-		Debug.Log("あああああああああああああああああああああああああああああああああああ");
+		// ここで弾き飛ばし処理になってる
 		this.transform.position = position;
 	}
 }

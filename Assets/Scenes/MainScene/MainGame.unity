@@ -3205,6 +3205,11 @@ PrefabInstance:
       propertyPath: CreateTime
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 5237957908880302242, guid: e264a9d8a62bde64790216c2472c9ff7,
+        type: 3}
+      propertyPath: isCreateItemBox
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5534399330142022038, guid: e264a9d8a62bde64790216c2472c9ff7,
         type: 3}
       propertyPath: m_LocalPosition.x

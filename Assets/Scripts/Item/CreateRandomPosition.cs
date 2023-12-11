@@ -21,7 +21,7 @@ public class CreateRandomPosition : NetworkBehaviour
 	private Vector3 rangeB;
 
 	//経過時間
-	public bool isCreateItemBox = false;
+	public bool isCreateItemBox = true;
 
 	// Start is called before the first frame update
 	void Start()
@@ -32,6 +32,7 @@ public class CreateRandomPosition : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if(!isServer) return;
 		if(!isCreateItemBox) return;
 		//前フレームからの時間を加算していく
 		CreateTime = CreateTime + Time.deltaTime;
@@ -56,7 +57,9 @@ public class CreateRandomPosition : NetworkBehaviour
 			float z = Random.Range(rangeA.z, rangeB.z);
 			//GameObjectを上記で決まったランダムな場所に生成
 			var obj = Instantiate(itemBox, new Vector3(x, y, z), itemBox.transform.rotation);
+			var comp = obj.GetComponent<ItemBox>();
 			NetworkServer.Spawn(obj);
+			comp.RpcSetItemData(comp.giveItem);
 		}
 	}
 }

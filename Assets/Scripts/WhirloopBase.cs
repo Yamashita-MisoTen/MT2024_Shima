@@ -230,11 +230,14 @@ public class WhirloopBase : NetworkBehaviour
 				if(obj.CompareTag("Player")){
 					obj.GetComponent<CPlayer>().OutWhirloop();
 				}
-				if(isLocalPlayer){
-					CmdDeleteFX(i);
-				}else if(isClient){
-					RpcDeleteFX(i);
-				}
+
+				Destroy(fxData[i]);
+
+				// if(isLocalPlayer){
+				// 	CmdDeleteFX(i);
+				// }else if(isClient){
+				// 	RpcDeleteFX(i);
+				// }
 				Debug.Log(fxData.Count);
 				otherObj.RemoveAt(i);
 				Debug.Log(obj.transform.forward);
