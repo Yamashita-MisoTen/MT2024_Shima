@@ -23,6 +23,23 @@ public class PlayerUI : NetworkBehaviour
 	Image saturateUI;
 	Image saturateCircleUI;
 	SaturatedAccele satirateCircleComp;
+
+	//item用変数
+	private int mCurFrame = 0;
+	private float mDelta = 0;
+	public float FPS = 5;
+	public List<Sprite> SpriteFrames;
+	public bool IsPlaying = false;
+	public bool Foward = true;
+	public bool AutoPlay = false;
+	public bool Loop = false;
+	public int FrameCount
+	{
+		get
+		{
+			return SpriteFrames.Count;
+		}
+	}
 	void Start()
 	{
 		for(int i = 0; i < UICanvasObj.transform.childCount; i++){
@@ -68,6 +85,46 @@ public class PlayerUI : NetworkBehaviour
 				isCharge = false;
 			}
 		}
+
+		//itmeUI変数更新用
+		mDelta += Time.deltaTime;
+		if (mDelta > 1 / FPS)
+		{
+			mDelta = 0;
+			if (Foward)
+			{
+				mCurFrame++;
+			}
+			else
+			{
+				mCurFrame--;
+			}
+			if (mCurFrame >= FrameCount)
+			{
+				if (Loop)
+				{
+					mCurFrame = 0;
+				}
+				else
+				{
+					IsPlaying = false;
+					return;
+				}
+			}
+			else if (mCurFrame < 0)
+			{
+				if (Loop)
+				{
+					mCurFrame = FrameCount - 1;
+				}
+				else
+				{
+					IsPlaying = false;
+					return;
+				}
+			}
+			SetSprite(mCurFrame);
+		}
 	}
 
 	public void ChangeOrgaPlayer(bool orgaflg){
@@ -105,7 +162,28 @@ public class PlayerUI : NetworkBehaviour
 	}
 
 	public void SetItemTexture(Texture2D tex){
+		StopItemUI();
 		playerHaveItemImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height),Vector2.zero);
+		//SetSprite(mCurFrame);
+	}
+	private void SetSprite(int idx)
+	{
+		playerHaveItemImage.sprite = SpriteFrames[idx];
+	}
+	public void StartItemUI()
+    {
+		PlayItemUI();
+    }
+	public void PlayItemUI()
+	{
+		IsPlaying = true;
+		Foward = true;
+	}
+	public void StopItemUI()
+	{
+		mCurFrame = 0;
+		//SetSprite(mCurFrame);
+		IsPlaying = false;
 	}
 
 	public void SetActiveSaturateCanvas(bool flg){

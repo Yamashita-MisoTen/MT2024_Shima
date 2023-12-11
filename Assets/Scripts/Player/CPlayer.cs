@@ -260,8 +260,14 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void SetItem(Item item){
 		Debug.Log(item);
-		_HaveItemData = item;
-		ui.SetItemTexture(item.itemTex);
+		ui.StartItemUI();
+		DOVirtual.DelayedCall(1.5f, () =>
+		{
+			_HaveItemData = item;
+			ui.SetItemTexture(item.itemTex);
+		});
+		//_HaveItemData = item;
+		//ui.SetItemTexture(item.itemTex);
 	}
 
 	public bool isHaveItem(){
