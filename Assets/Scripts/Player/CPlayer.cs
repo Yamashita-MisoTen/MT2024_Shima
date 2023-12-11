@@ -24,6 +24,8 @@ public partial class CPlayer : NetworkBehaviour
 	float _rotAngle;
 	[SerializeField] PlayerUI ui;
 	bool _isNowOrga = false;
+	bool _isCompleteChutolial = false;
+	int _progressDeg = 0;
 
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
@@ -128,6 +130,21 @@ public partial class CPlayer : NetworkBehaviour
 			Debug.Log("あたり 私が鬼です" + this.name);
 			CmdChangeOrga(other.gameObject);
 		}
+
+		// ここでレイを飛ばして正面に相手がいるかどうかを確認
+		Vector3 origin = this.transform.position + new Vector3(0,0.5f,0); // 原点
+		Vector3 direction = this.transform.forward; // X軸方向を表すベクトル
+		var ray = new Ray(origin, direction); // Rayを生成;
+		RaycastHit hit;
+
+		if(Physics.Raycast(ray.origin,ray.direction, out hit, 1.0f)){
+			if(hit.collider.gameObject == other.gameObject){
+				var pos = this.transform.position + (this.transform.forward * 5f);
+				Debug.Log("あああ" + pos);
+				CmdSetKnockAway(pos, other.gameObject.GetComponent<CPlayer>());
+			}
+		}
+
 		CmdEmergencyStop();
 		// Collisonのエフェクト作成
 		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
@@ -161,6 +178,10 @@ public partial class CPlayer : NetworkBehaviour
 			CmdChangeOrga(other.gameObject);
 		}
 		CmdEmergencyStop();
+
+
+
+
 		// Collisonのエフェクト作成
 		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
 		obj.gameObject.transform.parent = this.gameObject.transform;
@@ -277,5 +298,35 @@ public partial class CPlayer : NetworkBehaviour
 	public Camera GetRenderCamera(){
 		if(renderCamera == null) renderCamera = cameraObj.cameraComp;
 		return renderCamera;
+	}
+
+	void OnDecision(InputValue value){
+		if(isCanMove) return;
+
+		// チュートリアルを進める
+		_progressDeg++;
+
+		// チュートリアル画像を差し替える
+
+		if(_progressDeg == 1) CmdSetUpComplete();
+	}
+
+	[Command]
+	private void CmdSetUpComplete(){
+		if(_isCompleteChutolial) return;
+
+		_isCompleteChutolial = true;
+		mgr.CompleteChutolial();
+	}
+
+	[Command]
+	private void CmdSetKnockAway(Vector3 position, CPlayer player){
+		player.RpcSetKnockAway(position);
+	}
+
+	[ClientRpc]
+	private void RpcSetKnockAway(Vector3 position){
+		Debug.Log("あああああああああああああああああああああああああああああああああああ");
+		this.transform.position = position;
 	}
 }

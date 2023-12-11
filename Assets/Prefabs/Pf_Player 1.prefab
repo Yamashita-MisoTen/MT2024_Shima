@@ -241,7 +241,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _isNowOrga: 0
   collisonVFXPrefab: {fileID: 2267154920145094677, guid: cd4f8aae6560aca41af42843c05b49c8,
     type: 3}
   _WhirloopPrefab: {fileID: 8917630142182620420, guid: e1c964221159fc2429dff286cdc0fd0e,
@@ -261,7 +260,7 @@ MonoBehaviour:
     type: 3}
   HappenSplashFXTime: 0.1
   HappenRippleFXTime: 0.1
-  posCorrection: 1.2
+  posCorrection: 0
   Velocity_Limit: 15
   Acceleration: 0.1
   jumpCollTime: 3

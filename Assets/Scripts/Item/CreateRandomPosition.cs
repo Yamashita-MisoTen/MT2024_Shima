@@ -21,7 +21,7 @@ public class CreateRandomPosition : NetworkBehaviour
 	private Vector3 rangeB;
 
 	//経過時間
-	public bool isCreateItemBox = true;
+	public bool isCreateItemBox = false;
 
 	// Start is called before the first frame update
 	void Start()
@@ -32,12 +32,12 @@ public class CreateRandomPosition : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(isCreateItemBox) return;
+		if(!isCreateItemBox) return;
 		//前フレームからの時間を加算していく
-		CreateTime = CreateTime+ Time.deltaTime; ;
+		CreateTime = CreateTime + Time.deltaTime;
 
 		//ランダムに生成されるようにする
-		if(CreateTime>5.0f)
+		if(CreateTime > 5.0f)
 		{
 			CreateItemBox();
 			//経過時間をリセット

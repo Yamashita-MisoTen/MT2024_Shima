@@ -39,7 +39,6 @@ public partial class CPlayer
 	}
 
 	private void HitStopPerformance(){
-		Debug.Log("‚ ");
 		GlobalVolumeSetting(true);
 		CaptureScreenShot();
 		ShowImage();

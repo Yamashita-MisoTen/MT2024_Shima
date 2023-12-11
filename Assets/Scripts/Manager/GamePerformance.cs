@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using DG.Tweening;
 using UnityEngine;
+using Mirror;
 
 public partial class GameRuleManager
 {
@@ -17,7 +18,8 @@ public partial class GameRuleManager
 	float progressCountdownTime = 0;
 	bool isStartCountdown = false;
 
-	void StartReadyPerformance(){
+	[ClientRpc]
+	void RpcStartReadyPerformance(){
 		isStartCountdown = true;
 		SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
 		SoundManager.instance.LoopSettings(false);

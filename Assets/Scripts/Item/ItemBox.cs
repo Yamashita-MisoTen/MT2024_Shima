@@ -19,7 +19,7 @@ public class ItemBox : NetworkBehaviour
 		{
 			var pComp = collision.transform.GetComponent<CPlayer>();
 			if(pComp.isHaveItem())pComp.SetItem(giveItem);
-			Destroy(this.gameObject);
+			NetworkServer.Destroy(this.gameObject);
 		}
 	}
 
