@@ -48,9 +48,11 @@ public class Title : NetworkBehaviour{
 
 	[ClientRpc]
 	void RpcChangeSceneMainGame(string sceneName){
-		fadeMgr.StartFadeOut();
-		// フェードの命令いれる
-		DOVirtual.DelayedCall(fadeMgr.fadeOutTime,() =>netMgr.ServerChangeScene(sceneName));
+		if(!fadeMgr.isFadeOutNow){
+			fadeMgr.StartFadeOut();
+			// フェードの命令いれる
+			DOVirtual.DelayedCall(fadeMgr.fadeOutTime,() =>netMgr.ServerChangeScene(sceneName));
+		}
 	}
 
 	[ServerCallback]

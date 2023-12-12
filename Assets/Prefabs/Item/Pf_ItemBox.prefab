@@ -161,6 +161,7 @@ MonoBehaviour:
   - {fileID: 5640826294783059276, guid: dbf259c5c638a954f801d131195d60bc, type: 3}
   - {fileID: 5640826294783059276, guid: 51117c576bc391746bdc919345a1c3c4, type: 3}
   - {fileID: 5640826294783059276, guid: ada4ff2ac0a118f48a9469959c60b215, type: 3}
+  giveItem: {fileID: 0}
 --- !u!65 &1069076862985646567
 BoxCollider:
   m_ObjectHideFlags: 0

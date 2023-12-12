@@ -6,5 +6,5 @@ using Mirror;
 public class Item : NetworkBehaviour
 {
     [SerializeField] public Texture2D itemTex;
-    public virtual void UseEffect(Vector3 trans, Quaternion qt){}
+    [Server] public virtual void UseEffect(Vector3 trans, Quaternion qt){}
 }

@@ -17,6 +17,8 @@ public class FadeMgr : NetworkBehaviour
 	private List<RectTransform> fadeObj;
 	private List<Material> fadeObjMt;
 	public bool isCompleteFadeOut { get; private set;}
+	public bool isFadeOutNow {get; private set;}
+	public bool isFadeInNow {get; private set;}
 	void Start()
 	{
 		this.name = "Pf_FadeCanvas";
@@ -39,6 +41,7 @@ public class FadeMgr : NetworkBehaviour
 	}
 
 	public void StartFadeIn(){
+		isFadeInNow = true;
 		for(int i = 0; i < fadeObj.Count; i++){
 			float targetX = 0f;
 			if(i % 2 == 0){
@@ -53,6 +56,7 @@ public class FadeMgr : NetworkBehaviour
 	}
 
 	public void StartFadeOut(){
+		isFadeOutNow = true;
 		for(int i = 0; i < fadeObj.Count; i++){
 			float targetX = 0f;
 			if(i % 2 == 0){

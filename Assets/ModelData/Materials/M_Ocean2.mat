@@ -122,7 +122,7 @@ Material:
     - _Density: 0.79
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _Distance: 2
+    - _Distance: 0.2
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1

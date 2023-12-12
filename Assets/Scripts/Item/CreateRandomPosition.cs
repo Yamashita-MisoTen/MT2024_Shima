@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class CreateRandomPosition : NetworkBehaviour
 {
@@ -32,12 +33,13 @@ public class CreateRandomPosition : NetworkBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(isCreateItemBox) return;
+		if(!isServer) return;
+		if(!isCreateItemBox) return;
 		//前フレームからの時間を加算していく
-		CreateTime = CreateTime+ Time.deltaTime; ;
+		CreateTime = CreateTime + Time.deltaTime;
 
 		//ランダムに生成されるようにする
-		if(CreateTime>5.0f)
+		if(CreateTime > 5.0f)
 		{
 			CreateItemBox();
 			//経過時間をリセット
@@ -56,7 +58,10 @@ public class CreateRandomPosition : NetworkBehaviour
 			float z = Random.Range(rangeA.z, rangeB.z);
 			//GameObjectを上記で決まったランダムな場所に生成
 			var obj = Instantiate(itemBox, new Vector3(x, y, z), itemBox.transform.rotation);
+			var comp = obj.GetComponent<ItemBox>();
 			NetworkServer.Spawn(obj);
+
+			DOVirtual.DelayedCall(0.01f, () => comp.RpcSetItemData(comp.giveItem));
 		}
 	}
 }

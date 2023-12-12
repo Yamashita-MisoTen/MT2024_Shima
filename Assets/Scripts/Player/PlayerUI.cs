@@ -29,7 +29,7 @@ public class PlayerUI : NetworkBehaviour
 	private float mDelta = 0;
 	public float FPS = 5;
 	public List<Sprite> SpriteFrames;
-	public bool IsPlaying = false;
+	public bool isPlaying = false;
 	public bool Loop = false;
 	public int FrameCount
 	{
@@ -85,7 +85,7 @@ public class PlayerUI : NetworkBehaviour
 		}
 
         //itmeUI•Ï”XV—p
-        if (IsPlaying)
+        if (isPlaying)
         {
 			mDelta += Time.deltaTime;
 			if (mDelta > 1 / FPS)
@@ -149,13 +149,13 @@ public class PlayerUI : NetworkBehaviour
 	}
 	public void StartItemUI()
     {
-		IsPlaying = true;
+		isPlaying = true;
 	}
 	public void StopItemUI()
 	{
 		mCurFrame = 0;
 		//SetSprite(mCurFrame);
-		IsPlaying = false;
+		isPlaying = false;
 	}
 
 	public void SetActiveSaturateCanvas(bool flg){

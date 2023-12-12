@@ -305,17 +305,25 @@ public partial class CPlayer : NetworkBehaviour
 		ui.SetCharge();
 
 		// 鬼のときのみそのまま渦潮を生成する
-		if (_isNowOrga) CmdCreateWhrloop();
+		if (_isNowOrga && isLocalPlayer) CmdCreateWhrloop();
 	}
 
 	public void OnUseItem()	// アイテム使用
 	{
 		if (!isCanMove) return;
+		if (!isLocalPlayer) return;
 		if (isOnWhirloop) return;
 		if (_HaveItemData == null) return;
-		_HaveItemData.UseEffect(this.transform.position, this.transform.rotation);
+		Debug.Log("Num1");
+		Debug.Log(_HaveItemData);
+		CmdUseItem(_HaveItemData);
 		_HaveItemData = null;
 		ui.SetItemTexture(ui.defaultItemTex);
+	}
+	[Command]
+	void CmdUseItem(Item item){
+		Debug.Log("Num2");
+		item.UseEffect(this.transform.position, this.transform.rotation);
 	}
 
 	// 通信で用いる同期関数群

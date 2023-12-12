@@ -8,26 +8,35 @@ public class ItemBox : NetworkBehaviour
 {
 	//Objectを持っておくList
 	[SerializeField] List<GameObject> list_item;
-	Item giveItem = null;
+	public Item giveItem;
+	GameObject item;
+	CPlayer playerComp;
 	void Start(){
-		giveItem = RandomSetItem();
-	}
-	void OnTriggerEnter(Collider collision)
-	{
-		//衝突した相手にPlayerタグが付いているとき
-		if(collision.gameObject.tag == "Player")
-		{
-			var pComp = collision.transform.GetComponent<CPlayer>();
-			if(pComp.isHaveItem())pComp.SetItem(giveItem);
-			Destroy(this.gameObject);
+		int num = Random.Range(0, list_item.Count);
+		if(isServer){
+			item = Instantiate(list_item[num],transform.position,transform.rotation);
+			NetworkServer.Spawn(item);
+			giveItem = item.GetComponent<Item>();
 		}
 	}
 
-	Item RandomSetItem(){
-		int num = Random.Range(0, list_item.Count);
-		Debug.Log(num);
-		Debug.Log(list_item.Count - 1);
-		Debug.Log("アイテム取得" + list_item[num].name);
-		return list_item[num].GetComponent<Item>();
+	private void OnTriggerEnter(Collider other){
+		//衝突した相手にPlayerタグが付いているとき
+		if(other.gameObject.tag == "Player")
+		{
+			Debug.Log("ここで触ってる");
+			var pComp = other.transform.GetComponent<CPlayer>();
+			if(!pComp.isLocalPlayer) return;
+			if(pComp.isHaveItem()){
+				playerComp = pComp;
+				playerComp.SetItemData(giveItem);
+				NetworkServer.Destroy(this.gameObject);
+			}
+		}
+	}
+
+	[ClientRpc]
+	public void RpcSetItemData(Item itemData){
+		giveItem = itemData;
 	}
 }

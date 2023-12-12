@@ -33,7 +33,7 @@ public class IceEvent : GameEvent
         for (int i = 0; i < count; i++)
         {
             float rndScale = Random.Range(minSize, maxSize);
-            if (EdgeSize.x > EdgeSize.z) 
+            if (EdgeSize.x > EdgeSize.z)
             {
                 GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(Random.Range(-EdgeSize.x / 2, EdgeSize.x / 2), EdgePos.y, EdgePos.z), Quaternion.identity);
                 Ins_Ice.transform.localScale = new Vector3(rndScale, rndScale, rndScale);

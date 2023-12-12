@@ -13,6 +13,10 @@ public class Item_Whirloop : Item
 		Debug.Log(qtA);
 		var Obj = Instantiate(prefab, pos + qtA, qt);
 		NetworkServer.Spawn(Obj);
-		Obj.GetComponent<WhirloopBase>().EventSetUpWhirloop();
+		RpcSetUp(Obj.GetComponent<WhirloopBase>());
+	}
+	[ClientRpc]
+	void RpcSetUp(WhirloopBase obj){
+		obj.EventSetUpWhirloop();
 	}
 }

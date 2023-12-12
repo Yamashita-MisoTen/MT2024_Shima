@@ -47,6 +47,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField] List<Vector3> resultPos;
 
 	EventMgr eventMgr;
+	CreateRandomPosition itemMgr;
 	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
 	int completeChangeSceneClient = 0;
@@ -77,12 +78,14 @@ public partial class GameRuleManager : NetworkBehaviour
 	void Awake() {
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
-		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
-		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
+
 	}
 	void Start()
 	{
+		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
+		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
+
 		for(int i = 0; i < this.transform.childCount; i++){
 			var obj = this.transform.GetChild(i);
 			canvas = new List<Canvas>();
@@ -134,7 +137,7 @@ public partial class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
-				fadeResult.SetCamera(p.GetRenderCamera());
+				//fadeResult.SetCamera(p.GetRenderCamera());
 				foreach(Canvas c in canvas){
 					c.worldCamera = p.GetRenderCamera();
 				}
@@ -152,10 +155,10 @@ public partial class GameRuleManager : NetworkBehaviour
 
 		fadeMgr.StartFadeIn();
 
-		// デバッグの時は演出いれない
-		if(!isDebugMode){
-			DOVirtual.DelayedCall(fadeMgr.fadeInTime, () => StartReadyPerformance(), false);
-		}
+		// // デバッグの時は演出いれない
+		// if(!isDebugMode){
+		// 	DOVirtual.DelayedCall(fadeMgr.fadeInTime, () => StartReadyPerformance(), false);
+		// }
 	}
 
 	[ClientRpc]
@@ -167,6 +170,9 @@ public partial class GameRuleManager : NetworkBehaviour
 		countdownText.text = "Start!!";
 		// 1s後に非表示に
 		DOVirtual.DelayedCall (1f, ()=> readyCanvasObj.SetActive(false), false);
+
+		itemMgr = GameObject.Find("Pf_ItemMgr").GetComponent<CreateRandomPosition>();
+		itemMgr.isCreateItemBox = true;
 
 		gameState = GameState.NowPlay;
 		ChangeOrgaPlayer(_orgaPlayer);
@@ -336,5 +342,14 @@ public partial class GameRuleManager : NetworkBehaviour
 
 	public bool CheckOverCoolTime(){	// クールタイム終わってるか確認
 		return !_isCoolTimeNow;
+	}
+
+	public void CompleteChutolial(){
+		completeChangeSceneClient++;
+
+		if(completeChangeSceneClient == _playerData.Count){
+			RpcStartReadyPerformance();
+			Debug.Log(completeChangeSceneClient);
+		}
 	}
 }

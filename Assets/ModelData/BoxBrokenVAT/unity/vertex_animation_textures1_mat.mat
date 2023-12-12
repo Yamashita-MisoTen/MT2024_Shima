@@ -7,12 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_SaturatedLineCircle
-  m_Shader: {fileID: -6465566751694194690, guid: f33bf951fb4aa7442a5c061a0d3abcf7,
-    type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_Name: vertex_animation_textures1_mat
+  m_Shader: {fileID: -6465566751694194690, guid: 085ef3ec3a5a70d4790c0957d30c9f63, type: 3}
+  m_ValidKeywords:
+  - _B_LOAD_COL_TEX
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -20,14 +18,9 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BaseMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -64,11 +57,27 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_7ee73bedc63240ccbe6c3773e165724d_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 0d3b9ffd0f9ecc745a1306abfe548097, type: 3}
+    - _SampleTexture2D_72ab43ee7e5b4ff3acd5a9fb57f150dc_Texture_1:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SpecGlossMap:
+    - _colTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _posTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _posTexture2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _rotTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _spareColTexture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -86,58 +95,51 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaClip: 0
-    - _AlphaToMask: 0
-    - _Blend: 0
-    - _BlendModePreserveSpecular: 1
-    - _BlendRatio: 0.15
+    - _B_LOAD_COL_TEX: 1
+    - _B_LOAD_NORM_TEX: 0
+    - _B_LOAD_POS_TWO_TEX: 0
+    - _B_SMOOTH_TRAJECTORIES: 0
+    - _B_animateFirstFrame: 0
+    - _B_autoPlayback: 1
+    - _B_interpolate: 0
+    - _B_interpolateCol: 0
+    - _B_interpolateSpareCol: 0
+    - _B_pscaleAreInPosA: 1
+    - _B_stretchByVel: 0
+    - _B_surfaceNormals: 1
+    - _B_twoSidedNorms: 0
     - _BumpScale: 1
-    - _CircleDensity: 0.1
-    - _ClearCoatMask: 0
-    - _ClearCoatSmoothness: 0
-    - _Cull: 2
     - _Cutoff: 0.5
-    - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _DstBlendAlpha: 0
-    - _EnvironmentReflections: 1
-    - _GlossMapScale: 0
-    - _Glossiness: 0
-    - _GlossyReflections: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
     - _Metallic: 0
-    - _MoveTime: 1
+    - _Mode: 0
     - _OcclusionStrength: 1
-    - _Parallax: 0.005
-    - _QueueControl: 0
+    - _Parallax: 0.02
+    - _QueueControl: -1
     - _QueueOffset: 0
-    - _Ratio: 0.96061933
-    - _ReceiveShadows: 1
-    - _SaturatedRatio: 20
-    - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SrcBlendAlpha: 1
-    - _Surface: 0
-    - _WorkflowMode: 1
+    - _UVSec: 0
     - _ZWrite: 1
+    - _boundMaxX: 2.799999952316284
+    - _boundMaxY: 10.5
+    - _boundMaxZ: 21.649999618530273
+    - _boundMinX: -5.099999904632568
+    - _boundMinY: -0.6010000109672546
+    - _boundMinZ: -3.799999952316284
+    - _displayFrame: 1
+    - _frameCount: 100
+    - _gameTimeAtFirstFrame: 0
+    - _globalPscaleMul: 1
+    - _houdiniFPS: 30.0
+    - _playbackSpeed: 1
+    - _stretchByVelAmount: 0
     m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &926370024144671111
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 7
