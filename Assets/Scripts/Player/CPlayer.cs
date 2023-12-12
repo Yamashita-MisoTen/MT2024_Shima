@@ -271,15 +271,8 @@ public partial class CPlayer : NetworkBehaviour
 		ui.SetPlaneDistance(2);
 		ui.SetActiveSaturateCanvas(false);
 	}
-	public void SetItem(Item item){
-		if(isServer) CmdSetItem(item);
-	}
-	[Command]
-	public void CmdSetItem(Item item){
-		RpcSetItem(item);
-	}
-	[ClientRpc]
-	public void RpcSetItem(Item item){
+
+	public void SetItemData(Item item){
 		Debug.Log("アイテム入手" + item);
 		_HaveItemData = item;
 		ui.SetItemTexture(item.itemTex);

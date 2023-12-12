@@ -78,12 +78,14 @@ public partial class GameRuleManager : NetworkBehaviour
 	void Awake() {
 		NetworkClient.RegisterHandler<SendOrgaPlayerData>(ReciveOrgaPlayerDataInfo);
 		NetworkClient.RegisterHandler<SendCompleyeChangeSceme>(ReciveChangeSceneClient);
-		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
-		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
+
 	}
 	void Start()
 	{
+		netMgr = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
+		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
+
 		for(int i = 0; i < this.transform.childCount; i++){
 			var obj = this.transform.GetChild(i);
 			canvas = new List<Canvas>();
@@ -135,7 +137,7 @@ public partial class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
-				fadeResult.SetCamera(p.GetRenderCamera());
+				//fadeResult.SetCamera(p.GetRenderCamera());
 				foreach(Canvas c in canvas){
 					c.worldCamera = p.GetRenderCamera();
 				}

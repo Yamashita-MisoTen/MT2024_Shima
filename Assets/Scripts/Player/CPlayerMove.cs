@@ -314,13 +314,16 @@ public partial class CPlayer : NetworkBehaviour
 		if (!isLocalPlayer) return;
 		if (isOnWhirloop) return;
 		if (_HaveItemData == null) return;
-		CmdUseItem();
+		Debug.Log("Num1");
+		Debug.Log(_HaveItemData);
+		CmdUseItem(_HaveItemData);
+		_HaveItemData = null;
 		ui.SetItemTexture(ui.defaultItemTex);
 	}
 	[Command]
-	void CmdUseItem(){
-		_HaveItemData.UseEffect(this.transform.position, this.transform.rotation);
-		_HaveItemData = null;
+	void CmdUseItem(Item item){
+		Debug.Log("Num2");
+		item.UseEffect(this.transform.position, this.transform.rotation);
 	}
 
 	// ’ÊM‚Å—p‚¢‚é“¯ŠúŠÖ”ŒQ

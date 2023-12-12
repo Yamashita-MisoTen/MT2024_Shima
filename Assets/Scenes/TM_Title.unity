@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.48389626, g: 0.5756704, b: 0.6801584, a: 1}
+  m_IndirectSpecularColor: {r: 0.48396292, g: 0.5757246, b: 0.680174, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -210,6 +210,16 @@ PrefabInstance:
         type: 3}
       propertyPath: sceneId
       value: 2743610209
+      objectReference: {fileID: 0}
+    - target: {fileID: 1069076862985646567, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967510030411222077, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5290590036957677181, guid: 82b6f44e25b7a6a45a1ccc4570445547,
         type: 3}
@@ -800,6 +810,16 @@ PrefabInstance:
       propertyPath: sceneId
       value: 2740520561
       objectReference: {fileID: 0}
+    - target: {fileID: 1069076862985646567, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967510030411222077, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5290590036957677181, guid: 82b6f44e25b7a6a45a1ccc4570445547,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -961,6 +981,9 @@ MonoBehaviour:
   - {fileID: 6789354461771350062, guid: 338fcf6f3080f404ca975ea8c052ba9e, type: 3}
   - {fileID: 2767579982304457384, guid: a26a2a6d8fb9a8841b525d0cd6a89265, type: 3}
   - {fileID: 4984063755677553267, guid: 8e4260c6830d53d47bb8fb4d941ca9e9, type: 3}
+  - {fileID: 5640826294783059276, guid: 51117c576bc391746bdc919345a1c3c4, type: 3}
+  - {fileID: 5640826294783059276, guid: dbf259c5c638a954f801d131195d60bc, type: 3}
+  - {fileID: 5640826294783059276, guid: ada4ff2ac0a118f48a9469959c60b215, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -1038,6 +1061,16 @@ PrefabInstance:
         type: 3}
       propertyPath: sceneId
       value: 2398732381
+      objectReference: {fileID: 0}
+    - target: {fileID: 1069076862985646567, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967510030411222077, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5290590036957677181, guid: 82b6f44e25b7a6a45a1ccc4570445547,
         type: 3}
@@ -1701,6 +1734,16 @@ PrefabInstance:
       propertyPath: sceneId
       value: 3647778519
       objectReference: {fileID: 0}
+    - target: {fileID: 1069076862985646567, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967510030411222077, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5290590036957677181, guid: 82b6f44e25b7a6a45a1ccc4570445547,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -2085,6 +2128,16 @@ PrefabInstance:
         type: 3}
       propertyPath: sceneId
       value: 1191707786
+      objectReference: {fileID: 0}
+    - target: {fileID: 1069076862985646567, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967510030411222077, guid: 82b6f44e25b7a6a45a1ccc4570445547,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5290590036957677181, guid: 82b6f44e25b7a6a45a1ccc4570445547,
         type: 3}
