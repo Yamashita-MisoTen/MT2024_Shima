@@ -31,7 +31,7 @@ public class PlayerUI : NetworkBehaviour
 	public List<Sprite> SpriteFrames;
 	public bool IsPlaying = false;
 	public bool Foward = true;
-	public bool AutoPlay = false;
+	//public bool AutoPlay = false;
 	public bool Loop = false;
 	public int FrameCount
 	{
@@ -86,44 +86,47 @@ public class PlayerUI : NetworkBehaviour
 			}
 		}
 
-		//itmeUI変数更新用
-		mDelta += Time.deltaTime;
-		if (mDelta > 1 / FPS)
-		{
-			mDelta = 0;
-			if (Foward)
+        //itmeUI変数更新用
+        if (IsPlaying)
+        {
+			mDelta += Time.deltaTime;
+			if (mDelta > 1 / FPS)
 			{
-				mCurFrame++;
-			}
-			else
-			{
-				mCurFrame--;
-			}
-			if (mCurFrame >= FrameCount)
-			{
-				if (Loop)
+				mDelta = 0;
+				if (Foward)
 				{
-					mCurFrame = 0;
+					mCurFrame++;
 				}
 				else
 				{
-					IsPlaying = false;
-					return;
+					mCurFrame--;
 				}
-			}
-			else if (mCurFrame < 0)
-			{
-				if (Loop)
+				if (mCurFrame >= FrameCount)
 				{
-					mCurFrame = FrameCount - 1;
+					if (Loop)
+					{
+						mCurFrame = 0;
+					}
+					else
+					{
+						IsPlaying = false;
+						return;
+					}
 				}
-				else
+				else if (mCurFrame < 0)
 				{
-					IsPlaying = false;
-					return;
+					if (Loop)
+					{
+						mCurFrame = FrameCount - 1;
+					}
+					else
+					{
+						IsPlaying = false;
+						return;
+					}
 				}
+				SetSprite(mCurFrame);
 			}
-			SetSprite(mCurFrame);
 		}
 	}
 
@@ -172,10 +175,6 @@ public class PlayerUI : NetworkBehaviour
 	}
 	public void StartItemUI()
     {
-		PlayItemUI();
-    }
-	public void PlayItemUI()
-	{
 		IsPlaying = true;
 		Foward = true;
 	}
