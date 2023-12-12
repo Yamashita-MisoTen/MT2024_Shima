@@ -662,10 +662,48 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pf_Player 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: AutoPlay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: SpriteFrames.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: SpriteFrames.Array.data[0]
+      value: 
+      objectReference: {fileID: -287749669, guid: d4b61b09096cff74da87d8552a5d16e7,
+        type: 3}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: SpriteFrames.Array.data[1]
+      value: 
+      objectReference: {fileID: 441262852, guid: d4b61b09096cff74da87d8552a5d16e7,
+        type: 3}
+    - target: {fileID: 7762816088404949649, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: SpriteFrames.Array.data[2]
+      value: 
+      objectReference: {fileID: 1881003045, guid: d4b61b09096cff74da87d8552a5d16e7,
+        type: 3}
     - target: {fileID: 7864918274296005831, guid: 5ab8a9925101832478749cafb53210a2,
         type: 3}
       propertyPath: sceneId
       value: 3411153944
+      objectReference: {fileID: 0}
+    - target: {fileID: 8826248511332898170, guid: 5ab8a9925101832478749cafb53210a2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
