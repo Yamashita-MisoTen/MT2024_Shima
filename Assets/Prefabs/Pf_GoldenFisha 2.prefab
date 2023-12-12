@@ -318,7 +318,12 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 7e2409af7c7a0514284bb8ad592f95e3,
         type: 3}
       propertyPath: m_Name
-      value: Pf_GoldenFisha
+      value: Pf_GoldenFisha 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7e2409af7c7a0514284bb8ad592f95e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -335,7 +340,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7e2409af7c7a0514284bb8ad592f95e3,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8169131504351855164}
+      addedObject: {fileID: 6935794362309010238}
   m_SourcePrefab: {fileID: 100100000, guid: 7e2409af7c7a0514284bb8ad592f95e3, type: 3}
 --- !u!4 &3772268261046140462 stripped
 Transform:
@@ -349,7 +354,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3734452220735773125}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8169131504351855164
+--- !u!114 &6935794362309010238
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -358,6 +363,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4544722821927068820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 403619841b928cb43911a4b2b753a86e, type: 3}
+  m_Script: {fileID: 11500000, guid: f92c8edca28ada340a2e9f63b3bf664d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  time2: 0
