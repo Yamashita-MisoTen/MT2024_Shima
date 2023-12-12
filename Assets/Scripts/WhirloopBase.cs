@@ -44,7 +44,6 @@ public class WhirloopBase : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		otherObj = new List<GameObject>();	// オブジェクトのデータを格納する
 		remainUseNum = maxUseNum;
 	}
 
@@ -209,6 +208,7 @@ public class WhirloopBase : NetworkBehaviour
 
 	// 当たったときにオブジェクトを指定する
 	private void OnTriggerEnter(Collider other){
+		if(otherObj == null) otherObj = new List<GameObject>();	// オブジェクトのデータを格納する
 		if(remainUseNum == otherObj.Count) return;
 		Debug.Log("使用回数オーバーしてない");
 		if(otherObj.Contains(other.gameObject)) return;
@@ -233,11 +233,6 @@ public class WhirloopBase : NetworkBehaviour
 
 				Destroy(fxData[i]);
 
-				// if(isLocalPlayer){
-				// 	CmdDeleteFX(i);
-				// }else if(isClient){
-				// 	RpcDeleteFX(i);
-				// }
 				Debug.Log(fxData.Count);
 				otherObj.RemoveAt(i);
 				Debug.Log(obj.transform.forward);

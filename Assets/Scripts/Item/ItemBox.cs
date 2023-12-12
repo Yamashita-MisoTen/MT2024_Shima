@@ -16,9 +16,11 @@ public class ItemBox : NetworkBehaviour
 	}
 	void OnTriggerEnter(Collider collision)
 	{
+		if(!isServer) return;
 		//衝突した相手にPlayerタグが付いているとき
 		if(collision.gameObject.tag == "Player")
 		{
+			Debug.Log("ここで触ってる");
 			var pComp = collision.transform.GetComponent<CPlayer>();
 			if(pComp.isHaveItem())pComp.SetItem(giveItem);
 			NetworkServer.Destroy(this.gameObject);

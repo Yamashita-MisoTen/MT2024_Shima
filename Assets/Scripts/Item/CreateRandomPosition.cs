@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class CreateRandomPosition : NetworkBehaviour
 {
@@ -59,7 +60,8 @@ public class CreateRandomPosition : NetworkBehaviour
 			var obj = Instantiate(itemBox, new Vector3(x, y, z), itemBox.transform.rotation);
 			var comp = obj.GetComponent<ItemBox>();
 			NetworkServer.Spawn(obj);
-			comp.RpcSetItemData(comp.giveItem);
+
+			DOVirtual.DelayedCall(0.01f, () => comp.RpcSetItemData(comp.giveItem));
 		}
 	}
 }
