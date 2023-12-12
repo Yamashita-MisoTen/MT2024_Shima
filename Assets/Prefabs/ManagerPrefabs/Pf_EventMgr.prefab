@@ -50,8 +50,10 @@ MonoBehaviour:
   syncInterval: 0
   eventKind:
   - {fileID: 7953864117305497540, guid: c067391c3b3d0c248be937241b1b48eb, type: 3}
+  - {fileID: 7953864117305497540, guid: c067391c3b3d0c248be937241b1b48eb, type: 3}
   eventUIObj: {fileID: 4199790094535721805, guid: e4ed619f51998844db0db713eb77dac8,
     type: 3}
+  eventUI: {fileID: 0}
 --- !u!114 &8365918428400502127
 MonoBehaviour:
   m_ObjectHideFlags: 0
