@@ -30,8 +30,6 @@ public class PlayerUI : NetworkBehaviour
 	public float FPS = 5;
 	public List<Sprite> SpriteFrames;
 	public bool IsPlaying = false;
-	public bool Foward = true;
-	//public bool AutoPlay = false;
 	public bool Loop = false;
 	public int FrameCount
 	{
@@ -93,36 +91,12 @@ public class PlayerUI : NetworkBehaviour
 			if (mDelta > 1 / FPS)
 			{
 				mDelta = 0;
-				if (Foward)
-				{
-					mCurFrame++;
-				}
-				else
-				{
-					mCurFrame--;
-				}
+				mCurFrame++;
 				if (mCurFrame >= FrameCount)
 				{
 					if (Loop)
 					{
 						mCurFrame = 0;
-					}
-					else
-					{
-						IsPlaying = false;
-						return;
-					}
-				}
-				else if (mCurFrame < 0)
-				{
-					if (Loop)
-					{
-						mCurFrame = FrameCount - 1;
-					}
-					else
-					{
-						IsPlaying = false;
-						return;
 					}
 				}
 				SetSprite(mCurFrame);
@@ -176,7 +150,6 @@ public class PlayerUI : NetworkBehaviour
 	public void StartItemUI()
     {
 		IsPlaying = true;
-		Foward = true;
 	}
 	public void StopItemUI()
 	{

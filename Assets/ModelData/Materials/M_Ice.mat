@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Ice
-  m_Shader: {fileID: -6465566751694194690, guid: 6dc7ff7dbf8f05145aa90643464e9865,
+  m_Shader: {fileID: -6465566751694194690, guid: 265fc557571584446aa81294439fd556,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
