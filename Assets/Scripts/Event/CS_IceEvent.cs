@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 public class IceEvent : GameEvent
@@ -37,11 +38,13 @@ public class IceEvent : GameEvent
             {
                 GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(Random.Range(-EdgeSize.x / 2, EdgeSize.x / 2), EdgePos.y, EdgePos.z), Quaternion.identity);
                 Ins_Ice.transform.localScale = new Vector3(rndScale, rndScale, rndScale);
+                NetworkServer.Spawn(Ins_Ice);
             }
             if (EdgeSize.x < EdgeSize.z)
             {
                 GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(EdgePos.x, EdgePos.y, Random.Range(-EdgeSize.z / 2, EdgeSize.z / 2)), Quaternion.identity);
                 Ins_Ice.transform.localScale = new Vector3(rndScale, rndScale, rndScale);
+                NetworkServer.Spawn(Ins_Ice);
             }
         }
     }

@@ -303,6 +303,10 @@ MonoBehaviour:
   UICanvasObj: {fileID: 6433378810516615447}
   chargeTime: 3
   defaultItemTex: {fileID: 2800000, guid: c692dab827c586649b953291b016c78e, type: 3}
+  FPS: 5
+  SpriteFrames: []
+  isPlaying: 0
+  Loop: 0
 --- !u!114 &361399584869889880
 MonoBehaviour:
   m_ObjectHideFlags: 0

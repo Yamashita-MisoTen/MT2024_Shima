@@ -46,7 +46,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField] List<Vector3> playerStartPosition;
 	[SerializeField] List<Vector3> resultPos;
 
-	EventMgr eventMgr;
+	[SyncVar]EventMgr eventMgr;
 	CreateRandomPosition itemMgr;
 	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
@@ -101,8 +101,11 @@ public partial class GameRuleManager : NetworkBehaviour
 			}
 		}
 		if(netMgr == null)GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-		var mgr = Instantiate(eventMgrPrefabs);
-		eventMgr = mgr.GetComponent<EventMgr>();
+		if(isServer){
+			var mgr = Instantiate(eventMgrPrefabs);
+			NetworkServer.Spawn(mgr);
+			eventMgr = mgr.GetComponent<EventMgr>();
+		}
 		ReadyGame();
 	}
 

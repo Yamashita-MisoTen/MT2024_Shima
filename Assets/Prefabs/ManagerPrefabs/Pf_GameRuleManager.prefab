@@ -60,7 +60,7 @@ MonoBehaviour:
   _progressCoolTime: 0
   eventMgrPrefabs: {fileID: 8843581091669261959, guid: d4b83329f7e821147a0cbf03a9937b9a,
     type: 3}
-  eventTimer: 5a0000003c0000001e000000
+  eventTimer: 6e0000003c0000001e000000
   playerStartPosition:
   - {x: -100, y: -0.25, z: -100}
   - {x: -50, y: -0.25, z: -100}
