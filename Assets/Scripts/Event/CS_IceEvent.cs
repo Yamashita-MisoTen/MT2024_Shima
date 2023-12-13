@@ -36,13 +36,13 @@ public class IceEvent : GameEvent
             float rndScale = Random.Range(minSize, maxSize);
             if (EdgeSize.x > EdgeSize.z)
             {
-                GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(Random.Range(-EdgeSize.x / 2, EdgeSize.x / 2), EdgePos.y, EdgePos.z), Quaternion.identity);
+                GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(Random.Range(-EdgeSize.x / 2, EdgeSize.x / 2), 0, EdgePos.z), Quaternion.identity);
                 Ins_Ice.transform.localScale = new Vector3(rndScale, rndScale, rndScale);
                 NetworkServer.Spawn(Ins_Ice);
             }
             if (EdgeSize.x < EdgeSize.z)
             {
-                GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(EdgePos.x, EdgePos.y, Random.Range(-EdgeSize.z / 2, EdgeSize.z / 2)), Quaternion.identity);
+                GameObject Ins_Ice = (GameObject)Instantiate(Ice, new Vector3(EdgePos.x, 0, Random.Range(-EdgeSize.z / 2, EdgeSize.z / 2)), Quaternion.identity);
                 Ins_Ice.transform.localScale = new Vector3(rndScale, rndScale, rndScale);
                 NetworkServer.Spawn(Ins_Ice);
             }

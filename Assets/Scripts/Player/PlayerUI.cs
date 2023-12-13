@@ -17,13 +17,15 @@ public class PlayerUI : NetworkBehaviour
 	[SerializeField] public Texture2D defaultItemTex;
 	float requireChargeTime;
 	bool isCharge = false;
-	TextMeshProUGUI playerStateText;		// プレイヤーの状態を表示しておく
 	Image		playerHaveItemImage;
 	Image		SlideJumpImage;
 	Material	SlideJumpImageMaterial;
 	RectTransform	SlideJumpImageAnchoredPosition;
 	Image saturateUI;
 	Image saturateCircleUI;
+	Image roleUI;
+	[SerializeField] Sprite roleTexOrga;
+	[SerializeField] Sprite roleTexPenguin;
 	SaturatedAccele satirateCircleComp;
 	Image[] tutolialImage;
 	RectTransform[] tutolialImageTrans;
@@ -47,8 +49,8 @@ public class PlayerUI : NetworkBehaviour
 	{
 		for(int i = 0; i < UICanvasObj.transform.childCount; i++){
 			var childObj = UICanvasObj.transform.GetChild(i);
-			if(childObj.name == "PlayerState"){
-				playerStateText = childObj.GetComponent<TextMeshProUGUI>();
+			if(childObj.name == "RoleImage"){
+				roleUI = childObj.GetComponent<Image>();
 			}
 			if(childObj.name == "Item"){
 				playerHaveItemImage = childObj.GetComponent<Image>();
@@ -124,9 +126,9 @@ public class PlayerUI : NetworkBehaviour
 
 	public void ChangeOrgaPlayer(bool orgaflg){
 		if(orgaflg){
-			playerStateText.text = "Your Orga";
+			roleUI.sprite = roleTexOrga;
 		}else{
-			playerStateText.text = "";
+			roleUI.sprite = roleTexPenguin;
 		}
 	}
 

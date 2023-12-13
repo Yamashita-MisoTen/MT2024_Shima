@@ -44,10 +44,12 @@ public partial class CPlayer : NetworkBehaviour
 
 	// ** スピードアップイベント関数
 	public void SetUpSpeedUpEvent(float addSpeed){
+		Debug.Log("増えます");
 		Velocity_Addition += addSpeed;
 	}
 
 	public void FinishSpeedUpEvent(float minusSpeed){
+		Debug.Log("消えます");
 		Velocity_Addition -= minusSpeed;
 	}
 }

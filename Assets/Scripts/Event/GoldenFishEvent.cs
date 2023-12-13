@@ -19,11 +19,20 @@ public class Pf_GoldenFishEvent : GameEvent
 		Debug.Log(eventName() + "ooooooooooo");
 
 		var obj =  Instantiate(GoldenFish, zahyou1, Quaternion.identity);
-		obj.GetComponent<GoldFishMove>().SetUpEventData(eventTime, addSpeed);
 		var obj2 = Instantiate(GoldenFish2, zahyou2, Quaternion.identity);
-		obj2.GetComponent<GoldFishMove2>().SetUpEventData(eventTime, addSpeed);
-
+		// 関数呼ぶ前にサーバーに登録する
 		NetworkServer.Spawn(obj);
 		NetworkServer.Spawn(obj2);
+		RpcSetUpGoldenFish(obj.GetComponent<GoldFishMove>());
+		RpcSetUpGoldenFish(obj2.GetComponent<GoldFishMove2>());
+	}
+
+	[ClientRpc]
+	private void RpcSetUpGoldenFish(GoldFishMove comp){
+		comp.SetUpEventData(eventTime, addSpeed);
+	}
+	[ClientRpc]
+	private void RpcSetUpGoldenFish(GoldFishMove2 comp){
+		comp.SetUpEventData(eventTime, addSpeed);
 	}
 }

@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CS_IceUpdate : MonoBehaviour
+public class CS_IceUpdate : NetworkBehaviour
 {
     Vector3 direction;
     bool hited = false;
     float Seconds = 0;
-    Rigidbody rb;
 
     public float speed;
     public float exSeconds; //‘¶ÝŽžŠÔ
@@ -31,7 +31,7 @@ public class CS_IceUpdate : MonoBehaviour
 
         if (hited == true || Seconds > exSeconds)
         {
-            Destroy(this.gameObject);
+            NetworkServer.Destroy(this.gameObject);
         }
     }
 
