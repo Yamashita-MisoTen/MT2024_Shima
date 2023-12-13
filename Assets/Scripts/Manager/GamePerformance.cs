@@ -120,7 +120,7 @@ public partial class GameRuleManager
 
 				ResultList.RemoveAt(index);
 
-				script.SetAnimation(index);
+				script.SetAnimation(ransu);
 			}
 			_ResultObject[i].transform.position = resultPos[i];
 		}
