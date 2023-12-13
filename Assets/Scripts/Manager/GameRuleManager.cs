@@ -140,7 +140,9 @@ public partial class GameRuleManager : NetworkBehaviour
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
-				//fadeResult.SetCamera(p.GetRenderCamera());
+				// nullチェック
+				if(fadeResult == null) fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
+				fadeResult.SetCamera(p.GetRenderCamera());
 				foreach(Canvas c in canvas){
 					c.worldCamera = p.GetRenderCamera();
 				}

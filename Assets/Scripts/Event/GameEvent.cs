@@ -14,4 +14,8 @@ public class GameEvent : NetworkBehaviour
 	public string GetEventName(){
 		return eventName();
 	}
+
+	public string GetExplanatory(){
+		return eventExplanatory();
+	}
 }

@@ -45,7 +45,15 @@ public class HappenWhirloop : GameEvent
 			var obj = Instantiate(whirloopList[num], position, rotation);
 			whirloopObjList.Add(obj);
 			NetworkServer.Spawn(obj);
+			// クライアント各自で初期設定を行う
+			if(isServer){
+				RpcSetUpWhirloop(obj.GetComponent<WhirloopBase>());
+			}
 		}
+	}
+	[ClientRpc]
+	void RpcSetUpWhirloop(WhirloopBase whirloop){
+		whirloop.EventSetUpWhirloop();
 	}
 
 	void Update(){
@@ -58,7 +66,7 @@ public class HappenWhirloop : GameEvent
 	void FinishEvent(){
 		for(int i = 0; i < whirloopObjList.Count; i++){
 			if(whirloopObjList[i] == null) continue;
-			//NetworkServer.Destroy(whirloopObjList[i]);
+			NetworkServer.Destroy(whirloopObjList[i]);
 		}
 	}
 }

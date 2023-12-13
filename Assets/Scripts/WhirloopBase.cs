@@ -208,12 +208,20 @@ public class WhirloopBase : NetworkBehaviour
 
 	// 当たったときにオブジェクトを指定する
 	private void OnTriggerEnter(Collider other){
-		if(otherObj == null) otherObj = new List<GameObject>();	// オブジェクトのデータを格納する
+		// プレイヤーのみを指定する
+		if(!other.gameObject.CompareTag("Player")) return;
+		// オブジェクトのデータのnullCheck
+		if(otherObj == null) otherObj = new List<GameObject>();
+		// 使用回数確認
 		if(remainUseNum == otherObj.Count) return;
 		Debug.Log("使用回数オーバーしてない");
+		// 同一オブジェクト確認
 		if(otherObj.Contains(other.gameObject)) return;
 		Debug.Log("同一オブジェクトが入ってない");
+
+		// 問題ないのでデータを格納する
 		otherObj.Add(other.gameObject);
+
 		// プレイヤーの時は変更する
 		if(other.gameObject.CompareTag("Player")){
 			other.gameObject.GetComponent<CPlayer>().InWhirloopSetUp();

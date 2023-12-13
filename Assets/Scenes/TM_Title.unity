@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.48394263, g: 0.5756992, b: 0.6801818, a: 1}
+  m_IndirectSpecularColor: {r: 0.48398095, g: 0.57574916, b: 0.6801951, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -960,7 +960,7 @@ MonoBehaviour:
   offlineScene: Assets/Scenes/TM_Title.unity
   onlineScene: Assets/Scenes/TM_Title.unity
   transport: {fileID: 0}
-  networkAddress: 164.254.204.39
+  networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
@@ -987,7 +987,10 @@ MonoBehaviour:
   - {fileID: 8843581091669261959, guid: d4b83329f7e821147a0cbf03a9937b9a, type: 3}
   - {fileID: 8003933814664383107, guid: 525b5378241a1634cb080d81a9265c4f, type: 3}
   - {fileID: 8003933814664383107, guid: da762fe4a4ddae44587d56e5f90f79b4, type: 3}
-  - {fileID: 0}
+  - {fileID: 1531779560267493186, guid: 20ecc9a2deb1705499faf167e4d986a2, type: 3}
+  - {fileID: 6369339781616624354, guid: bbf7ba895a373044685cb911ca68fdcc, type: 3}
+  - {fileID: 5993929817270170688, guid: bac739d2348e61c468c62107e11cbe78, type: 3}
+  - {fileID: 5902512507151107633, guid: 5bb0b1e61407d3e44acebcd1a35c1899, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -1482,8 +1485,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1.5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1541,13 +1544,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 717360273}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.4047769, y: -0.23499742, z: 0.10845962, w: 0.87702245}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 49.55, y: -30, z: 0}
 --- !u!114 &717360276
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -50,7 +50,7 @@ MonoBehaviour:
   syncInterval: 0
   minSize: 3
   maxSize: 5
-  count: 20
+  count: 200
   Ice: {fileID: 2252726113065761430, guid: 38c7d2954792dd04aa9d15a22c89b77a, type: 3}
 --- !u!114 &8009845523669037555
 MonoBehaviour:

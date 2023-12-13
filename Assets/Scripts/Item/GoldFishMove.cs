@@ -43,7 +43,6 @@ public class GoldFishMove : NetworkBehaviour
 	public void SetUpEventData(float time, float speed){
 		eventTime = time;
 		addSpeed = speed;
-		// NetworkServer.Spawn(this.gameObject);
 	}
 
 	private void OnTriggerEnter(Collider other) {
