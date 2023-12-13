@@ -2,36 +2,79 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Mirror;
 
-public class GoldFishMove2 : MonoBehaviour
+public class GoldFishMove2 : NetworkBehaviour
 {
-    Tweener GoldenFish2;
+	Tweener goldenFishTweener;
    // [SerializeField] public Vector3 zahyou01;
-    [SerializeField] public float time2;
+	[SerializeField, Tooltip("進む経路")] List<Vector3> route;
+	float eventTime = 0;
+	float addSpeed = 0;
+	bool isPlayerCatch = false;	// プレイヤーに捕獲されたかどうか
+	float requireTime = 0f;	// 経過時間
+	CPlayer playerComp = null;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        float lookAhead = 0.8f;
-      GoldenFish2   =  transform.DOLocalPath(new Vector3[] { new Vector3(60f, 0f, -50f), new Vector3(-60f, 0f, -50f), new Vector3(-60f, 0f, 50f), new Vector3(60f, 0f, 50) },
-          30, PathType.CatmullRom, PathMode.Full3D, gizmoColor: Color.red).OnComplete(() => Debug.Log("終わり"))
-      .SetLookAt(lookAhead, Vector3.forward)
-      .SetLoops(-1, LoopType.Restart)
-      .SetEase(Ease.Linear);
-      // DOVirtual.DelayedCall(time2, () => GoldenFish2.Kill());
-    }
+	// Start is called before the first frame update
+	void Start()
+	{
+		float lookAhead = 0.8f; // 方向の更新の頻度
+		// 経路を指定する
+		goldenFishTweener = transform.DOLocalPath(route.ToArray(),30, PathType.CatmullRom, PathMode.Full3D, gizmoColor: Color.red)
+		.OnComplete(() => Debug.Log("終わり"))
+		.SetLookAt(lookAhead, Vector3.forward)
+		.SetLoops(-1, LoopType.Restart)
+		.SetEase(Ease.Linear);
 
-    // Update is called once per frame
-    void Update()
-    {
+		// 一定時間後に消えるようにする
 
+		// DOVirtual.DelayedCall(time2, () => GoldenFish2.Kill());
+	}
 
-        
+	void Update(){
+		requireTime += Time.deltaTime;
+		// イベントの時間が終了した場合それぞれ効果が変わる
+		if(requireTime >= eventTime){
+			if(isPlayerCatch){
+				CatchByPlayer();
+			}else{
+				NotCatchByPlayer();
+			}
+		}
+	}
 
+	public void SetUpEventData(float time, float speed){
+		eventTime = time;
+		addSpeed = speed;
+		// NetworkServer.Spawn(this.gameObject);
+	}
 
-    }
+	private void OnTriggerEnter(Collider other) {
+		if(other.gameObject.tag != "Player") return;
+		isPlayerCatch = true;
+		playerComp = other.gameObject.transform.GetComponent<CPlayer>();
+		// プレイヤーとあたったときのみ処理する
+		playerComp.GetGoldenFish(addSpeed);
+		// プレイヤーの子オブジェクトに変更
+		this.gameObject.transform.parent = playerComp.gameObject.transform;
 
+		// 顔に合うようにローカル座標・向き・大きさを変更する
+		this.transform.localPosition = new Vector3(0f,0.45f,1.6f);
+		this.transform.eulerAngles = new Vector3(90f,90f,0f);
+		this.transform.localScale = new Vector3(50f,50f,50f);
 
+		// 動きを止める
+		goldenFishTweener.Kill();
+	}
+	private void CatchByPlayer(){
+		// プレイヤーに飲み込む処理をさせる
+		playerComp.FinishGoldenFishEvent(addSpeed);
 
- 
+		NetworkServer.Destroy(this.gameObject);
+	}
+
+	private void NotCatchByPlayer(){
+		// そのまま削除
+		NetworkServer.Destroy(this.gameObject);
+	}
 }

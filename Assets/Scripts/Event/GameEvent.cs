@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class GameEvent : MonoBehaviour
+public class GameEvent : NetworkBehaviour
 {
 	protected virtual string eventName() => "name";
+	protected virtual string eventExplanatory() => "説明文";
 	// 継承する用のスタート関数
 	public virtual void StartEvent() {}
 

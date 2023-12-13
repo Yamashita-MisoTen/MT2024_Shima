@@ -29,7 +29,7 @@ public class EventMgr : NetworkBehaviour
 
 		var eventnum = Random.Range(0, eventKind.Count);
 		Debug.Log(eventKind[eventnum].GetEventName() + "発生");
-		eventKind[eventnum].StartEvent();
+		if(isServer) eventKind[eventnum].StartEvent();
 	}
 
 	void StartPerformance(){
