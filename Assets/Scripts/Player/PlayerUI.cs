@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine.UI;
 using System.Security;
 using Unity.VisualScripting;
+using System.Linq;
+using DG.Tweening;
 
 public class PlayerUI : NetworkBehaviour
 {
@@ -23,7 +25,8 @@ public class PlayerUI : NetworkBehaviour
 	Image saturateUI;
 	Image saturateCircleUI;
 	SaturatedAccele satirateCircleComp;
-
+	Image[] tutolialImage;
+	RectTransform[] tutolialImageTrans;
 	//itemópïœêî
 	private int mCurFrame = 0;
 	private float mDelta = 0;
@@ -31,6 +34,8 @@ public class PlayerUI : NetworkBehaviour
 	public List<Sprite> SpriteFrames;
 	public bool isPlaying = false;
 	public bool Loop = false;
+	public int tutorialNum {get; private set;}= 0;
+	bool isTutorialAnim = false;
 	public int FrameCount
 	{
 		get
@@ -63,6 +68,19 @@ public class PlayerUI : NetworkBehaviour
 				satirateCircleComp = childObj.GetComponent<SaturatedAccele>();
 				saturateCircleUI.gameObject.SetActive(false);
 			}
+			if(childObj.name == "Tutorial1"){
+				if(tutolialImage == null) tutolialImage = new Image[2];
+				if(tutolialImageTrans == null) tutolialImageTrans = new RectTransform[2];
+				tutolialImage[0] = childObj.GetComponent<Image>();
+				tutolialImageTrans[0] = childObj.GetComponent<RectTransform>();
+			}
+			if(childObj.name == "Tutorial2"){
+				if(tutolialImage == null) tutolialImage = new Image[2];
+				if(tutolialImageTrans == null) tutolialImageTrans = new RectTransform[2];
+				tutolialImage[1] = childObj.GetComponent<Image>();
+				tutolialImageTrans[1] = childObj.GetComponent<RectTransform>();
+			}
+
 		}
 		UICanvasObj.SetActive(false);
 
@@ -172,5 +190,39 @@ public class PlayerUI : NetworkBehaviour
 
 	public void SetPlaneDistance(float value){
 		UICanvasObj.GetComponent<Canvas>().planeDistance = value;
+	}
+
+	public void NextTutolialPage(){
+		if(isTutorialAnim) return;
+		if(tutorialNum + 1 == tutolialImage.Count()) return;
+		tutorialNum++;
+		isTutorialAnim = true;
+
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.x - 1920;
+			Debug.Log(pos);
+			tutolialImageTrans[i].DOAnchorPosX(pos, 1.0f).
+			OnComplete(() => DOVirtual.DelayedCall(1.0f, () => isTutorialAnim = false));
+		}
+	}
+	public void BackTutolialPage(){
+		if(isTutorialAnim) return;
+		if(tutorialNum == 0) return;
+		tutorialNum--;
+		isTutorialAnim = true;
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.x + 1920;
+			Debug.Log(pos);
+			tutolialImageTrans[i].DOAnchorPosX(pos, 1.0f).
+			OnComplete(() => DOVirtual.DelayedCall(1.0f, () => isTutorialAnim = false));
+		}
+	}
+
+	public void CloseTutorialImage(){
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].position.y + 1080;
+			tutolialImageTrans[i].DOAnchorPosY(pos, 1.0f).
+			OnComplete(() => tutolialImage[i].gameObject.SetActive(false));
+		}
 	}
 }

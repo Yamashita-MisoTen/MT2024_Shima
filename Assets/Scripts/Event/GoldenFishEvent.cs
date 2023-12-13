@@ -12,8 +12,9 @@ public class Pf_GoldenFishEvent : GameEvent
 	[SerializeField] private Vector3 zahyou1;
 	[SerializeField] private Vector3 zahyou2;
 
-	protected override string eventName() => "黄金魚発生";
-	public override void StartEvent()
+	protected override string eventName() => "黄金魚";
+    protected override string eventExplanatory() => "エリア内に\"黄金魚\"が出現！！奪い合え！！";
+    public override void StartEvent()
 	{
 		Debug.Log(eventName() + "ooooooooooo");
 

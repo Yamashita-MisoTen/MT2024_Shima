@@ -25,7 +25,6 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] PlayerUI ui;
 	bool _isNowOrga = false;
 	bool _isCompleteChutolial = false;
-	int _progressDeg = 0;
 
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
@@ -291,11 +290,14 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove) return;
 
 		// チュートリアルを進める
-		_progressDeg++;
+		if(ui.tutorialNum + 1 != 2){
+			ui.NextTutolialPage();
+		}else{
+			ui.CloseTutorialImage();
+			CmdSetUpComplete();
+		}
 
 		// チュートリアル画像を差し替える
-
-		if(_progressDeg == 1) CmdSetUpComplete();
 	}
 
 	[Command]
