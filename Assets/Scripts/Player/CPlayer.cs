@@ -139,6 +139,7 @@ public partial class CPlayer : NetworkBehaviour
 
 		// ここでレイを飛ばして正面に相手がいるかどうかを確認
 		var cor = - this.transform.lossyScale.x / 2;
+		bool isCehck = false;
 		for(int i = 0; i < 3; i++){
 			Vector3 origin = this.gameObject.transform.position + new Vector3(cor,0f,0f); // 原点
 			Vector3 direction = this.gameObject.transform.forward; // X軸方向を表すベクトル
@@ -156,12 +157,22 @@ public partial class CPlayer : NetworkBehaviour
 					Debug.Log("吹き飛ばし" + pos);
 					// 吹き飛ばし処理
 					CmdSetKnockAway(pos, time, other.gameObject.GetComponent<CPlayer>());
+					isCehck = true;
 					break;
 				}
 			}
 		}
 
-		// 相手との距離をベクトルでだしてその逆ベクトルに飛ばす
+		// 吹き飛ばし処理をしない場合
+		if(isCehck){
+			// 緊急停止かける
+			CmdEmergencyStop();
+
+			// 相手との距離をベクトルでだしてその逆ベクトルに飛ばす
+
+		}
+
+		// 音をいれる
 		var hit1 = moveAudioComp.NewAudioSource();
 		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerhit, hit1);
 		SoundManager.instance.ChangeVolume(0.25f, hit1);
@@ -173,15 +184,15 @@ public partial class CPlayer : NetworkBehaviour
 		SoundManager.instance.LoopSettings(hit2, false);
 		DOVirtual.DelayedCall(2.2f, () => Destroy(hit2));
 
-		CmdEmergencyStop();
 		// Collisonのエフェクト作成
+		// 生成位置わるすぎ
 		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
 		obj.gameObject.transform.parent = this.gameObject.transform;
 		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
 		ui.SetActiveSaturateCanvas(true);
 		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
 
-		DOVirtual.DelayedCall(0.05f, () =>
+		DOVirtual.DelayedCall(0.03f, () =>
 		{
 			HitStopPerformance();
 		});
@@ -234,6 +245,11 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void ChangeOrgaPlayer(bool orgaflg){
 		_isNowOrga = orgaflg;
+		if(orgaflg){
+			velocity_Orga = orgaPlusSpeed;
+		}else{
+			velocity_Orga = 0f;
+		}
 		ParticleStartUpSwitch(orgaFX, orgaflg);
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
@@ -265,6 +281,8 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InWhirloopSetUp(){
+		float speed = NowVelocity;
+		Debug.Log(NowVelocity);
 		CmdEmergencyStop();
 		isOnWhirloop = true;
 		// カメラの設定
@@ -272,9 +290,6 @@ public partial class CPlayer : NetworkBehaviour
 
 		// プレイヤーの体の角度を渦潮の方向に向ける
 		// 回転のときのプレイヤーのカメラの更新処理
-		var euler = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
-		var camqt = Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
-		cameraObj.CameraMoveforPlayerMove(euler, camqt);
 
 		// 画面演出
 		// 被写界深度
@@ -284,8 +299,8 @@ public partial class CPlayer : NetworkBehaviour
 		ui.SetActiveSaturateCanvas(true);
 	}
 
-	public void OutWhirloop(){
-		Velocity = 5f;
+	public void OutWhirloop(float velo){
+		NowVelocity = velo;
 		Debug.Log(Side_Move);
 		Debug.Log(Side_MoveNow);
 		isOnWhirloop = false;

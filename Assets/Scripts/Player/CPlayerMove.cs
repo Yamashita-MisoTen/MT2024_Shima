@@ -20,7 +20,7 @@ public partial class CPlayer : NetworkBehaviour
 
 	// ** 移動類のパラメータ
 	private float Velocity;  //入力されている速度
-	private float NowVelocity;  //現在の速度
+	public float NowVelocity;  //現在の速度
 	[SerializeField, Header("移動の速度制限")]
 	private float Velocity_Limit;
 
@@ -32,27 +32,16 @@ public partial class CPlayer : NetworkBehaviour
 
 	//イベントなど加速の値が変化するとき
 	private float Velocity_Addition;
+	[SerializeField] float orgaPlusSpeed = 5.0f;
+	private float velocity_Orga;
 
 	//?????x
 	private float Deceleration = 0.5f;
-
-	private float NowJump_speed;
-	private float Jump_Speed = 10;
-	private bool Jump_Switch;
 	private bool isCanJump = true;
 
 	private Vector3 Start_Position;
 	private eJump_Type Jump_Type;
 
-	// ** 横ダッシュのパラメーター
-	//横ダッシュ加速度
-	private float SJump_Acceleration = 20.0f;
-	//全体の時間
-	private float SJump_AllTime = 1.0f;
-	//ジャンプ経過時間
-	private float SJump_NowTime;
-	//現在の速度
-	private float SJump_Speed;
 	// ジャンプのクールタイム用の経過時間
 	private float requireJumpTime = 0f;
 
@@ -126,22 +115,24 @@ public partial class CPlayer : NetworkBehaviour
 			}
 		}
 
-		if (!isOnWhirloop)
+		// 渦潮に乗ってるときは基本挙動の更新をしない
+		if (isOnWhirloop){
+			return;
+		}
+
+		// 動いてるときの音
+		if (NowVelocity > 0)
 		{
-			// 動いてるときの音
-			if (NowVelocity > 0)
-			{
-				isSwim = true;
-				var ratio = NowVelocity / Velocity_Limit;
-				SoundManager.instance.ChangeVolume(ratio / 50, moveAudioComp.GetAudioSource());
-				cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60, 75, ratio);
-			}
-			else
-			{
-				SoundManager.instance.ChangeVolume(0f, moveAudioComp.GetAudioSource());
-				isSwim = false;
-				cameraObj.cameraComp.fieldOfView = 60;
-			}
+			isSwim = true;
+			var ratio = NowVelocity / Velocity_Limit;
+			SoundManager.instance.ChangeVolume(ratio / 50, moveAudioComp.GetAudioSource());
+			cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60, 75, ratio);
+		}
+		else
+		{
+			SoundManager.instance.ChangeVolume(0f, moveAudioComp.GetAudioSource());
+			isSwim = false;
+			cameraObj.cameraComp.fieldOfView = 60;
 		}
 
 		//アニメーションに数値代入
@@ -155,37 +146,12 @@ public partial class CPlayer : NetworkBehaviour
 			Swimming.SetBool("MoveFastest", false);
 		}
 
-		if (Jump_Switch)
-		{
-			// 横ジャンプの予備動作
-			if (SJump_NowTime <= SJump_AllTime * 0.2f)
-			{
-				this.transform.position += -this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
-				this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
-				SJump_NowTime += Time.deltaTime;
-			}
-			else  // 横ジャンプ挙動
-			{
-				this.transform.position += this.gameObject.transform.forward * SJump_Speed * Time.deltaTime;
-				this.transform.position += this.gameObject.transform.up * Jump_Fall * Time.deltaTime;
+		// サーバー側での各プレイヤーの入力値に応じた加速度を計算する
+		// サーバー側での処理をしないとクライアントで生じる更新回数の差でズレが生じるため
+		if (isServer) PlayerMoveServerProcess();
+		// クライアントでサーバー側から得た情報で更新を行う
+		PlayerMoveClientProcess();
 
-				SJump_NowTime += Time.deltaTime;
-				SJump_Speed += SJump_Acceleration * Time.deltaTime;
-				// Debug.Log(SJump_Acceleration);
-				if (SJump_NowTime > SJump_AllTime)
-				{
-					Jump_Switch = false;
-				}
-			}
-		}
-		else
-		{
-			// サーバー側での各プレイヤーの入力値に応じた加速度を計算する
-			// サーバー側での処理をしないとクライアントで生じる更新回数の差でズレが生じるため
-			if (isServer) PlayerMoveServerProcess();
-			// クライアントでサーバー側から得た情報で更新を行う
-			PlayerMoveClientProcess();
-		}
 	}
 
 	void PlayerMoveServerProcess()
@@ -206,7 +172,7 @@ public partial class CPlayer : NetworkBehaviour
 		// クライアント側で最終の更新を行う
 		if(isOnWhirloop) return;
 		// 移動
-		this.transform.position += this.gameObject.transform.forward * (NowVelocity + Velocity_Addition) * Time.deltaTime;
+		this.transform.position += this.gameObject.transform.forward * (NowVelocity + Velocity_Addition + velocity_Orga) * Time.deltaTime;
 		// 回転
 		var qt = this.transform.rotation;
 		if(Side_MoveNow != 0.0f){
@@ -283,29 +249,24 @@ public partial class CPlayer : NetworkBehaviour
 		CmdUpdateSideMove(axis.x * Side_Acceleration);
 	}
 
+	public float GetNowSpeed(){
+		return NowVelocity + Velocity_Addition + velocity_Orga;
+	}
 
 	private void OnJump() // ジャンプ
 	{
-		if (!isCanMove) return;
-		if (Jump_Switch) return;
+		if (!isCanMove) return;		// 移動可能な場合のみ
 		// ジャンプの制限を確認する
-		if(!isCanJump) return;
-		if (isOnWhirloop) return;
-
-		// 緊急停止
-		CmdEmergencyStop();
-
+		if(!isCanJump) return;		// ジャンプのクールタイム
+		if(!_isNowOrga) return;		// 自分が鬼のときのみ
+		if(isOnWhirloop) return;	// 渦潮に乗ってないときのみ
+		if(!isLocalPlayer) return;	// 操作キャラのときのみ
 		// ジャンプの変数更新
-		Jump_Switch = true;
 		isCanJump = false;
-		SJump_NowTime = 0.0f;
-		SJump_Speed = 0.0f;
-
 		// UIを更新する
 		ui.SetCharge();
-
-		// 鬼のときのみそのまま渦潮を生成する
-		if (_isNowOrga && isLocalPlayer) CmdCreateWhrloop();
+		// 渦潮を生成する
+		CmdCreateWhrloop();
 	}
 
 	public void OnUseItem()	// アイテム使用
@@ -348,6 +309,7 @@ public partial class CPlayer : NetworkBehaviour
 	[Command]
 	private void CmdEmergencyStop()
 	{
+		Debug.Log("緊急停止");
 		NowVelocity = 0.0f;
 		Velocity = 0.0f;
 		Side_MoveNow = 0.0f;
