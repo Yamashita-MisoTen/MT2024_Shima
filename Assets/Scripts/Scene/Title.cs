@@ -36,6 +36,8 @@ public class Title : NetworkBehaviour{
 
 		obj = Instantiate(Soundprefab);
 		obj = Instantiate(BGMSoungprefab);
+
+		BGMSoundManager.instance.PlayAudio(BGMSoundManager.AudioID.Title);
 	}
 
 	// Update is called once per frame

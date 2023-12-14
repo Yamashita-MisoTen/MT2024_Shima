@@ -79,6 +79,8 @@ public class FadeMgr : NetworkBehaviour
 	}
 
 	void CompleteFadeIn(){
+		var mgr = GameObject.Find("Pf_GameRuleManager(Clone)").GetComponent<GameRuleManager>();
+		mgr.CompleteFadeIn();
 		NetworkServer.Destroy(this.gameObject);
 	}
 

@@ -85,6 +85,10 @@ public class BGMSoundManager : NetworkBehaviour
 		source.clip = audioDatas[(int)id].audioClip;
 		source.Play();
 	}
+
+	public void StopAudio(){
+		_source[mainSorceNum].Stop();
+	}
 	/// <summary>
 	/// ボリュームの変更を行う
 	/// </summary>

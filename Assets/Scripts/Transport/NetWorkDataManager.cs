@@ -53,7 +53,7 @@ public class NetWorkDataManager : NetworkBehaviour {
 			Vector3 pos = new Vector3( -1.5f + detail, 0, 0);
 			obj.transform.position = pos;
 		}else{
-			obj.transform.position = lobyPlayerDataPos[playerInfo.ObjDatas.Count];
+			obj.transform.position = lobyPlayerDataPos[playerInfo.ObjDatas.Count - 1];
 		}
 
 		// クライアントにデータを送る

@@ -15,6 +15,9 @@ public class SoundManager : NetworkBehaviour
 		whistle,
 		countdown,
 		whirloopIn,
+		playerhit,
+		waterhit,
+		min1Alarm
 	}
 
 	[System.Serializable]

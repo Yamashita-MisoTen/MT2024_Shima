@@ -55,6 +55,15 @@ public partial class CPlayer : NetworkBehaviour
 		ParticleUpdate();
 		HitStopUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
+
+		var cor = -this.transform.lossyScale.x / 2;
+		Vector3 origin = this.gameObject.transform.position + new Vector3(cor,0f,0f); // 原点
+		Vector3 origin1 = this.gameObject.transform.position + new Vector3(cor + this.transform.lossyScale.x / 2,0f,0f); // 原点
+		Vector3 origin2 = this.gameObject.transform.position + new Vector3(cor + this.transform.lossyScale.x,0f,0f); // 原点
+		Vector3 direction = this.gameObject.transform.forward; // X軸方向を表すベクトル
+		Debug.DrawRay(origin, direction, Color.red, 3.0f);
+		Debug.DrawRay(origin1, direction, Color.red, 3.0f);
+		Debug.DrawRay(origin2, direction, Color.red, 3.0f);
 	}
 
 	[ClientRpc]
@@ -115,6 +124,7 @@ public partial class CPlayer : NetworkBehaviour
 			inputComp.enabled = true;
 		}
 	}
+	BoxCollider box;
 
 	private void OnCollisionEnter(Collision other) {
 		if(!other.gameObject.CompareTag("Player")) return;
@@ -128,18 +138,40 @@ public partial class CPlayer : NetworkBehaviour
 		}
 
 		// ここでレイを飛ばして正面に相手がいるかどうかを確認
-		Vector3 origin = this.transform.position + new Vector3(0,0.5f,0); // 原点
-		Vector3 direction = this.transform.forward; // X軸方向を表すベクトル
-		var ray = new Ray(origin, direction); // Rayを生成;
-		RaycastHit hit;
+		var cor = - this.transform.lossyScale.x / 2;
+		for(int i = 0; i < 3; i++){
+			Vector3 origin = this.gameObject.transform.position + new Vector3(cor,0f,0f); // 原点
+			Vector3 direction = this.gameObject.transform.forward; // X軸方向を表すベクトル
+			RaycastHit hit;
+			Ray ray = new Ray(origin, direction); // Rayを生成
+			cor += this.transform.lossyScale.x / 2;
 
-		if(Physics.Raycast(ray.origin,ray.direction, out hit, 1.0f)){
-			if(hit.collider.gameObject == other.gameObject){
-				var pos = this.transform.position + (this.transform.forward * 5f);
-				Debug.Log("あああ" + pos);
-				CmdSetKnockAway(pos, other.gameObject.GetComponent<CPlayer>());
+			if(Physics.Raycast(ray.origin,ray.direction, out hit, 10.0f)){
+				Debug.Log("BoxCast当たり" + hit.collider.gameObject.name );
+				if(hit.collider.gameObject == other.gameObject){
+
+					var ratio = NowVelocity / Velocity_Limit;
+					float time = 2f * (1f - ratio) + 1f;
+					var pos = other.transform.position + (this.transform.forward * 5f);
+					Debug.Log("吹き飛ばし" + pos);
+					// 吹き飛ばし処理
+					CmdSetKnockAway(pos, time, other.gameObject.GetComponent<CPlayer>());
+					break;
+				}
 			}
 		}
+
+		// 相手との距離をベクトルでだしてその逆ベクトルに飛ばす
+		var hit1 = moveAudioComp.NewAudioSource();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerhit, hit1);
+		SoundManager.instance.ChangeVolume(0.25f, hit1);
+		SoundManager.instance.LoopSettings(hit1, false);
+		DOVirtual.DelayedCall(1.1f, () => Destroy(hit1));
+		var hit2 = moveAudioComp.NewAudioSource();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.waterhit, hit2);
+		SoundManager.instance.ChangeVolume(0.25f, hit2);
+		SoundManager.instance.LoopSettings(hit2, false);
+		DOVirtual.DelayedCall(2.2f, () => Destroy(hit2));
 
 		CmdEmergencyStop();
 		// Collisonのエフェクト作成
@@ -248,7 +280,7 @@ public partial class CPlayer : NetworkBehaviour
 		// 被写界深度
 		//dof.focalLength.Override(120f);
 		// 集中線
-		ui.SetPlaneDistance(2);
+		ui.SetPlaneDistance(1);
 		ui.SetActiveSaturateCanvas(true);
 	}
 
@@ -267,7 +299,7 @@ public partial class CPlayer : NetworkBehaviour
 		//dof.focalLength.Override(0f);
 
 		// 集中線
-		ui.SetPlaneDistance(2);
+		ui.SetPlaneDistance(1);
 		ui.SetActiveSaturateCanvas(false);
 	}
 
@@ -290,14 +322,20 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove) return;
 
 		// チュートリアルを進める
-		if(ui.tutorialNum + 1 != 2){
-			ui.NextTutolialPage();
+		if(mgr.tutorialNum + 1 != 2){
+			mgr.NextTutolialPage();
 		}else{
-			ui.CloseTutorialImage();
+			mgr.CloseTutorialImage();
 			CmdSetUpComplete();
 		}
+	}
 
-		// チュートリアル画像を差し替える
+	void OnCancel(InputValue value){
+		if(isCanMove) return;
+		// チュートリアル戻る
+		if(mgr.tutorialNum == 1){
+			mgr.BackTutolialPage();
+		}
 	}
 
 	[Command]
@@ -309,13 +347,14 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdSetKnockAway(Vector3 position, CPlayer player){
-		player.RpcSetKnockAway(position);
+	private void CmdSetKnockAway(Vector3 position, float time,CPlayer player){
+		player.RpcSetKnockAway(position, time);
 	}
 
 	[ClientRpc]
-	private void RpcSetKnockAway(Vector3 position){
+	private void RpcSetKnockAway(Vector3 position, float time){
 		// ここで弾き飛ばし処理になってる
-		this.transform.position = position;
+		this.transform.DOMove(position, time)
+		.SetEase(Ease.OutQuint);
 	}
 }

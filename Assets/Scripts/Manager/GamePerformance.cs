@@ -5,6 +5,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 public partial class GameRuleManager
 {
@@ -14,15 +15,56 @@ public partial class GameRuleManager
 	bool isCompleteCountdown = false;
 	[SerializeField] private TextMeshProUGUI countdownText;
 	[SerializeField] int countdownTime;
+	private RectTransform countdownTrans;
+	Tweener countdownTwenner;
 	GameObject readyCanvasObj = null;
 	float progressCountdownTime = 0;
 	bool isStartCountdown = false;
+
+	// チュートリアル関連
+	Image[] tutolialImage;
+	RectTransform[] tutolialImageTrans;
+	public int tutorialNum {get; private set;}= 0;
+	bool isTutorialAnim = false;
+	void StartPerformance(){
+		for(int i = 0; i < readyCanvasObj.transform.childCount; i++){
+			var childObj = readyCanvasObj.transform.GetChild(i).gameObject;
+			if(childObj.name == "TutorialPage1"){
+				if(tutolialImage == null) tutolialImage = new Image[2];
+				if(tutolialImageTrans == null) tutolialImageTrans = new RectTransform[2];
+				tutolialImage[0] = childObj.GetComponent<Image>();
+				tutolialImageTrans[0] = childObj.GetComponent<RectTransform>();
+			}
+			if(childObj.name == "TutorialPage2"){
+				if(tutolialImage == null) tutolialImage = new Image[2];
+				if(tutolialImageTrans == null) tutolialImageTrans = new RectTransform[2];
+				tutolialImage[1] = childObj.GetComponent<Image>();
+				tutolialImageTrans[1] = childObj.GetComponent<RectTransform>();
+			}
+			if(childObj.name == "CountdownText"){
+				countdownTrans = childObj.GetComponent<RectTransform>();
+			}
+		}
+	}
 
 	[ClientRpc]
 	void RpcStartReadyPerformance(){
 		isStartCountdown = true;
 		SoundManager.instance.PlayAudio(SoundManager.AudioID.countdown);
 		SoundManager.instance.LoopSettings(false);
+	}
+
+	void StartCountDown(){
+		//DOVirtual.Float();
+		float size = 10;
+		if(countdownTwenner != null){
+			countdownTwenner.Kill();
+			Debug.Log("あり");
+		}
+		Debug.Log("更新" + countdownText.text);
+		// 文字のスケール大きくする
+		countdownTrans.localScale = new Vector3(size,size,size);
+		countdownTwenner = countdownTrans.DOScale(5,1f);
 	}
 
 	void UpdateReadyPerformance()
@@ -33,7 +75,14 @@ public partial class GameRuleManager
 			var time = countdownTime - progressCountdownTime;
 			if (Mathf.Ceil(time) > 0)
 			{
-				countdownText.text = (Mathf.Ceil(time)).ToString();
+				if(countdownText.text != Mathf.Ceil(time).ToString()){
+					float size = 10;
+					Debug.Log("更新" + countdownText.text);
+					// 文字のスケール大きくする
+					countdownTrans.localScale = new Vector3(size,size,size);
+					countdownTrans.DOScale(5,1f);
+					countdownText.text = Mathf.Ceil(time).ToString();
+				}
 			}
 			else
 			{
@@ -156,6 +205,48 @@ public partial class GameRuleManager
 				}
 				num += 1;
 			}
+		}
+	}
+	public void NextTutolialPage(){
+		if(isTutorialAnim) return;
+		if(!isCompleteFadeIn) return;
+		if(tutorialNum + 1 == tutolialImage.Count()) return;
+		tutorialNum++;
+		isTutorialAnim = true;
+
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.x - 1920;
+			Debug.Log(pos);
+			tutolialImageTrans[i].DOAnchorPosX(pos, 1.0f)
+			.OnComplete(() => DOVirtual.DelayedCall(0.3f, () => isTutorialAnim = false));
+		}
+	}
+
+	public void BackTutolialPage(){
+		if(isTutorialAnim) return;
+		if(tutorialNum == 0) return;
+		tutorialNum--;
+		isTutorialAnim = true;
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.x + 1920;
+			Debug.Log(pos);
+			tutolialImageTrans[i].DOAnchorPosX(pos, 1.0f)
+			.OnComplete(() => DOVirtual.DelayedCall(0.3f, () => isTutorialAnim = false));
+		}
+	}
+
+	public void CloseTutorialImage(){
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.y + 1080;
+			tutolialImageTrans[i].DOAnchorPosY(pos, 1.0f).
+			OnComplete(() => tutolialImage[i].gameObject.SetActive(false));
+		}
+	}
+	public void CompleteFadeIn(){
+		for(int i = 0; i < tutolialImage.Count(); i++){
+			var pos = tutolialImageTrans[i].anchoredPosition.y - 1080;
+			tutolialImageTrans[i].DOAnchorPosY(pos, 1.0f).
+			OnComplete(() => isCompleteFadeIn = true);
 		}
 	}
 }
