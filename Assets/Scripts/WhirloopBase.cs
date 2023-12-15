@@ -5,8 +5,6 @@ using Mirror;
 using UnityEngine.VFX;
 using Unity.VisualScripting;
 using DG.Tweening;
-using UnityEngine.UIElements.Experimental;
-using Unity.Burst.CompilerServices;
 
 public class WhirloopBase : NetworkBehaviour
 {
@@ -94,21 +92,24 @@ public class WhirloopBase : NetworkBehaviour
 
 		// エフェクト起動
 		if(whirloopFX == null) return;
-		Vector3 fxpos = new Vector3(0.0f,0.0f,0.0f);
+
+		var fxpos = new Vector3[3];
+		fxpos[0] = new Vector3(0,0,0);
+		fxpos[1] = new Vector3(0,0,whirloopLength / 2);
+		fxpos[2] = new Vector3(0,0,whirloopLength);
+
 		for(int i = 0; i < maxUseNum; i++){
 			// エフェクト生成
 			var obj = Instantiate(whirloopFX);
 			// 生成したオブジェクトを自分の子供に変更する
 			obj.gameObject.transform.parent = this.gameObject.transform;
 			// 座標変更
-			obj.transform.localPosition = fxpos;
+			obj.transform.localPosition = fxpos[i];
 			// 起動
 			obj.SendEvent("OnStart");
 			// 初期設定
 			obj.SetFloat("RingRadius",1.0f);
-			obj.SetFloat("RingSpeed",50.0f);
-			// 次のエフェクト用に座標を＋する
-			fxpos.z += 1.0f;
+			obj.SetFloat("RingSpeed",3.0f);
 
 			// エフェクトのデータを配列に格納
 			if(fxData == null) fxData = new List<GameObject>();
@@ -249,7 +250,7 @@ public class WhirloopBase : NetworkBehaviour
 		// 乗ってるオブジェクトを終点まで運んでいく
 		var trans = obj.GetComponent<Transform>();
 
-		float velo = 5.0f;
+		float velo = time * 1.2f;
 
 		// 直線かどうかで動きを変える
 		PathType type = PathType.Linear;
@@ -273,12 +274,13 @@ public class WhirloopBase : NetworkBehaviour
 				// エフェクト関連変更
 				// 回数リング
 				Destroy(fxData[i]);
-
+				// foreach(GameObject fx in fxData){
+				// 	var comp = fx.GetComponent<VisualEffect>();
+				// 	//comp.SetFloat();
+				// }
 				//
 
-				Debug.Log(fxData.Count);
 				otherObj.RemoveAt(i);
-				Debug.Log(obj.transform.forward);
 				// フラグを削除する
 				if(otherObj.Count == 0) _isOnObject = false;
 				continue;
@@ -287,7 +289,6 @@ public class WhirloopBase : NetworkBehaviour
 
 		// 使用回数を減らす
 		remainUseNum -= 1;
-		Debug.Log(remainUseNum);
 		// エフェクト削除
 
 		// 使用回数がなくなった場合の処理

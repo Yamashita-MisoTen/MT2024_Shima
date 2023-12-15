@@ -25,7 +25,6 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] PlayerUI ui;
 	bool _isNowOrga = false;
 	bool _isCompleteChutolial = false;
-
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
 	PlayerAudio moveAudioComp;
@@ -35,6 +34,8 @@ public partial class CPlayer : NetworkBehaviour
 	DepthOfField dof;
 	// アイテム所持するように
 	Item _HaveItemData;
+
+	float custidy_SideMove = 0f;
 
 	/// </summary>
 	/// // Start is called before the first frame update
@@ -66,8 +67,7 @@ public partial class CPlayer : NetworkBehaviour
 		Debug.DrawRay(origin2, direction, Color.red, 3.0f);
 	}
 
-	[ClientRpc]
-	public void RpcCreateSettings(string name, Color color){
+	public void CreateSettings(string name, Color color){
 		this.name = name;
 		for(int i = 0; i < this.gameObject.transform.childCount; i++){
 			var child = this.gameObject.transform.GetChild(i).gameObject;
@@ -124,7 +124,27 @@ public partial class CPlayer : NetworkBehaviour
 			inputComp.enabled = true;
 		}
 	}
-	BoxCollider box;
+	[Command]
+	private void CmdSetData(){
+		for(int i = 0; i < this.gameObject.transform.childCount; i++){
+			var child = this.gameObject.transform.GetChild(i).gameObject;
+			if(child.name != "PenguinFBX") continue;
+			for(int j = 0; j < child.transform.childCount; j++){
+				var grandChild = child.transform.GetChild(j);
+				if(grandChild.name != "penguin") continue;
+				Material mat = grandChild.GetComponent<SkinnedMeshRenderer>().material;
+				RpcSetData(this.name, mat.color);
+				break;
+			}
+		}
+	}
+
+	[ClientRpc]
+	private void RpcSetData(string name, Color color){
+		Debug.Log(name);
+		Debug.Log(color);
+		CreateSettings(name, color);
+	}
 
 	private void OnCollisionEnter(Collision other) {
 		if(!other.gameObject.CompareTag("Player")) return;
@@ -150,7 +170,6 @@ public partial class CPlayer : NetworkBehaviour
 			if(Physics.Raycast(ray.origin,ray.direction, out hit, 10.0f)){
 				Debug.Log("BoxCast当たり" + hit.collider.gameObject.name );
 				if(hit.collider.gameObject == other.gameObject){
-
 					var ratio = NowVelocity / Velocity_Limit;
 					float time = 2f * (1f - ratio) + 1f;
 					var pos = other.transform.position + (this.transform.forward * 5f);
@@ -206,38 +225,6 @@ public partial class CPlayer : NetworkBehaviour
 		);
 	}
 
-	// private void OnTriggerEnter(Collider other){
-	// 	if(!other.gameObject.CompareTag("Player")) return;
-
-	// 	// ローカルプレイヤーのときのみ
-	// 	if(!isLocalPlayer) return;
-	// 	// 自分が鬼のときのみ通知をする
-	// 	if(_isNowOrga && mgr.CheckOverCoolTime()){
-	// 		Debug.Log("あたり 私が鬼です" + this.name);
-	// 		CmdChangeOrga(other.gameObject);
-	// 	}
-	// 	CmdEmergencyStop();
-	// 	// Collisonのエフェクト作成
-	// 	var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
-	// 	obj.gameObject.transform.parent = this.gameObject.transform;
-	// 	obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
-	// 	ui.SetActiveSaturateCanvas(true);
-	// 	obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
-
-	// 	DOVirtual.DelayedCall(0.05f, () =>
-	// 	{
-	// 		HitStopPerformance();
-	// 	});
-
-	// 	// 最終のエフェクトを削除する
-	// 	DOVirtual.DelayedCall(0.5f, () =>
-	// 		{
-	// 			Destroy(obj);
-	// 			ui.SetActiveSaturateCanvas(false);
-	// 		}
-	// 	);
-	// }
-
 	[Command]
 	void CmdChangeOrga(GameObject otherObj){
 		mgr.ServerGetChangeOrga(otherObj.GetComponent<CPlayer>());
@@ -281,12 +268,16 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InWhirloopSetUp(){
-		float speed = NowVelocity;
 		Debug.Log(NowVelocity);
-		CmdEmergencyStop();
+		custidy_SideMove = Side_Move;
+
+		NowVelocity = 0.0f;
+		Velocity = 0.0f;
+		Side_Move = 0.0f;
+
 		isOnWhirloop = true;
 		// カメラの設定
-		cameraObj.SetCameraInWhirloop();
+		cameraObj.SetCameraInWhirloop(CameraCopy.x, custidy_SideMove);
 
 		// プレイヤーの体の角度を渦潮の方向に向ける
 		// 回転のときのプレイヤーのカメラの更新処理
@@ -301,8 +292,11 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void OutWhirloop(float velo){
 		NowVelocity = velo;
-		Debug.Log(Side_Move);
-		Debug.Log(Side_MoveNow);
+		// ここで
+		//DOVirtual.Float(0, custidy_SideMove, 1.0f, value => {Side_Move = value;});
+		custidy_SideMove = 0f;
+		Debug.Log("数値かくにん" + Side_Move);
+		Debug.Log("数値かくにん" + Side_MoveNow);
 		isOnWhirloop = false;
 		cameraObj.SetCameraOutWhirloop();
 

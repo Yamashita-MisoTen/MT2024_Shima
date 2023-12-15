@@ -54,14 +54,7 @@ public class GoldFishMove2 : NetworkBehaviour
 		isPlayerCatch = true;
 		playerComp = other.gameObject.transform.GetComponent<CPlayer>();
 		// プレイヤーとあたったときのみ処理する
-		playerComp.GetGoldenFish(addSpeed);
-		// プレイヤーの子オブジェクトに変更
-		this.gameObject.transform.parent = playerComp.gameObject.transform;
-
-		// 顔に合うようにローカル座標・向き・大きさを変更する
-		this.transform.localPosition = new Vector3(0f,0.45f,1.6f);
-		this.transform.eulerAngles = new Vector3(90f,90f,0f);
-		this.transform.localScale = new Vector3(50f,50f,50f);
+		playerComp.GetGoldenFish(addSpeed, this.gameObject);
 
 		// 動きを止める
 		goldenFishTweener.Kill();

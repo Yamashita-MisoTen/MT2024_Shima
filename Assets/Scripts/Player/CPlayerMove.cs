@@ -8,6 +8,8 @@ using System.Collections;
 using System;
 using Mirror.Examples.Common;
 using Unity.VisualScripting;
+using DG.Tweening;
+using TMPro;
 
 
 public partial class CPlayer : NetworkBehaviour

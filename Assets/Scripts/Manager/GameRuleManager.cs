@@ -140,7 +140,10 @@ public partial class GameRuleManager : NetworkBehaviour
 		_playerData = netMgr.GetPlayerDatas(_playerData);
 		Debug.Log("準備" + _playerData.Count);
 		// プレイヤーの準備
+		int num = 0;
 		foreach(CPlayer p in _playerData){
+			p.CreateSettings("Player_" + (num + 1).ToString(), netMgr.GetPlayerColor(num));
+			num++;
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
