@@ -37,7 +37,7 @@ public class BGMSoundManager : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		BGMSoundManager.instance.PlayAudio(BGMSoundManager.AudioID.Title);
 	}
 
 	// Update is called once per frame
@@ -84,6 +84,10 @@ public class BGMSoundManager : NetworkBehaviour
 	public void PlayAudio(AudioID id, AudioSource source){
 		source.clip = audioDatas[(int)id].audioClip;
 		source.Play();
+	}
+	public void PlayAudio(AudioID id, int num){
+		_source[num].clip = audioDatas[(int)id].audioClip;
+		_source[num].Play();
 	}
 
 	public void StopAudio(){

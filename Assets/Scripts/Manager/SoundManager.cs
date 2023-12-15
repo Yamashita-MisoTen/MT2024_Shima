@@ -17,7 +17,10 @@ public class SoundManager : NetworkBehaviour
 		whirloopIn,
 		playerhit,
 		waterhit,
-		min1Alarm
+		min1Alarm,
+		cursorMove,
+		cancel,
+		
 	}
 
 	[System.Serializable]

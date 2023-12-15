@@ -36,16 +36,12 @@ public class Title : NetworkBehaviour{
 
 		obj = Instantiate(Soundprefab);
 		obj = Instantiate(BGMSoungprefab);
-
-		BGMSoundManager.instance.PlayAudio(BGMSoundManager.AudioID.Title);
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Y)){
-			BGMSoundManager.instance.SetNextBGM(BGMSoundManager.AudioID.GameBGMHighTemp, 1f);
-		}
+
 	}
 
 	[ClientRpc]

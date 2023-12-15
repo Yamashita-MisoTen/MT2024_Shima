@@ -32,6 +32,9 @@ public class WhirloopBase : NetworkBehaviour
 	List<GameObject> otherObj = null;	// 複数対応用に配列にしておく
 	[SerializeField]List<GameObject> fxData = null;		// エフェクト用にデータを格納しておく
 	[SerializeField]List<GameObject> fxShellData = null;		// エフェクト用にデータを格納しておく
+	[SerializeField]List<GameObject> fxShellData2 = null;		// エフェクト用にデータを格納しておく
+	[SerializeField]List<GameObject> fxShellCurve1Data = null;		// エフェクト用にデータを格納しておく
+	[SerializeField]List<GameObject> fxShellCurve2Data = null;		// エフェクト用にデータを格納しておく
 	List<Vector3> wayPoint;
 	float whirloopLength = 1.0f;	// 渦潮の長さ
 	float whirloopSize = 1.0f;		// 渦潮の大きさ(馬鹿でか渦潮作るならつかう)
@@ -41,6 +44,7 @@ public class WhirloopBase : NetworkBehaviour
 	bool isCompleteSetUp = false;
 	bool isStraight = false;
 	List<bool> isWaitFinish;
+	AudioSource audio = null;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -167,9 +171,22 @@ public class WhirloopBase : NetworkBehaviour
 				Debug.Log("後 :" + wayPoint[i]);
 			}
 		}
-
 		// チェックポイントが無い場合は直線になる
 		if(checkPoint.Count == 0) isStraight = true;
+
+		if(!isStraight) {
+			var type = PathType.CatmullRom;
+			int num = 0;
+			foreach(GameObject fx in fxData){
+				DOVirtual.DelayedCall(
+					num * 3f,
+					() =>fx.transform.DOLocalPath(wayPoint.ToArray(), 5f, type, PathMode.Full3D, gizmoColor: Color.red)
+						.SetLookAt(0.01f, Vector3.forward)
+						.SetLoops(-1,LoopType.Restart)
+				);
+				num++;
+			}
+		}
 
 		// セットアップ完了
 		isCompleteSetUp = true;
@@ -199,6 +216,12 @@ public class WhirloopBase : NetworkBehaviour
 		var speed = playerComp.GetNowSpeed();	// 自分の速度 + 追加分の速度を加算
 		Debug.Log(speed);
 		playerComp.InWhirloopSetUp();
+
+		//音ならす
+		audio = this.AddComponent<AudioSource>();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.whirloopIn, audio);
+		SoundManager.instance.LoopSettings(audio, true);
+		SoundManager.instance.LerpPich(1,3, audio, 1f);
 
 		// スピードに補正
 		if(speed < 5f) speed = lowestSpeed;
@@ -254,7 +277,7 @@ public class WhirloopBase : NetworkBehaviour
 
 		// 直線かどうかで動きを変える
 		PathType type = PathType.Linear;
-		if(isStraight) type = PathType.CatmullRom;
+		if(!isStraight) type = PathType.CatmullRom;
 		// 実際に動かす
 		obj.transform.DOLocalPath(waypoint.ToArray(), time, type, PathMode.Full3D, gizmoColor:Color.red)
 			.SetLookAt(0.001f, Vector3.forward)
@@ -269,16 +292,17 @@ public class WhirloopBase : NetworkBehaviour
 			if(otherObj[i] == obj){
 				if(obj.CompareTag("Player")){
 					obj.GetComponent<CPlayer>().OutWhirloop(velo);
+					SoundManager.instance.LerpPich( 3, 1,audio,0.5f);
+					DOVirtual.DelayedCall(0.5f,() => Destroy(audio));
 				}
 
 				// エフェクト関連変更
 				// 回数リング
-				Destroy(fxData[i]);
-				// foreach(GameObject fx in fxData){
-				// 	var comp = fx.GetComponent<VisualEffect>();
-				// 	//comp.SetFloat();
-				// }
-				//
+				Debug.Log("数確認" + fxData.Count);
+				Destroy(fxData[fxData.Count - 1]);
+				fxData.RemoveAt(fxData.Count - 1);
+				Debug.Log("数確認2" + fxData.Count);
+				EffectUpdate(remainUseNum - 1);
 
 				otherObj.RemoveAt(i);
 				// フラグを削除する
@@ -294,6 +318,45 @@ public class WhirloopBase : NetworkBehaviour
 		// 使用回数がなくなった場合の処理
 		if(remainUseNum == 0){
 			NetworkServer.Destroy(this.gameObject);
+		}
+	}
+
+	private void EffectUpdate(float remain){
+		if(fxData.Count != 0){
+			foreach(GameObject fx in fxShellData){
+				var comp = fx.GetComponent<VisualEffect>();
+				comp.SetFloat("RingSpeed", 3 * remain);
+			}
+		}
+		if(fxShellData.Count != 0){
+			fxShellData.Remove(fxShellData[fxShellData.Count - 1]);
+			foreach(GameObject fx in fxShellData){
+				var comp = fx.GetComponent<VisualEffect>();
+				comp.SetFloat("RingSpeed",remain);
+				comp.SetFloat("ForwardSpeed", 2 * remain);
+			}
+		}
+		if(fxShellData2.Count != 0){
+			fxShellData2.Remove(fxShellData2[fxShellData2.Count - 1]);
+			foreach(GameObject fx in fxShellData2){
+				var comp = fx.GetComponent<VisualEffect>();
+				comp.SetFloat("RingSpeed",remain);
+				comp.SetFloat("ForwardSpeed", 2 * remain);
+			}
+		}
+		if(fxShellCurve1Data.Count != 0){
+			foreach(GameObject fx in fxShellCurve1Data){
+				var comp = fx.GetComponent<VisualEffect>();
+				comp.SetFloat("RingSpeed",remain);
+				comp.SetFloat("ForwardSpeed", 2 * remain);
+			}
+		}
+		if(fxShellCurve2Data.Count != 0){
+			foreach(GameObject fx in fxShellCurve2Data){
+				var comp = fx.GetComponent<VisualEffect>();
+				comp.SetFloat("RingSpeed",remain);
+				comp.SetFloat("ForwardSpeed", 2 * remain);
+			}
 		}
 	}
 
