@@ -25,7 +25,6 @@ public partial class CPlayer : NetworkBehaviour
 	[SerializeField] PlayerUI ui;
 	bool _isNowOrga = false;
 	bool _isCompleteChutolial = false;
-
 	GameRuleManager mgr;
 	PlayerCamera cameraObj;
 	PlayerAudio moveAudioComp;
@@ -35,6 +34,8 @@ public partial class CPlayer : NetworkBehaviour
 	DepthOfField dof;
 	// アイテム所持するように
 	Item _HaveItemData;
+
+	float custidy_SideMove = 0f;
 
 	/// </summary>
 	/// // Start is called before the first frame update
@@ -55,10 +56,18 @@ public partial class CPlayer : NetworkBehaviour
 		ParticleUpdate();
 		HitStopUpdate();
 		_rotAngle = this.gameObject.transform.eulerAngles.y;
+
+		var cor = -this.transform.lossyScale.x / 2;
+		Vector3 origin = this.gameObject.transform.position + new Vector3(cor,0f,0f); // 原点
+		Vector3 origin1 = this.gameObject.transform.position + new Vector3(cor + this.transform.lossyScale.x / 2,0f,0f); // 原点
+		Vector3 origin2 = this.gameObject.transform.position + new Vector3(cor + this.transform.lossyScale.x,0f,0f); // 原点
+		Vector3 direction = this.gameObject.transform.forward; // X軸方向を表すベクトル
+		Debug.DrawRay(origin, direction, Color.red, 3.0f);
+		Debug.DrawRay(origin1, direction, Color.red, 3.0f);
+		Debug.DrawRay(origin2, direction, Color.red, 3.0f);
 	}
 
-	[ClientRpc]
-	public void RpcCreateSettings(string name, Color color){
+	public void CreateSettings(string name, Color color){
 		this.name = name;
 		for(int i = 0; i < this.gameObject.transform.childCount; i++){
 			var child = this.gameObject.transform.GetChild(i).gameObject;
@@ -115,6 +124,27 @@ public partial class CPlayer : NetworkBehaviour
 			inputComp.enabled = true;
 		}
 	}
+	[Command]
+	private void CmdSetData(){
+		for(int i = 0; i < this.gameObject.transform.childCount; i++){
+			var child = this.gameObject.transform.GetChild(i).gameObject;
+			if(child.name != "PenguinFBX") continue;
+			for(int j = 0; j < child.transform.childCount; j++){
+				var grandChild = child.transform.GetChild(j);
+				if(grandChild.name != "penguin") continue;
+				Material mat = grandChild.GetComponent<SkinnedMeshRenderer>().material;
+				RpcSetData(this.name, mat.color);
+				break;
+			}
+		}
+	}
+
+	[ClientRpc]
+	private void RpcSetData(string name, Color color){
+		Debug.Log(name);
+		Debug.Log(color);
+		CreateSettings(name, color);
+	}
 
 	private void OnCollisionEnter(Collision other) {
 		if(!other.gameObject.CompareTag("Player")) return;
@@ -128,28 +158,60 @@ public partial class CPlayer : NetworkBehaviour
 		}
 
 		// ここでレイを飛ばして正面に相手がいるかどうかを確認
-		Vector3 origin = this.transform.position + new Vector3(0,0.5f,0); // 原点
-		Vector3 direction = this.transform.forward; // X軸方向を表すベクトル
-		var ray = new Ray(origin, direction); // Rayを生成;
-		RaycastHit hit;
+		var cor = - this.transform.lossyScale.x / 2;
+		bool isCehck = false;
+		for(int i = 0; i < 3; i++){
+			Vector3 origin = this.gameObject.transform.position + new Vector3(cor,0f,0f); // 原点
+			Vector3 direction = this.gameObject.transform.forward; // X軸方向を表すベクトル
+			RaycastHit hit;
+			Ray ray = new Ray(origin, direction); // Rayを生成
+			cor += this.transform.lossyScale.x / 2;
 
-		if(Physics.Raycast(ray.origin,ray.direction, out hit, 1.0f)){
-			if(hit.collider.gameObject == other.gameObject){
-				var pos = this.transform.position + (this.transform.forward * 5f);
-				Debug.Log("あああ" + pos);
-				CmdSetKnockAway(pos, other.gameObject.GetComponent<CPlayer>());
+			if(Physics.Raycast(ray.origin,ray.direction, out hit, 10.0f)){
+				Debug.Log("BoxCast当たり" + hit.collider.gameObject.name );
+				if(hit.collider.gameObject == other.gameObject){
+					var ratio = NowVelocity / Velocity_Limit;
+					float time = 2f * (1f - ratio) + 1f;
+					var pos = other.transform.position + (this.transform.forward * 5f);
+					Debug.Log("吹き飛ばし" + pos);
+					// 吹き飛ばし処理
+					CmdSetKnockAway(pos, time, other.gameObject.GetComponent<CPlayer>());
+					isCehck = true;
+					break;
+				}
 			}
 		}
 
-		CmdEmergencyStop();
+		// 吹き飛ばし処理をしない場合
+		if(isCehck){
+			// 緊急停止かける
+			CmdEmergencyStop();
+
+			// 相手との距離をベクトルでだしてその逆ベクトルに飛ばす
+
+		}
+
+		// 音をいれる
+		var hit1 = moveAudioComp.NewAudioSource();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.playerhit, hit1);
+		SoundManager.instance.ChangeVolume(0.25f, hit1);
+		SoundManager.instance.LoopSettings(hit1, false);
+		DOVirtual.DelayedCall(1.1f, () => Destroy(hit1));
+		var hit2 = moveAudioComp.NewAudioSource();
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.waterhit, hit2);
+		SoundManager.instance.ChangeVolume(0.25f, hit2);
+		SoundManager.instance.LoopSettings(hit2, false);
+		DOVirtual.DelayedCall(2.2f, () => Destroy(hit2));
+
 		// Collisonのエフェクト作成
+		// 生成位置わるすぎ
 		var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
 		obj.gameObject.transform.parent = this.gameObject.transform;
 		obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
 		ui.SetActiveSaturateCanvas(true);
 		obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
 
-		DOVirtual.DelayedCall(0.05f, () =>
+		DOVirtual.DelayedCall(0.03f, () =>
 		{
 			HitStopPerformance();
 		});
@@ -163,38 +225,6 @@ public partial class CPlayer : NetworkBehaviour
 		);
 	}
 
-	// private void OnTriggerEnter(Collider other){
-	// 	if(!other.gameObject.CompareTag("Player")) return;
-
-	// 	// ローカルプレイヤーのときのみ
-	// 	if(!isLocalPlayer) return;
-	// 	// 自分が鬼のときのみ通知をする
-	// 	if(_isNowOrga && mgr.CheckOverCoolTime()){
-	// 		Debug.Log("あたり 私が鬼です" + this.name);
-	// 		CmdChangeOrga(other.gameObject);
-	// 	}
-	// 	CmdEmergencyStop();
-	// 	// Collisonのエフェクト作成
-	// 	var obj = Instantiate(collisonVFXPrefab, new Vector3(0,0,0) , Quaternion.identity);
-	// 	obj.gameObject.transform.parent = this.gameObject.transform;
-	// 	obj.gameObject.transform.localPosition = new Vector3(0,0.5f,1);
-	// 	ui.SetActiveSaturateCanvas(true);
-	// 	obj.GetComponent<VisualEffect>().SendEvent("OnPlay");
-
-	// 	DOVirtual.DelayedCall(0.05f, () =>
-	// 	{
-	// 		HitStopPerformance();
-	// 	});
-
-	// 	// 最終のエフェクトを削除する
-	// 	DOVirtual.DelayedCall(0.5f, () =>
-	// 		{
-	// 			Destroy(obj);
-	// 			ui.SetActiveSaturateCanvas(false);
-	// 		}
-	// 	);
-	// }
-
 	[Command]
 	void CmdChangeOrga(GameObject otherObj){
 		mgr.ServerGetChangeOrga(otherObj.GetComponent<CPlayer>());
@@ -202,6 +232,11 @@ public partial class CPlayer : NetworkBehaviour
 
 	public void ChangeOrgaPlayer(bool orgaflg){
 		_isNowOrga = orgaflg;
+		if(orgaflg){
+			velocity_Orga = orgaPlusSpeed;
+		}else{
+			velocity_Orga = 0f;
+		}
 		ParticleStartUpSwitch(orgaFX, orgaflg);
 		ui.ChangeOrgaPlayer(_isNowOrga);
 	}
@@ -233,29 +268,35 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	public void InWhirloopSetUp(){
-		CmdEmergencyStop();
+		Debug.Log(NowVelocity);
+		custidy_SideMove = Side_Move;
+
+		NowVelocity = 0.0f;
+		Velocity = 0.0f;
+		Side_Move = 0.0f;
+
 		isOnWhirloop = true;
 		// カメラの設定
-		cameraObj.SetCameraInWhirloop();
+		cameraObj.SetCameraInWhirloop(CameraCopy.x, custidy_SideMove);
 
 		// プレイヤーの体の角度を渦潮の方向に向ける
 		// 回転のときのプレイヤーのカメラの更新処理
-		var euler = new Vector3(CameraCopy.x, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
-		var camqt = Quaternion.AngleAxis(Side_MoveNow * Camera_Deferred_Power, this.transform.up);
-		cameraObj.CameraMoveforPlayerMove(euler, camqt);
 
 		// 画面演出
 		// 被写界深度
 		//dof.focalLength.Override(120f);
 		// 集中線
-		ui.SetPlaneDistance(2);
+		ui.SetPlaneDistance(1);
 		ui.SetActiveSaturateCanvas(true);
 	}
 
-	public void OutWhirloop(){
-		Velocity = 5f;
-		Debug.Log(Side_Move);
-		Debug.Log(Side_MoveNow);
+	public void OutWhirloop(float velo){
+		NowVelocity = velo;
+		// ここで
+		//DOVirtual.Float(0, custidy_SideMove, 1.0f, value => {Side_Move = value;});
+		custidy_SideMove = 0f;
+		Debug.Log("数値かくにん" + Side_Move);
+		Debug.Log("数値かくにん" + Side_MoveNow);
 		isOnWhirloop = false;
 		cameraObj.SetCameraOutWhirloop();
 
@@ -267,7 +308,7 @@ public partial class CPlayer : NetworkBehaviour
 		//dof.focalLength.Override(0f);
 
 		// 集中線
-		ui.SetPlaneDistance(2);
+		ui.SetPlaneDistance(1);
 		ui.SetActiveSaturateCanvas(false);
 	}
 
@@ -290,14 +331,20 @@ public partial class CPlayer : NetworkBehaviour
 		if(isCanMove) return;
 
 		// チュートリアルを進める
-		if(ui.tutorialNum + 1 != 2){
-			ui.NextTutolialPage();
+		if(mgr.tutorialNum + 1 != 2){
+			mgr.NextTutolialPage();
 		}else{
-			ui.CloseTutorialImage();
+			mgr.CloseTutorialImage();
 			CmdSetUpComplete();
 		}
+	}
 
-		// チュートリアル画像を差し替える
+	void OnCancel(InputValue value){
+		if(isCanMove) return;
+		// チュートリアル戻る
+		if(mgr.tutorialNum == 1){
+			mgr.BackTutolialPage();
+		}
 	}
 
 	[Command]
@@ -309,13 +356,14 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdSetKnockAway(Vector3 position, CPlayer player){
-		player.RpcSetKnockAway(position);
+	private void CmdSetKnockAway(Vector3 position, float time,CPlayer player){
+		player.RpcSetKnockAway(position, time);
 	}
 
 	[ClientRpc]
-	private void RpcSetKnockAway(Vector3 position){
+	private void RpcSetKnockAway(Vector3 position, float time){
 		// ここで弾き飛ばし処理になってる
-		this.transform.position = position;
+		this.transform.DOMove(position, time)
+		.SetEase(Ease.OutQuint);
 	}
 }

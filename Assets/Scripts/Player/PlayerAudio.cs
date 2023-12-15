@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Unity.VisualScripting;
 
 public class PlayerAudio : NetworkBehaviour
 {
 	// Start is called before the first frame update
-	AudioSource audioSource ;
+	AudioSource audioSource;
 	AudioListener audioListener;
 	void Start()
 	{
@@ -35,5 +36,9 @@ public class PlayerAudio : NetworkBehaviour
 
 	public AudioSource GetAudioSource(){
 		return audioSource;
+	}
+
+	public AudioSource NewAudioSource(){
+		return this.AddComponent<AudioSource>();
 	}
 }

@@ -51,6 +51,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	int nextEventNum = 0;
 	bool _isCoolTimeNow = false;
 	int completeChangeSceneClient = 0;
+	public bool isCompleteFadeIn{get;private set;} = false;
 
 	// ** ゲーム開始前の準備時間関連
 
@@ -87,6 +88,8 @@ public partial class GameRuleManager : NetworkBehaviour
 		fadeMgr = GameObject.Find("Pf_FadeCanvas").GetComponent<FadeMgr>();
 		fadeResult = GameObject.Find("Pf_ResultFade").GetComponent<ResultFade>();
 
+		BGMSoundManager.instance.StopAudio();
+
 		for(int i = 0; i < this.transform.childCount; i++){
 			var obj = this.transform.GetChild(i);
 			canvas = new List<Canvas>();
@@ -99,6 +102,7 @@ public partial class GameRuleManager : NetworkBehaviour
 				readyCanvasObj = obj.gameObject;
 				canvas.Add(readyCanvasObj.GetComponent<Canvas>());
 				readyCanvasObj.SetActive(true);
+				StartPerformance();
 			}
 		}
 		if(netMgr == null)GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
@@ -137,7 +141,10 @@ public partial class GameRuleManager : NetworkBehaviour
 		_playerData = netMgr.GetPlayerDatas(_playerData);
 		Debug.Log("準備" + _playerData.Count);
 		// プレイヤーの準備
+		int num = 0;
 		foreach(CPlayer p in _playerData){
+			p.CreateSettings("Player_" + (num + 1).ToString(), netMgr.GetPlayerColor(num));
+			num++;
 			p.DataSetUPforMainScene(this);
 			if(p.isLocalPlayer){
 				fadeMgr.SetRenderCamera(p.GetRenderCamera());
@@ -172,10 +179,12 @@ public partial class GameRuleManager : NetworkBehaviour
 
 		// ゲームのBGM流す
 		BGMSoundManager.instance.PlayAudio(BGMSoundManager.AudioID.GameBGM);
-
+		// カウントダウン表記
 		countdownText.text = "Start!!";
-		// 1s後に非表示に
-		DOVirtual.DelayedCall (1f, ()=> readyCanvasObj.SetActive(false), false);
+		// 文字のスケール大きくする
+		countdownTrans.localScale = new Vector3(10f,10f,10f);
+		countdownTrans.DOScale(5 ,1f)
+		.OnComplete(()=> readyCanvasObj.SetActive(false));
 
 		itemMgr = GameObject.Find("Pf_ItemMgr").GetComponent<CreateRandomPosition>();
 		itemMgr.isCreateItemBox = true;
@@ -354,7 +363,7 @@ public partial class GameRuleManager : NetworkBehaviour
 		completeChangeSceneClient++;
 
 		if(completeChangeSceneClient == _playerData.Count){
-			RpcStartReadyPerformance();
+			DOVirtual.DelayedCall(0.5f, () => RpcStartReadyPerformance());
 			Debug.Log(completeChangeSceneClient);
 		}
 	}

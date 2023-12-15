@@ -6,6 +6,7 @@ using Mirror;
 public partial class CPlayer : NetworkBehaviour
 {
 	// ** 黄金魚関連
+	[SerializeField] GameObject mesh;
 	bool isHaveGoldenFish = false;
 	GameObject goldenFish;
 	// ** 流氷イベント関連
@@ -27,10 +28,17 @@ public partial class CPlayer : NetworkBehaviour
 	}
 
 	// ** 黄金魚関連関数
-	public void GetGoldenFish(float addSpeed){
+	public void GetGoldenFish(float addSpeed, GameObject fish){
 		isHaveGoldenFish = true;
 		Velocity_Addition += addSpeed;
-		SetGoldFishTrigger();
+		goldenFish = new GameObject();
+		goldenFish = fish;
+		fish.transform.parent = mesh.transform;
+
+		// 顔に合うようにローカル座標・向き・大きさを変更する
+		fish.transform.localPosition = new Vector3(0f,0f,0f);
+		fish.transform.eulerAngles = new Vector3(90f,0f,-90f);
+		fish.transform.localScale = new Vector3(2000f,2000f,2000f);
 	}
 
 	public void FinishGoldenFishEvent(float minusSpeed){

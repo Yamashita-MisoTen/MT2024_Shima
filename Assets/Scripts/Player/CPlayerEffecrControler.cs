@@ -46,12 +46,12 @@ public partial class CPlayer : NetworkBehaviour
 		if(isSwim){
 			// 水しぶき
 			if(happenSplashFX){
-			// 	var pos = this.transform.position;
-			// 	var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
-			// 	obj.gameObject.transform.parent = this.gameObject.transform;
-			// 	var comp = obj.GetComponent<VisualEffect>();
-			// 	// 計測時間後にオブジェクトを削除予定
-			// 	DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
+				var pos = this.transform.position + (this.transform.forward * -0.2f);
+				var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
+				obj.gameObject.transform.parent = this.gameObject.transform;
+				var comp = obj.GetComponent<VisualEffect>();
+				// 計測時間後にオブジェクトを削除予定
+				DOVirtual.DelayedCall(1.1f, () =>DeleteEffect(obj));
 			}
 
 			// 波紋

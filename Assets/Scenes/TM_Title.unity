@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.48398095, g: 0.57574916, b: 0.6801951, a: 1}
+  m_IndirectSpecularColor: {r: 0.48399687, g: 0.5757612, b: 0.68020093, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -932,7 +932,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 367536441}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39ab5d956814a0d4d95be92569e94f7f, type: 3}
   m_Name: 
@@ -960,7 +960,7 @@ MonoBehaviour:
   offlineScene: Assets/Scenes/TM_Title.unity
   onlineScene: Assets/Scenes/TM_Title.unity
   transport: {fileID: 0}
-  networkAddress: localhost
+  networkAddress: 169.254.204.39
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60

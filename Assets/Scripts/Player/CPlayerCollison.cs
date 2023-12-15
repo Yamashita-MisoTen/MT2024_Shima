@@ -49,7 +49,7 @@ public partial class CPlayer
 		{;
 			GlobalVolumeSetting(false);
 			targetImage.SetActive(false);
-			ui.SetPlaneDistance(2);
+			ui.SetPlaneDistance(1);
 			hitTex = null;
 		});
 	}

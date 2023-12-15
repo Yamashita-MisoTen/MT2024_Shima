@@ -14,7 +14,7 @@ public class CustomNetworkManager : NetworkManager
 	[SerializeField] List<Color> playerColor;
 	[SerializeField] GameObject dataMgrPrefab;
 	GameObject dataManagerObj;
-	NetWorkDataManager dataManager;
+	public NetWorkDataManager dataManager{get; private set;}
 	private int connectPlayerCount = 0;	// 現在の接続人数
 
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
@@ -42,8 +42,6 @@ public class CustomNetworkManager : NetworkManager
 		}
 
 		var pComp = player.GetComponent<CPlayer>();
-		// 名前とプレイヤーの番号に応じた色に設定する
-		pComp.RpcCreateSettings("Player_" + connectPlayerCount.ToString(), playerColor[connectPlayerCount - 1]);
 		var connid = pComp.connectionToClient.connectionId;
 		dataManager.SetPlayerData(player,pComp,connid);
 	}
@@ -112,5 +110,9 @@ public class CustomNetworkManager : NetworkManager
 	public void PlayerDataInit(){
 		if(dataManagerObj == null) return;
 		dataManager.PlayerDataInit();
+	}
+
+	public Color GetPlayerColor(int num){
+		return playerColor[num];
 	}
 }

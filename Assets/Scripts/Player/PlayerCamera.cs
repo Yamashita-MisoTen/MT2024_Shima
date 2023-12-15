@@ -32,13 +32,16 @@ public class PlayerCamera : NetworkBehaviour
 	private Vector3 initialCameraPos;   // 初期のカメラの位置
 	private float initialCameraFov;     // 初期のカメラの視野角
 	private float progressLerpTime = 0.0f;  // 補間用の経過時間
-	[SerializeField] private float targetLerpTime = 0.0f;   // 補間にかかる時間
+	[SerializeField] private float targetLerpTime = 0.1f;   // 補間にかかる時間
 	[SerializeField] private Vector3 inWhirloopCameraPos;   // 渦潮内でのカメラの座標
 	[SerializeField] private float inWhirloopCameraFov;     // 渦潮内でのカメラの視野角
 	GameObject CameraObj;
 	public Camera cameraComp{get;private set;}
 
 	bool Reverse = false;
+
+	float initialCameraAngleX = 0f;
+	float leroStartAngle = 0;
 
 	void Start()
 	{
@@ -71,7 +74,7 @@ public class PlayerCamera : NetworkBehaviour
 		// 渦潮に入ってるときのみに処理をする
 		if (isInWhirloopCameraSet)
 		{
-			//InWhirloopCameraUpdate();
+			InWhirloopCameraUpdate();
 			return;
 		}
 
@@ -114,15 +117,15 @@ public class PlayerCamera : NetworkBehaviour
 	}
 
 	// ** 渦潮関連のカメラ
-	public void SetCameraInWhirloop()
+	public void SetCameraInWhirloop(float x, float nowAngle)
 	{
-		Debug.Log("カメラを変更する");
 		// フラグの設定
 		InWhirloop = true;
 		// 必要な情報を格納していく
 		// 初期のカメラ位置
-		initialCameraPos = CameraObj.transform.position;
+		initialCameraAngleX = x;
 		initialCameraFov = cameraComp.fieldOfView;
+		leroStartAngle = nowAngle;
 		// 経過時間の初期化
 		progressLerpTime = 0f;
 
@@ -144,17 +147,20 @@ public class PlayerCamera : NetworkBehaviour
 			// ここでカメラの位置etcを補完していく
 			progressLerpTime += Time.deltaTime;
 			float ratio = progressLerpTime / targetLerpTime;
+			var lerp = Mathf.Lerp(leroStartAngle, 0f, ratio);
+			Debug.Log("補間" + lerp);
 			if (ratio > 1.0f)
 			{
 				ratio = 1.0f;
 				isInWhirloopCameraSet = false;
 			}
-			// 補間処理をかける
-			var campos = Vector3.Lerp(initialCameraPos, inWhirloopCameraPos, ratio);
-			var camfov = Mathf.Lerp(initialCameraFov, inWhirloopCameraFov, ratio);
+			// 回転のときのプレイヤーのカメラの更新処理
+			var euler = new Vector3(initialCameraAngleX, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
+			var camqt = Quaternion.AngleAxis(lerp, this.transform.up);
+			CameraMoveforPlayerMove(euler, camqt);
 			// 計算結果を格納する
 			//cameraComp.gameObject.transform.position = campos;
-			cameraComp.fieldOfView = camfov;
+			//cameraComp.fieldOfView = camfov;
 		}
 		else
 		{
