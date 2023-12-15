@@ -333,14 +333,18 @@ public partial class CPlayer : NetworkBehaviour
 		//リザルトからタイトルに進む
 		if(mgr.GetisResultAnnounce())
         {
-
+			SoundManager.instance.PlayAudio(SoundManager.AudioID.decide);
+			SoundManager.instance.LoopSettings(false);
 			mgr.SetResultFinish(true);
 			return;
         }
 		// チュートリアルを進める
 		if (mgr.tutorialNum + 1 != 2){
 			mgr.NextTutolialPage();
-		}else{
+			SoundManager.instance.PlayAudio(SoundManager.AudioID.decide);
+			SoundManager.instance.LoopSettings(false);
+		}
+		else{
 			mgr.CloseTutorialImage();
 			CmdSetUpComplete();
 		}
