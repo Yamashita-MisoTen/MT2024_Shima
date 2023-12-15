@@ -63,6 +63,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField] List<GameObject>_ResultObject;//リザルト用のプレイヤーオブジェクト
 	[SerializeField] GameObject Resultobj;
 	private List<int> ResultList = new List<int>();
+	private int LosePayer = 0;
 
 	// ** 共通のUI
 	FadeMgr fadeMgr;
