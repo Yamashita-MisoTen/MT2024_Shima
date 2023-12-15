@@ -330,8 +330,15 @@ public partial class CPlayer : NetworkBehaviour
 	void OnDecision(InputValue value){
 		if(isCanMove) return;
 
+		//リザルトからタイトルに進む
+		if(mgr.GetisResultAnnounce())
+        {
+
+			mgr.SetResultFinish(true);
+			return;
+        }
 		// チュートリアルを進める
-		if(mgr.tutorialNum + 1 != 2){
+		if (mgr.tutorialNum + 1 != 2){
 			mgr.NextTutolialPage();
 		}else{
 			mgr.CloseTutorialImage();

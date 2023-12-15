@@ -35,6 +35,9 @@ public partial class CPlayer : NetworkBehaviour
 		goldenFish = fish;
 		fish.transform.parent = mesh.transform;
 
+		//プレイヤーのアニメーション設定
+		SetGoldFishTrigger();
+
 		// 顔に合うようにローカル座標・向き・大きさを変更する
 		fish.transform.localPosition = new Vector3(0f,0f,0f);
 		fish.transform.eulerAngles = new Vector3(90f,0f,-90f);

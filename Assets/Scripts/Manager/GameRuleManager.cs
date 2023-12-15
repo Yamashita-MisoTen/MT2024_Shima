@@ -64,6 +64,7 @@ public partial class GameRuleManager : NetworkBehaviour
 	[SerializeField] GameObject Resultobj;
 	private List<int> ResultList = new List<int>();
 	private int LosePayer = 0;
+	private bool ResultFinish = false;
 
 	// ** 共通のUI
 	FadeMgr fadeMgr;
@@ -273,8 +274,9 @@ public partial class GameRuleManager : NetworkBehaviour
 			UpdateResultPerformance();
 		}else{
 			if(!isServer) return;
-			if(Input.GetKeyDown(KeyCode.L)){
+			if(ResultFinish){
 				netMgr.ServerChangeScene("TM_Title");
+				ResultFinish = false;
 			}
 		}
 	}
@@ -367,4 +369,14 @@ public partial class GameRuleManager : NetworkBehaviour
 			Debug.Log(completeChangeSceneClient);
 		}
 	}
+
+	public bool GetisResultAnnounce()
+	{
+		return isResultAnnounce;
+	}
+
+	public void SetResultFinish(bool key)
+    {
+		ResultFinish = key;
+    }
 }
