@@ -15,7 +15,7 @@ public class CustomNetworkManager : NetworkManager
 	[SerializeField] GameObject dataMgrPrefab;
 	GameObject dataManagerObj;
 	public NetWorkDataManager dataManager{get; private set;}
-	private int connectPlayerCount = 0;	// Œ»İ‚ÌÚ‘±l”
+	public int connectPlayerCount{get; private set;} = 0;	// Œ»İ‚ÌÚ‘±l”
 
 	override public void  OnServerAddPlayer(NetworkConnectionToClient conn){
 
@@ -63,7 +63,7 @@ public class CustomNetworkManager : NetworkManager
 		base.OnStopHost();
 		StopClient();
 		StopServer();
-		dataManager.DeleteAllObj();
+		if(dataManager != null)dataManager.DeleteAllObj();
 		connectPlayerCount = 0;
 	}
 	public override void OnStopServer()

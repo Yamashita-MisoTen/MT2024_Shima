@@ -32,6 +32,13 @@ public class Ui_Move : MonoBehaviour
 	bool isConnectingNow = false;
 	float requireTime = 0f;
 	int updateNum = 0;
+	int conNum = 0;
+
+	[SerializeField] List<GameObject> dammyObj;
+	[SerializeField] List<GameObject> titlePlayerDammy;
+	[SerializeField] GameObject soundPf;
+	[SerializeField] GameObject BGMPf;
+	Title titleObj;
 
 	private number Number;
 	private number2 Number2;
@@ -40,8 +47,25 @@ public class Ui_Move : MonoBehaviour
 	{
 		CNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
 		CTitleAnimation = GameObject.Find("TitleLogo").GetComponent<TitleAnimation>();
+
+		var soundObj = GameObject.Find("Pf_SoundManager 1");
+		if(soundObj == null){
+			Instantiate(soundPf);
+		}
+		var BsoundObj = GameObject.Find("Pf_BGMSoundManager 1");
+		if(BsoundObj == null){
+			Instantiate(BGMPf);
+		}
 		if(NetworkClient.active){
-			Debug.Log("‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ");
+			AllUIunActive();
+		}
+
+		for(int i = 0 ; i < titlePlayerDammy.Count; i++){
+			titlePlayerDammy[i].GetComponent<MeshRenderer>().material.SetColor("_BaseColor",CNetworkManager.GetPlayerColor(i));
+		}
+
+		for(int i = 0 ; i < dammyObj.Count; i++){
+			dammyObj[i].SetActive(false);
 		}
 	}
 
@@ -62,6 +86,8 @@ public class Ui_Move : MonoBehaviour
 	private void Progression0()
 	{
 		if(!NetworkClient.active){
+			conNum = 0;
+			ActiveDammy(0);
 			if (Number == number.HOST)
 			{
 				Cursor.transform.localPosition = new Vector3(-850, -300, 0);
@@ -72,13 +98,19 @@ public class Ui_Move : MonoBehaviour
 				Cursor.transform.localPosition = new Vector3(150, -300, 0);
 			}
 		}else{
-
+			if(CNetworkManager.connectPlayerCount != conNum){
+				if(titleObj == null)titleObj = GameObject.Find("TitleScene").GetComponent<Title>();
+				titleObj.ConnectUpdate(CNetworkManager.connectPlayerCount);
+				ActiveDammy(CNetworkManager.connectPlayerCount);
+			}
 		}
 	}
 
 	private void Progression1()
 	{
 		if(!NetworkClient.active){
+			conNum = 0;
+			ActiveDammy(0);
 			if(isConnectingNow){
 				isConnectingNow = false;
 				Address.SetActive(true);
@@ -96,7 +128,14 @@ public class Ui_Move : MonoBehaviour
 					break;
 			}
 		}else{
-			ConnectingText();
+			if(!NetworkClient.isConnected){
+				ConnectingText();
+			}else{
+				if(titleObj == null)titleObj = GameObject.Find("TitleScene").GetComponent<Title>();
+				if(titleObj.connectNum != conNum){
+					ActiveDammy(titleObj.connectNum);
+				}
+			}
 		}
 	}
 
@@ -172,7 +211,10 @@ public class Ui_Move : MonoBehaviour
 				progressNum = 1;
 			}
 		}else{
-			GameObject.Find("TitleScene").GetComponent<Title>().StartGame();
+			if(titleObj == null){
+				titleObj = GameObject.Find("TitleScene").GetComponent<Title>();
+			}
+			titleObj.StartGame();
 		}
 	}
 	private void DecisionProgression1(){
@@ -213,7 +255,6 @@ public class Ui_Move : MonoBehaviour
 				SelectProgression1(axis.y);
 				break;
 		}
-
 	}
 
 	private void SelectProgression0(float x){
@@ -249,5 +290,25 @@ public class Ui_Move : MonoBehaviour
 				conectText.text = conectText.text + ".";
 			}
 		}
+	}
+
+	private void AllUIunActive(){
+		Host.SetActive(false);
+		Guest.SetActive(false);
+		Address.SetActive(false);
+		Connect.SetActive(false);
+		Cursor.SetActive(false);
+	}
+
+	public void ActiveDammy(int number){
+		if(number > 3) return;
+		for(int i = 0 ;i < dammyObj.Count;i++){
+			dammyObj[i].SetActive(false);
+		}
+		for(int i = 0 ;i < number;i++){
+			dammyObj[i].SetActive(true);
+		}
+
+		conNum = number;
 	}
 }

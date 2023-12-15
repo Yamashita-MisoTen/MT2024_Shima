@@ -20,7 +20,7 @@ public class SoundManager : NetworkBehaviour
 		min1Alarm,
 		cursorMove,
 		cancel,
-		
+
 	}
 
 	[System.Serializable]
@@ -32,10 +32,12 @@ public class SoundManager : NetworkBehaviour
 	[SerializeField] private List<AudioData> audioDatas;
 	[SerializeField] private AudioSource _source;
 	void Awake(){
+		Debug.Log("Sound生成");
 		if(instance == null){
 			instance = this;
 			DontDestroyOnLoad(gameObject);
 		}else{
+			Debug.Log("オナチュウs");
 			Destroy(gameObject);
 		}
 	}

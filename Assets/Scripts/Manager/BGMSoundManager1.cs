@@ -26,10 +26,12 @@ public class BGMSoundManager : NetworkBehaviour
 	bool isBlendNow = false;
 	int mainSorceNum = 0;
 	void Awake(){
+		Debug.Log("BGM生成");
 		if(instance == null){
 			instance = this;
 			DontDestroyOnLoad(gameObject);
 		}else{
+			Debug.Log("オナチュウB");
 			Destroy(gameObject);
 		}
 	}
