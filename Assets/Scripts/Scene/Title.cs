@@ -17,13 +17,15 @@ public class Title : NetworkBehaviour{
 
 	[Serializable]
 	public struct TitleSendData : NetworkMessage{
-		public bool _isHostReady;
+		public int connectNum;
 	}
 
 	[SerializeField] GameObject fadeObj;
 	FadeMgr fadeMgr;
+	Ui_Move uimove;
+	public int connectNum;
 	void Awake(){
-
+		NetworkClient.RegisterHandler<TitleSendData>(ReciveTitleDataInfo);
 	}
 
 	void Start()
@@ -33,6 +35,7 @@ public class Title : NetworkBehaviour{
 		fadeMgr = obj.GetComponent<FadeMgr>();
 		fadeMgr.SetRenderCamera(GameObject.Find("Main Camera").GetComponent<Camera>());
 		netMgr.PlayerDataInit();
+		uimove = GameObject.Find("TitleCanvas").GetComponent<Ui_Move>();
 
 		obj = Instantiate(Soundprefab);
 		obj = Instantiate(BGMSoungprefab);
@@ -41,7 +44,14 @@ public class Title : NetworkBehaviour{
 	// Update is called once per frame
 	void Update()
 	{
-
+		if (NetworkServer.active && NetworkClient.isConnected)
+		{
+			Debug.Log("サーバーやで");
+		}
+		else if (NetworkClient.isConnected)
+		{
+			Debug.Log("クライアントやで");
+		}
 	}
 
 	[ClientRpc]
@@ -52,9 +62,25 @@ public class Title : NetworkBehaviour{
 			DOVirtual.DelayedCall(fadeMgr.fadeOutTime,() =>netMgr.ServerChangeScene(sceneName));
 		}
 	}
+	[ServerCallback]
+	public void ConnectUpdate(int num){
+		var send = new TitleSendData{connectNum = num};
+		NetworkServer.SendToAll(send);
+	}
+	[ClientRpc]
+	public void RpcConnectUpdate(int num){
+		connectNum = num;
+	}
 
 	[ServerCallback]
 	public void StartGame(){
 		RpcChangeSceneMainGame("MainGame");
+	}
+
+	private void ReciveTitleDataInfo(TitleSendData receivedData)
+	{
+		//ローカルのフラグに反映
+		connectNum = receivedData.connectNum;
+		Debug.Log("ここここ" + connectNum);
 	}
 }

@@ -21,6 +21,13 @@ public class FadeMgr : NetworkBehaviour
 	public bool isFadeInNow {get; private set;}
 	void Start()
 	{
+		var obj = GameObject.Find("Pf_FadeCanvas");
+		if(obj != null){
+			if(obj != this){
+				Destroy(obj);
+			}
+		}
+
 		this.name = "Pf_FadeCanvas";
 		DontDestroyOnLoad(this);
 		fadeObj = new List<RectTransform>();
@@ -41,6 +48,7 @@ public class FadeMgr : NetworkBehaviour
 	}
 
 	public void StartFadeIn(){
+		Debug.Log("確認");
 		isFadeInNow = true;
 		for(int i = 0; i < fadeObj.Count; i++){
 			float targetX = 0f;
@@ -86,5 +94,9 @@ public class FadeMgr : NetworkBehaviour
 
 	public void SetRenderCamera(Camera cam){
 		canvasComp.worldCamera = cam;
+	}
+
+	public bool isSetRenderCamera(){
+		return canvasComp.worldCamera != null;
 	}
 }

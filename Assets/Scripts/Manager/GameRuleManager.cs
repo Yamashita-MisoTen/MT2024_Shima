@@ -169,6 +169,14 @@ public partial class GameRuleManager : NetworkBehaviour
 			_playerData[i].transform.rotation *= qt;
 		}
 
+		if(!fadeMgr.isSetRenderCamera()){
+			Debug.Log("なかったから入れ直し");
+			foreach(CPlayer p in _playerData){
+				if(p.isLocalPlayer){
+					fadeMgr.SetRenderCamera(p.GetRenderCamera());
+				}
+			}
+		}
 		fadeMgr.StartFadeIn();
 
 		// // デバッグの時は演出いれない
