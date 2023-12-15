@@ -46,7 +46,7 @@ public partial class CPlayer : NetworkBehaviour
 		if(isSwim){
 			// 水しぶき
 			if(happenSplashFX){
-				var pos = this.transform.position + (this.transform.forward * -0.2f);
+				var pos = this.transform.position + (this.transform.forward * -0.4f);
 				var obj = Instantiate(swimSplashFX.gameObject, pos, Quaternion.identity);
 				obj.gameObject.transform.parent = this.gameObject.transform;
 				var comp = obj.GetComponent<VisualEffect>();

@@ -7,14 +7,13 @@ using UnityEngine.Animations;
 
 public class HappenWhirloop : GameEvent
 {
-	[SerializeField] float eventTime = 30f;
 	[SerializeField] List<GameObject> whirloopList;
 	[SerializeField] int createWhirloopNum = 10;
 	[SerializeField] Vector2 mapSize;
 	List<GameObject> whirloopObjList;
-	float requireTime = 0f;
 	protected override string eventName() => "水流発生";
 	protected override string eventExplanatory() => "エリア内に水流が大量発生中！！";
+	[SerializeField] public override float eventTime() => 30f;
 	public override void StartEvent()
 	{
 		whirloopObjList = new List<GameObject>();
@@ -56,14 +55,7 @@ public class HappenWhirloop : GameEvent
 		whirloop.EventSetUpWhirloop();
 	}
 
-	void Update(){
-		requireTime += Time.deltaTime;
-		if(requireTime >= eventTime){
-			FinishEvent();
-		}
-	}
-
-	void FinishEvent(){
+	public override void FinishEvent(){
 		for(int i = 0; i < whirloopObjList.Count; i++){
 			if(whirloopObjList[i] == null) continue;
 			NetworkServer.Destroy(whirloopObjList[i]);

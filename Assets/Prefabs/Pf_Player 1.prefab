@@ -246,7 +246,7 @@ MonoBehaviour:
     type: 3}
   _WhirloopPrefab: {fileID: 8917630142182620420, guid: e1c964221159fc2429dff286cdc0fd0e,
     type: 3}
-  _whirloopLength: 10
+  _whirloopLength: 20
   isCanMove: 0
   isOnWhirloop: 0
   ui: {fileID: 7762816088404949649}
@@ -1253,7 +1253,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d99f3b558cb5c0e41bff7b68ab85f525, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2fe1d28baf6bc844c96efd80194d881a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -127,7 +127,7 @@ public partial class CPlayer : NetworkBehaviour
 		{
 			isSwim = true;
 			var ratio = NowVelocity / Velocity_Limit;
-			SoundManager.instance.ChangeVolume(ratio / 50, moveAudioComp.GetAudioSource());
+			SoundManager.instance.ChangeVolume(ratio / 2, moveAudioComp.GetAudioSource());
 			cameraObj.cameraComp.fieldOfView = Mathf.Lerp(60, 75, ratio);
 		}
 		else
@@ -175,6 +175,9 @@ public partial class CPlayer : NetworkBehaviour
 		if(isOnWhirloop) return;
 		// ˆÚ“®
 		this.transform.position += this.gameObject.transform.forward * (NowVelocity + Velocity_Addition + velocity_Orga) * Time.deltaTime;
+		var x = Mathf.Clamp(this.transform.position.x, -500, 500);
+		var z = Mathf.Clamp(this.transform.position.z, -500, 500);
+		this.transform.position = new Vector3(x, this.transform.position.y, z);
 		// ‰ñ“]
 		var qt = this.transform.rotation;
 		if(Side_MoveNow != 0.0f){

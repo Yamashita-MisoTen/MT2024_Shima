@@ -148,6 +148,7 @@ public class PlayerCamera : NetworkBehaviour
 			progressLerpTime += Time.deltaTime;
 			float ratio = progressLerpTime / targetLerpTime;
 			var lerp = Mathf.Lerp(leroStartAngle, 0f, ratio);
+			var camfov = 10 * ratio;
 			Debug.Log("補間" + lerp);
 			if (ratio > 1.0f)
 			{
@@ -160,7 +161,7 @@ public class PlayerCamera : NetworkBehaviour
 			CameraMoveforPlayerMove(euler, camqt);
 			// 計算結果を格納する
 			//cameraComp.gameObject.transform.position = campos;
-			//cameraComp.fieldOfView = camfov;
+			cameraComp.fieldOfView = initialCameraFov + camfov;
 		}
 		else
 		{

@@ -67,7 +67,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   audioDatas:
-  - audioClip: {fileID: 8300000, guid: 4ecc288d8f7f56649afef2ec8d09c8ed, type: 3}
+  - audioClip: {fileID: 8300000, guid: 79c3352718fc07746957efcf894a13f1, type: 3}
     audioID: 0
     volume: 0.5
   - audioClip: {fileID: 8300000, guid: ce8da97eaddea984eb7d02168cb659b0, type: 3}
@@ -93,6 +93,12 @@ MonoBehaviour:
     volume: 1
   - audioClip: {fileID: 8300000, guid: 1bc6786f0272de04887f4c7b7198df44, type: 3}
     audioID: 8
+    volume: 1
+  - audioClip: {fileID: 8300000, guid: 40fa92a1e161ceb4db25dbb988459bb2, type: 3}
+    audioID: 9
+    volume: 1
+  - audioClip: {fileID: 8300000, guid: 777bd835191c90741b22e4128a1193de, type: 3}
+    audioID: 10
     volume: 1
   _source: {fileID: 7519692929340677138}
 --- !u!82 &7519692929340677138

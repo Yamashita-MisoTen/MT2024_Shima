@@ -8,8 +8,10 @@ public class GameEvent : NetworkBehaviour
 {
 	protected virtual string eventName() => "name";
 	protected virtual string eventExplanatory() => "説明文";
+	[SerializeField] public virtual float eventTime() => 0f;
 	// 継承する用のスタート関数
 	public virtual void StartEvent() {}
+	public virtual void FinishEvent() {}
 
 	public string GetEventName(){
 		return eventName();

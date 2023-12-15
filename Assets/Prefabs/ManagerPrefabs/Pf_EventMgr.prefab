@@ -50,6 +50,8 @@ MonoBehaviour:
   syncInterval: 0
   eventKind:
   - {fileID: 1381063532951286966, guid: bbf7ba895a373044685cb911ca68fdcc, type: 3}
+  - {fileID: 3813241021710551272, guid: bac739d2348e61c468c62107e11cbe78, type: 3}
+  - {fileID: 665719460185204746, guid: 5bb0b1e61407d3e44acebcd1a35c1899, type: 3}
   eventUIObj: {fileID: 4199790094535721805, guid: e4ed619f51998844db0db713eb77dac8,
     type: 3}
   eventUI: {fileID: 0}

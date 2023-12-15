@@ -102,6 +102,8 @@ public class Ui_Move : MonoBehaviour
 
 	private void OnCancel()
 	{
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.cancel);
+		SoundManager.instance.LoopSettings(false);
 		switch (progressNum)
 		{
 			case 0:
@@ -133,6 +135,8 @@ public class Ui_Move : MonoBehaviour
 
 	private void OnDecision()
 	{
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.decide);
+		SoundManager.instance.LoopSettings(false);
 		switch (progressNum)
 		{
 			case 0:
@@ -198,7 +202,8 @@ public class Ui_Move : MonoBehaviour
 	private void OnSelection(InputValue values)
 	{
 		var axis = values.Get<Vector2>();
-
+		SoundManager.instance.PlayAudio(SoundManager.AudioID.cursorMove);
+		SoundManager.instance.LoopSettings(false);
 		switch (progressNum)
 		{
 			case 0:

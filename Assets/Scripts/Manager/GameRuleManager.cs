@@ -165,6 +165,8 @@ public partial class GameRuleManager : NetworkBehaviour
 			}
 			// 座標をスタート位置に格納する
 			_playerData[i].transform.position = playerStartPosition[i];
+			Quaternion qt = Quaternion.AngleAxis(45 + 90 * i, Vector3.up);
+			_playerData[i].transform.rotation *= qt;
 		}
 
 		fadeMgr.StartFadeIn();

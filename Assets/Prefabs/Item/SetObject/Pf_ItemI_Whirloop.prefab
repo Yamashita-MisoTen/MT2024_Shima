@@ -60,7 +60,7 @@ VisualEffect:
       - m_Value: 2
         m_Name: R
         m_Overridden: 1
-      - m_Value: 10
+      - m_Value: 20
         m_Name: EndPosZ
         m_Overridden: 1
     m_Vector2f:
@@ -174,8 +174,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 10}
-  m_Center: {x: 0, y: 0, z: 5}
+  m_Size: {x: 2, y: 2, z: 20}
+  m_Center: {x: 0, y: 0, z: 10}
 --- !u!1 &4608947296570126818
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,7 +236,7 @@ VisualEffect:
       - m_Value: 2
         m_Name: R
         m_Overridden: 1
-      - m_Value: 10
+      - m_Value: 20
         m_Name: EndPosZ
         m_Overridden: 1
     m_Vector2f:
@@ -358,7 +358,7 @@ MonoBehaviour:
   syncInterval: 0
   waitTime: 0.1
   maxUseNum: 3
-  endPoint: {x: 0, y: 0, z: 10}
+  endPoint: {x: 0, y: 0, z: 20}
   checkPoint: []
   exitForward: {x: 0, y: 0, z: 0}
   colliderObj: {fileID: 0}
@@ -372,7 +372,9 @@ MonoBehaviour:
   - {fileID: 4608947296570126818}
   - {fileID: 8478163015890233560}
   - {fileID: 1625282957925349005}
-  - {fileID: 0}
+  fxShellData2: []
+  fxShellCurve1Data: []
+  fxShellCurve2Data: []
 --- !u!114 &6621660482938694083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,7 +513,7 @@ VisualEffect:
       - m_Value: 2
         m_Name: R
         m_Overridden: 1
-      - m_Value: 10
+      - m_Value: 20
         m_Name: EndPosZ
         m_Overridden: 1
     m_Vector2f:
@@ -640,7 +642,7 @@ PrefabInstance:
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Value
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -685,7 +687,7 @@ PrefabInstance:
     - target: {fileID: 6960981851210205955, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6960981851210205955, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -800,7 +802,7 @@ PrefabInstance:
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -970,7 +972,7 @@ PrefabInstance:
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Value
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6568989194215945572, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
@@ -1015,7 +1017,7 @@ PrefabInstance:
     - target: {fileID: 6960981851210205955, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6960981851210205955, guid: c0589d5246bfaf84fa0affb0443d258d,
         type: 3}

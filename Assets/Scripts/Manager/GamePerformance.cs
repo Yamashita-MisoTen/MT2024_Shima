@@ -89,6 +89,7 @@ public partial class GameRuleManager
 					var child = resultStageObj.transform.GetChild(i).gameObject;
 					if (child.name == "ResultCamera")
 					{
+						child.GetComponent<AudioListener>().enabled = true;
 						fadeResult.SetCamera(child.GetComponent<Camera>());
 						resultStageObj.SetActive(true);
 						break;
