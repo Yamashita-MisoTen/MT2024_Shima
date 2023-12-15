@@ -31,6 +31,7 @@ public class Result_Animation : MonoBehaviour
         if (!AnimationSet)
         {
             Result_Animator.SetInteger("Number", AnimationNumber);
+            Result_Animator.SetFloat("MoveSpeed", 0.0f);
             AnimationSet = true;
         }
     }
@@ -38,5 +39,14 @@ public class Result_Animation : MonoBehaviour
     public void SetAnimation(int Number)
     {
         AnimationNumber = Number;
+    }
+
+    public void SetStart()
+    {
+        Result_Animator.SetFloat("MoveSpeed", 1.0f);
+    }
+    public bool GetGetCurrentAnimatorStateInfo()
+    {
+        return Result_Animator.GetCurrentAnimatorStateInfo(0).IsName("Finish");
     }
 }
