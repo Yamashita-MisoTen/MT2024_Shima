@@ -30,6 +30,7 @@ public partial class CPlayer : NetworkBehaviour
 	public void GetGoldenFish(float addSpeed){
 		isHaveGoldenFish = true;
 		Velocity_Addition += addSpeed;
+		SetGoldFishTrigger();
 	}
 
 	public void FinishGoldenFishEvent(float minusSpeed){

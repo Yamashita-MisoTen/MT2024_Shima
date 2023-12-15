@@ -361,4 +361,9 @@ public partial class CPlayer : NetworkBehaviour
 
 		return true;
 	}
+
+	public void SetGoldFishTrigger()
+    {
+		Swimming.SetTrigger("GitFish");
+    }
 }
