@@ -69,19 +69,19 @@ MonoBehaviour:
   audioDatas:
   - audioClip: {fileID: 8300000, guid: 4ecc288d8f7f56649afef2ec8d09c8ed, type: 3}
     audioID: 0
-    volume: 0
+    volume: 0.5
   - audioClip: {fileID: 8300000, guid: ce8da97eaddea984eb7d02168cb659b0, type: 3}
     audioID: 1
-    volume: 0
+    volume: 0.5
   - audioClip: {fileID: 8300000, guid: ce8da97eaddea984eb7d02168cb659b0, type: 3}
     audioID: 2
     volume: 0.3
   - audioClip: {fileID: 8300000, guid: 768b1218c9aa4ae42a705b1c57c9b445, type: 3}
     audioID: 3
-    volume: 0.1
+    volume: 0.5
   - audioClip: {fileID: 8300000, guid: a56bc27bb7325a941be0f9792ace48f5, type: 3}
     audioID: 4
-    volume: 0.1
+    volume: 0.5
   - audioClip: {fileID: 8300000, guid: a050228f3d4d4104f9be17e595e78abd, type: 3}
     audioID: 5
     volume: 1
